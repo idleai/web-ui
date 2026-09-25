@@ -1,0 +1,11 @@
+:root {
+  color-scheme: light dark;
+  font-family: var(--vscode-font-family, system-ui, sans-serif);
+  color: var(--vscode-foreground, CanvasText);
+  background: var(--vscode-editor-background, Canvas);
+}
+
+body { margin: 0; }
+.idle-shell { padding: 1.5rem; }
+.idle-shell h1 { font-size: 1.5rem; }
+.idle-shell p { line-height: 1.5; }

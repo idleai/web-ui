@@ -1,0 +1,16 @@
+[package]
+name = "web-ui"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "MIT"
+publish = false
+description = "Shared Dioxus components for Idle browser and VS Code hosts"
+repository = "https://github.com/idleai/web-ui"
+
+[dependencies]
+app-core = { path = "../../../app-core/crates/app-core", version = "0.1.0" }
+dioxus = { version = "=0.7.7", default-features = false, features = ["macro", "html", "signals"] }
+
+[lints]
+workspace = true

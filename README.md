@@ -1,5 +1,10 @@
 # web-ui
 
+The root `Cargo.toml` is a virtual workspace. Library source and theme assets live
+in `crates/web-ui/{src,assets}/`; package examples belong in `crates/web-ui/examples/`.
+Run build/check scripts from the repository root; source paths in the module
+ownership table are relative to `crates/web-ui/src/`.
+
 Initial scaffold for Idle. Module ownership, current behavior, and build
 instructions are documented below; reserved modules are intentionally empty.
 
@@ -47,7 +52,7 @@ bash scripts/check.sh
 cargo build --locked --target wasm32-unknown-unknown
 ```
 
-The hosts copy `assets/theme.css` into their own bundles.
+The hosts copy `crates/web-ui/assets/theme.css` into their own bundles.
 
 | Boundary | Owner after f1 |
 | --- | --- |

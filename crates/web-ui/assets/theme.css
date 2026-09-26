@@ -1,0 +1,261 @@
+/* Idle foundations, adapted from EditChain's media/main.css (MIT).
+ * Pulse surfaces/hairlines, compact controls, badges, focus and reduced motion
+ * are shared here. History geometry/row selectors belong to history components.
+ * Load once in the host. All tokens and rules are scoped to .idle-theme.
+ */
+.idle-theme {
+  color-scheme: light dark;
+  --idle-color-background: light-dark(#ffffff, #1e1e1e);
+  --idle-color-surface: light-dark(#f4f4f4, #292929);
+  --idle-color-surface-raised: light-dark(#e8e8e8, #333333);
+  --idle-color-text: light-dark(#242424, #dedede);
+  --idle-color-muted: light-dark(#595959, #b5b5b5);
+  --idle-color-disabled: light-dark(#656565, #a0a0a0);
+  --idle-color-border: light-dark(#8a8a8a, #808080);
+  --idle-color-focus: light-dark(#005fb8, #75beff);
+  --idle-color-accent: light-dark(#005fb8, #75beff);
+  --idle-color-relation: light-dark(#7041a0, #c4a1ef);
+  --idle-color-success: light-dark(#246b30, #89d185);
+  --idle-color-warning: light-dark(#805800, #e2c08d);
+  --idle-color-danger: light-dark(#b42318, #f48771);
+  --idle-color-input: var(--idle-color-surface);
+  --idle-color-input-text: var(--idle-color-text);
+  --idle-color-placeholder: var(--idle-color-muted);
+  --idle-color-input-border: var(--idle-color-border);
+  --idle-color-button: light-dark(#005fb8, #0e639c);
+  --idle-color-button-hover: light-dark(#004c93, #1177bb);
+  --idle-color-button-text: #ffffff;
+  --idle-color-secondary: var(--idle-color-surface);
+  --idle-color-secondary-hover: var(--idle-color-surface-raised);
+  --idle-color-secondary-text: var(--idle-color-text);
+  --idle-color-selection: light-dark(#d6eaff, #264f78);
+  --idle-color-selection-text: var(--idle-color-text);
+  --idle-color-badge: var(--idle-color-surface-raised);
+  --idle-color-badge-text: var(--idle-color-text);
+  --idle-color-code: var(--idle-color-text);
+  --idle-color-added: var(--idle-color-success);
+  --idle-color-modified: var(--idle-color-warning);
+  --idle-color-deleted: var(--idle-color-danger);
+  --idle-color-hairline: color-mix(in srgb, var(--idle-color-border) 58%, var(--idle-color-background));
+
+  --idle-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --idle-font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --idle-font-size-body: 0.875rem;
+  --idle-font-size-small: 0.85em;
+  --idle-font-size-label: 0.9em;
+  --idle-font-size-heading: 1.5em;
+  --idle-line-height: 1.5;
+  --idle-font-weight-medium: 500;
+  --idle-font-weight-strong: 600;
+  --idle-space-1: 0.25rem;
+  --idle-space-2: 0.5rem;
+  --idle-space-3: 0.75rem;
+  --idle-space-4: 1rem;
+  --idle-space-6: 1.5rem;
+  --idle-space-8: 2rem;
+  --idle-radius-small: 3px;
+  --idle-radius-control: 4px;
+  --idle-border-width: 1px;
+  --idle-focus-width: 2px;
+  --idle-control-height: 2.25rem;
+  --idle-control-padding: var(--idle-space-3);
+  --idle-icon-size: 1rem;
+  --idle-motion-fast: 70ms;
+  --idle-motion-spin: 800ms;
+
+  min-width: 0;
+  color: var(--idle-color-text);
+  background: var(--idle-color-background);
+  font-family: var(--idle-font-sans);
+  font-size: var(--idle-font-size-body);
+  line-height: var(--idle-line-height);
+}
+
+.idle-theme[data-idle-theme="light"] { color-scheme: light; }
+.idle-theme[data-idle-theme="dark"] { color-scheme: dark; }
+.idle-theme[data-idle-density="compact"] {
+  --idle-font-size-body: 0.8125rem;
+  --idle-line-height: 1.35;
+  --idle-control-height: 1.75rem;
+  --idle-control-padding: var(--idle-space-2);
+}
+
+/* Only this adapter knows VS Code's variable names. Components consume Idle
+ * tokens. Missing variables fall back to a complete browser palette. */
+.idle-theme[data-idle-theme="vscode"] {
+  --idle-font-sans: var(--vscode-font-family, system-ui, sans-serif);
+  --idle-font-mono: var(--vscode-editor-font-family, ui-monospace, monospace);
+  --idle-font-size-body: var(--vscode-font-size, 0.8125rem);
+  --idle-color-background: var(--vscode-editor-background, light-dark(#ffffff, #1e1e1e));
+  --idle-color-surface: var(--vscode-input-background, light-dark(#f4f4f4, #292929));
+  --idle-color-surface-raised: var(--vscode-list-hoverBackground, light-dark(#e8e8e8, #333333));
+  --idle-color-text: var(--vscode-foreground, light-dark(#242424, #dedede));
+  --idle-color-muted: var(--vscode-descriptionForeground, light-dark(#595959, #b5b5b5));
+  --idle-color-disabled: var(--vscode-disabledForeground, var(--idle-color-muted));
+  --idle-color-border: var(--vscode-contrastBorder, var(--vscode-panel-border, light-dark(#8a8a8a, #808080)));
+  --idle-color-focus: var(--vscode-focusBorder, light-dark(#005fb8, #75beff));
+  --idle-color-accent: var(--vscode-textLink-foreground, var(--idle-color-focus));
+  --idle-color-relation: var(--vscode-symbolIcon-classForeground, light-dark(#7041a0, #c4a1ef));
+  --idle-color-success: var(--vscode-testing-iconPassed, light-dark(#246b30, #89d185));
+  --idle-color-warning: var(--vscode-editorWarning-foreground, light-dark(#805800, #e2c08d));
+  --idle-color-danger: var(--vscode-editorError-foreground, light-dark(#b42318, #f48771));
+  --idle-color-input: var(--vscode-input-background, var(--idle-color-surface));
+  --idle-color-input-text: var(--vscode-input-foreground, var(--idle-color-text));
+  --idle-color-input-border: var(--vscode-contrastBorder, var(--vscode-input-border, var(--idle-color-border)));
+  --idle-color-placeholder: var(--vscode-input-placeholderForeground, var(--idle-color-muted));
+  --idle-color-button: var(--vscode-button-background, light-dark(#005fb8, #0e639c));
+  --idle-color-button-hover: var(--vscode-button-hoverBackground, light-dark(#004c93, #1177bb));
+  --idle-color-button-text: var(--vscode-button-foreground, #ffffff);
+  --idle-color-secondary: var(--vscode-button-secondaryBackground, var(--idle-color-surface));
+  --idle-color-secondary-hover: var(--vscode-button-secondaryHoverBackground, var(--idle-color-surface-raised));
+  --idle-color-secondary-text: var(--vscode-button-secondaryForeground, var(--idle-color-text));
+  --idle-color-selection: var(--vscode-list-activeSelectionBackground, light-dark(#d6eaff, #264f78));
+  --idle-color-selection-text: var(--vscode-list-activeSelectionForeground, var(--idle-color-text));
+  --idle-color-badge: var(--vscode-badge-background, var(--idle-color-surface-raised));
+  --idle-color-badge-text: var(--vscode-badge-foreground, var(--idle-color-text));
+  --idle-color-code: var(--vscode-textPreformat-foreground, var(--idle-color-text));
+  --idle-color-added: var(--vscode-gitDecoration-addedResourceForeground, var(--idle-color-success));
+  --idle-color-modified: var(--vscode-gitDecoration-modifiedResourceForeground, var(--idle-color-warning));
+  --idle-color-deleted: var(--vscode-gitDecoration-deletedResourceForeground, var(--idle-color-danger));
+}
+
+/* VS Code sets these body classes as the workbench theme changes. */
+.vscode-light .idle-theme[data-idle-theme="vscode"],
+.vscode-high-contrast-light .idle-theme[data-idle-theme="vscode"] { color-scheme: light; }
+.vscode-dark .idle-theme[data-idle-theme="vscode"],
+.vscode-high-contrast .idle-theme[data-idle-theme="vscode"] { color-scheme: dark; }
+
+.idle-theme, .idle-theme *, .idle-theme *::before, .idle-theme *::after { box-sizing: border-box; }
+.idle-theme [hidden] { display: none !important; }
+.idle-theme :where(button, input, select, textarea) { font: inherit; }
+.idle-theme :where(button, input, select, textarea, a, [tabindex]):focus-visible {
+  outline: var(--idle-focus-width) solid var(--idle-color-focus);
+  outline-offset: 2px;
+}
+.idle-theme ::selection { color: var(--idle-color-selection-text); background: var(--idle-color-selection); }
+.idle-theme .idle-shell { padding: var(--idle-space-6); }
+.idle-theme .idle-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--idle-space-3); }
+.idle-theme .idle-inline { display: flex; align-items: center; flex-wrap: wrap; gap: var(--idle-space-2); }
+.idle-theme .idle-heading { margin: 0; font-size: var(--idle-font-size-heading); font-weight: var(--idle-font-weight-strong); }
+.idle-theme .idle-muted { color: var(--idle-color-muted); }
+.idle-theme .idle-code { color: var(--idle-color-code); font-family: var(--idle-font-mono); }
+.idle-theme .idle-link { color: var(--idle-color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.idle-theme .idle-visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.idle-theme .idle-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--idle-space-2);
+  min-height: var(--idle-control-height); min-width: var(--idle-control-height); max-width: 100%;
+  padding: var(--idle-space-1) var(--idle-control-padding);
+  border: var(--idle-border-width) solid var(--idle-color-border); border-radius: var(--idle-radius-control);
+  color: var(--idle-color-secondary-text); background: var(--idle-color-secondary);
+  font-weight: var(--idle-font-weight-medium); overflow-wrap: anywhere; cursor: pointer;
+  transition: background-color var(--idle-motion-fast) ease;
+}
+.idle-theme .idle-button:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--idle-color-secondary-hover); }
+.idle-theme .idle-button[data-variant="primary"] { color: var(--idle-color-button-text); background: var(--idle-color-button); border-color: var(--idle-color-button); }
+.idle-theme .idle-button[data-variant="primary"]:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--idle-color-button-hover); }
+.idle-theme .idle-button[data-variant="quiet"] { color: var(--idle-color-text); background: transparent; border-color: transparent; }
+.idle-theme .idle-button[data-variant="danger"] { color: var(--idle-color-danger); border-color: currentColor; }
+.idle-theme .idle-button:disabled, .idle-theme .idle-button[aria-disabled="true"] {
+  color: var(--idle-color-disabled); background: var(--idle-color-surface); border-color: var(--idle-color-hairline); cursor: default;
+}
+.idle-theme .idle-button[aria-busy="true"] { cursor: progress; }
+.idle-theme .idle-icon-button { padding: var(--idle-space-1); }
+.idle-theme .idle-icon { width: var(--idle-icon-size); height: var(--idle-icon-size); flex: none; vertical-align: middle; }
+.idle-theme .idle-disclosure { width: 100%; border-bottom: var(--idle-border-width) solid var(--idle-color-hairline); }
+.idle-theme .idle-disclosure-trigger { width: 100%; justify-content: flex-start; text-align: start; }
+.idle-theme .idle-disclosure-panel { padding: var(--idle-space-3); }
+
+.idle-theme .idle-field { display: flex; flex-direction: column; gap: var(--idle-space-1); width: 100%; min-width: 0; }
+.idle-theme .idle-label { font-weight: var(--idle-font-weight-medium); font-size: var(--idle-font-size-label); }
+.idle-theme .idle-input {
+  display: block; min-width: 0; width: 100%; min-height: var(--idle-control-height);
+  padding: var(--idle-space-1) var(--idle-control-padding);
+  color: var(--idle-color-input-text); background: var(--idle-color-input);
+  border: var(--idle-border-width) solid var(--idle-color-input-border); border-radius: var(--idle-radius-control);
+}
+.idle-theme .idle-input::placeholder { color: var(--idle-color-placeholder); opacity: 1; }
+.idle-theme .idle-input:hover:not(:disabled) { border-color: var(--idle-color-focus); }
+.idle-theme .idle-input[aria-invalid="true"] { border-color: var(--idle-color-danger); }
+.idle-theme .idle-input:disabled { color: var(--idle-color-disabled); cursor: not-allowed; }
+.idle-theme .idle-field-message { margin: 0; font-size: var(--idle-font-size-small); color: var(--idle-color-muted); overflow-wrap: anywhere; }
+.idle-theme .idle-field-message[data-invalid="true"] { color: var(--idle-color-danger); }
+.idle-theme .idle-checkbox { display: inline-flex; align-items: center; gap: var(--idle-space-2); min-height: var(--idle-control-height); cursor: pointer; }
+.idle-theme .idle-checkbox input { flex: none; width: var(--idle-icon-size); height: var(--idle-icon-size); margin: 0; accent-color: var(--idle-color-focus); }
+.idle-theme .idle-checkbox:has(input:disabled) { color: var(--idle-color-disabled); cursor: default; }
+.idle-theme .idle-host-action { display: flex; flex-direction: column; align-items: flex-start; gap: var(--idle-space-1); }
+
+.idle-theme .idle-badge { display: inline-flex; align-items: center; gap: var(--idle-space-1); max-width: 100%; padding: var(--idle-space-1) var(--idle-space-2); border: var(--idle-border-width) solid transparent; border-radius: var(--idle-radius-small); color: var(--idle-color-badge-text); background: var(--idle-color-badge); font-size: var(--idle-font-size-small); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.idle-theme [data-tone="info"] { color: var(--idle-color-accent); }
+.idle-theme [data-tone="success"] { color: var(--idle-color-success); }
+.idle-theme [data-tone="warning"] { color: var(--idle-color-warning); }
+.idle-theme [data-tone="danger"] { color: var(--idle-color-danger); }
+.idle-theme .idle-badge:not([data-tone="neutral"]) { background: color-mix(in srgb, currentColor 9%, var(--idle-color-background)); }
+.idle-theme .idle-status { display: flex; align-items: center; gap: var(--idle-space-2); color: var(--idle-color-muted); }
+.idle-theme .idle-state { width: 100%; padding: var(--idle-space-4); border: var(--idle-border-width) solid var(--idle-color-hairline); border-radius: var(--idle-radius-control); }
+.idle-theme .idle-state[data-tone="danger"] { border-inline-start: 3px solid var(--idle-color-danger); }
+.idle-theme .idle-state-title { display: flex; align-items: center; gap: var(--idle-space-2); margin: 0; font-weight: var(--idle-font-weight-strong); }
+.idle-theme .idle-state-message { margin: var(--idle-space-1) 0 0; color: var(--idle-color-muted); overflow-wrap: anywhere; }
+.idle-theme .idle-spinner { display: inline-block; flex: none; width: var(--idle-icon-size); height: var(--idle-icon-size); border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: idle-spin var(--idle-motion-spin) linear infinite; }
+@keyframes idle-spin { to { transform: rotate(360deg); } }
+
+@media (pointer: coarse) {
+  .idle-theme { --idle-control-height: 2.75rem; }
+  .idle-theme[data-idle-density="compact"] { --idle-control-height: 2.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .idle-theme { --idle-motion-fast: 0ms; }
+  .idle-theme .idle-spinner { animation: none; border-top-color: currentColor; }
+}
+@media (prefers-contrast: more) {
+  .idle-theme { --idle-color-hairline: var(--idle-color-border); --idle-border-width: 2px; }
+}
+.vscode-high-contrast .idle-theme[data-idle-theme="vscode"],
+.vscode-high-contrast-light .idle-theme[data-idle-theme="vscode"] {
+  --idle-color-hairline: var(--idle-color-border);
+  --idle-border-width: 2px;
+}
+@media (forced-colors: active) {
+  /* Override injected palettes as well: a dark workbench can coexist with a
+   * light system contrast theme. Keep every foreground/background pair aligned. */
+  .idle-theme, .idle-theme[data-idle-theme] {
+    --idle-color-background: Canvas;
+    --idle-color-surface: Canvas;
+    --idle-color-surface-raised: Canvas;
+    --idle-color-text: CanvasText;
+    --idle-color-muted: CanvasText;
+    --idle-color-disabled: GrayText;
+    --idle-color-border: CanvasText;
+    --idle-color-hairline: CanvasText;
+    --idle-color-focus: Highlight;
+    --idle-color-accent: LinkText;
+    --idle-color-relation: CanvasText;
+    --idle-color-success: CanvasText;
+    --idle-color-warning: CanvasText;
+    --idle-color-danger: CanvasText;
+    --idle-color-input: Field;
+    --idle-color-input-text: FieldText;
+    --idle-color-input-border: CanvasText;
+    --idle-color-placeholder: GrayText;
+    --idle-color-button: ButtonFace;
+    --idle-color-button-hover: ButtonFace;
+    --idle-color-button-text: ButtonText;
+    --idle-color-secondary: ButtonFace;
+    --idle-color-secondary-hover: ButtonFace;
+    --idle-color-secondary-text: ButtonText;
+    --idle-color-selection: Highlight;
+    --idle-color-selection-text: HighlightText;
+    --idle-color-badge: Canvas;
+    --idle-color-badge-text: CanvasText;
+    --idle-color-code: CanvasText;
+    --idle-color-added: CanvasText;
+    --idle-color-modified: CanvasText;
+    --idle-color-deleted: CanvasText;
+  }
+  .idle-theme .idle-button, .idle-theme .idle-badge { border-color: ButtonText; }
+  .idle-theme .idle-button:disabled, .idle-theme .idle-button[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
+  .idle-theme .idle-input[aria-invalid="true"] { border-style: dashed; }
+}

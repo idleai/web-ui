@@ -1,0 +1,25 @@
+/* Fixture composition and simulated injected VS Code variables, not library CSS. */
+body { margin: 0; background: #ededed; color: #242424; font-family: system-ui, sans-serif; }
+.gallery-header { padding: 24px; }
+.gallery-header h1 { margin: 0; font-size: 24px; }
+.gallery-header p { margin: 8px 0 0; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 24px; padding: 0 24px 24px; align-items: start; }
+.gallery-panel { padding: 24px; }
+.fixture-vscode {
+  --vscode-font-family: "Segoe UI", system-ui, sans-serif;
+  --vscode-font-size: 13px;
+  --vscode-editor-background: #181c24;
+  --vscode-input-background: #242a35;
+  --vscode-input-foreground: #e2e6ed;
+  --vscode-foreground: #e2e6ed;
+  --vscode-descriptionForeground: #aab4c3;
+  --vscode-panel-border: #586679;
+  --vscode-focusBorder: #79b8ff;
+  --vscode-button-background: #205f9c;
+  --vscode-button-hoverBackground: #286fb4;
+  --vscode-button-foreground: #ffffff;
+}
+@media (max-width: 400px) {
+  .gallery-grid { padding: 0 8px 8px; gap: 8px; }
+  .gallery-panel, .gallery-header { padding: 16px; }
+}

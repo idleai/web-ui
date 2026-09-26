@@ -12,5 +12,17 @@ repository = "https://github.com/idleai/web-ui"
 app-core = { path = "../../../app-core/crates/app-core", version = "0.1.0" }
 dioxus = { version = "=0.7.7", default-features = false, features = ["macro", "html", "signals"] }
 
+[dev-dependencies]
+dioxus-ssr = { version = "=0.7.7", default-features = false }
+dioxus-html = { version = "=0.7.10", default-features = false, features = ["serialize"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+dioxus-web = { version = "=0.7.7", default-features = false }
+wasm-bindgen = "=0.2.127"
+
+[[example]]
+name = "foundations"
+crate-type = ["cdylib"]
+
 [lints]
 workspace = true

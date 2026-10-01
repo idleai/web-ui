@@ -2,6 +2,9 @@
 
 use dioxus::prelude::*;
 use dioxus_html as dioxus_elements;
+use history_geometry as _;
+#[cfg(target_arch = "wasm32")]
+use web_sys as _;
 use web_ui::controls::{
     Button, ButtonVariant, Checkbox, ControlState, Disclosure, FieldMessage, IconButton, Select,
     SelectOption, TextField, TextFieldKind,

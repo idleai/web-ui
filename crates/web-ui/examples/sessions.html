@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle session fixture</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="history-details.css">
+<link rel="stylesheet" href="sessions.css">
+<style>
+body { margin:0; background:#f6f7f9; }
+.session-gallery { padding:24px; max-width:1440px; margin:auto; }
+.fixture-actions { display:flex; flex-wrap:wrap; gap:8px; margin-block:16px; }
+.fixture-action { overflow-wrap:anywhere; min-height:40px; font:12px ui-monospace,monospace; }
+.fixture-compositions { display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,420px); gap:24px; }
+.fixture-compositions > .idle-theme { min-width:0; padding:16px; border-radius:8px; }
+.fixture-compositions h1 { font-size:20px; }
+.fixture-compositions h2 { font-size:18px; }
+.fixture-compositions h3 { font-size:16px; }
+@media(max-width:760px) { .fixture-compositions { grid-template-columns:minmax(0,1fr); } .session-gallery { padding:12px; } }
+</style>
+<div id="main"></div>
+<script type="module" src="loader.js"></script>
+</html>

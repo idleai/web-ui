@@ -63,6 +63,15 @@ async function clickButton(page, label) {
   await settle(page);
 }
 
+async function tallFirstRow(page) {
+  const key = await page.$eval('#browser-history [data-focused=true]', row => row.dataset.itemKey);
+  const row = `#browser-history [data-item-key="${key}"]`;
+  await page.$eval(`${row} .idle-history-item-content`, content => { content.style.minHeight = '2000px'; });
+  await settle(page);
+  assert.ok(await page.$eval(row, item => item.getBoundingClientRect().height >= 2000), 'the graph measures supplied tall content');
+  return row;
+}
+
 test('both host compositions virtualize, retain records, and distinguish relationship types', async () => {
   const { page, errors } = await open();
   try {
@@ -144,6 +153,50 @@ test('keyboard focus survives disclosure and item removal without taking focus f
     await clickButton(page, 'Retract selected item');
     assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Retract selected item', 'reconciliation must not steal focus back from a control');
     assert.ok(await page.$eval('#browser-history', tree => !!document.getElementById(tree.getAttribute('aria-activedescendant'))));
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('clicking visible content in a tall row preserves scroll through selection updates', async () => {
+  const { page, errors } = await open();
+  try {
+    const row = await tallFirstRow(page);
+    for (const offset of [800, 1200]) {
+      await page.$eval('#browser-history', (tree, top) => { tree.scrollTop = top; }, offset);
+      await settle(page);
+      const before = await page.$eval('#browser-history', tree => tree.scrollTop);
+      const box = await page.$eval('#browser-history', tree => {
+        const box = tree.getBoundingClientRect();
+        return { x: box.left, y: box.top };
+      });
+      await page.mouse.click(box.x + 200, box.y + 200);
+      await settle(page);
+      const after = await page.$eval('#browser-history', tree => tree.scrollTop);
+      assert.ok(Math.abs(before - after) <= 1, 'selecting or reselecting visible content keeps its reading position');
+      assert.equal(await page.$eval(row, item => item.getAttribute('aria-selected')), 'true', 'the host applies the selection');
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'browser-history');
+    }
+    await page.keyboard.press('ArrowDown');
+    await settle(page);
+    assert.equal(await page.$eval('#browser-history [data-focused=true]', item => item.getAttribute('aria-posinset')), '2');
+    assert.ok(await page.$eval('#browser-history', tree => tree.scrollTop > 1200), 'keyboard navigation still reveals the next row');
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('Page Up and Page Down advance across a row taller than the viewport', async () => {
+  const { page, errors } = await open();
+  try {
+    await tallFirstRow(page);
+    await page.focus('#browser-history');
+    await page.keyboard.press('ArrowDown');
+    await settle(page);
+    for (const [key, position] of [['PageUp', '1'], ['PageDown', '2'], ['PageUp', '1'], ['PageUp', '1']]) {
+      await page.keyboard.press(key);
+      await settle(page);
+      assert.equal(await page.$eval('#browser-history [data-focused=true]', row => row.getAttribute('aria-posinset')), position, `${key} moves in its requested direction until the boundary`);
+    }
+    assert.ok(await page.$eval('#browser-history', tree => tree.scrollTop <= 1), 'Page Up reveals the start of the tall row');
     assert.deepEqual(errors, []);
   } finally { await page.close(); }
 });

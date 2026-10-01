@@ -19,6 +19,7 @@ pub(super) struct State {
     pub(super) node_births: BTreeMap<String, f64>,
     selected: Selected,
     pending_reveal: Option<String>,
+    pointer_selection: Option<Selected>,
 }
 
 impl State {
@@ -64,10 +65,14 @@ impl State {
             self.viewport.update(&self.layout.order);
             self.snapshot = next;
         }
-        if self.selected != view.selected {
+        if self.pointer_selection.as_ref() == Some(&view.selected) {
+            self.pointer_selection = None;
+            self.pending_reveal = None;
+        } else if self.selected != view.selected {
+            self.pointer_selection = None;
             self.pending_reveal.clone_from(&view.selected.item);
-            self.selected.clone_from(&view.selected);
         }
+        self.selected.clone_from(&view.selected);
         if let Some(index) = self
             .pending_reveal
             .as_ref()
@@ -79,6 +84,20 @@ impl State {
         self.initialized |= !view.items.is_empty();
         self.births.retain(|_, born| now - *born < 240.0);
         self.node_births.retain(|_, born| now - *born < 160.0);
+    }
+
+    pub(super) fn click(&mut self, key: String) -> Event {
+        if self.viewport.index(&key).is_some() {
+            self.viewport.focused = Some(key.clone());
+        }
+        let selected = Selected {
+            item: Some(key),
+            observation: None,
+        };
+        // The host's selection update acknowledges this click without revealing it again.
+        self.pointer_selection = Some(selected.clone());
+        self.pending_reveal = None;
+        Event::Select(selected)
     }
 
     pub(super) fn key(&mut self, key: &Key) -> (bool, Option<Event>) {
@@ -116,15 +135,19 @@ impl State {
             self.viewport.rows.len().saturating_sub(1)
         } else if matches!(key, Key::PageDown | Key::PageUp) {
             let top = self.viewport.rows.get(current).map_or(0.0, |row| row.top);
-            let target = if *key == Key::PageDown {
-                top + self.viewport.height
+            if *key == Key::PageDown {
+                let target = top + self.viewport.height;
+                self.viewport
+                    .rows
+                    .partition_point(|row| row.top < target)
+                    .min(self.viewport.rows.len().saturating_sub(1))
             } else {
-                (top - self.viewport.height).max(0.0)
-            };
-            self.viewport
-                .rows
-                .partition_point(|row| row.top < target)
-                .min(self.viewport.rows.len().saturating_sub(1))
+                let target = (top - self.viewport.height).max(0.0);
+                self.viewport
+                    .rows
+                    .partition_point(|row| row.top <= target)
+                    .saturating_sub(1)
+            }
         } else {
             return (false, None);
         };

@@ -232,11 +232,46 @@ fn endpoint_label(endpoint: &Endpoint) -> String {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+enum LaneSource {
+    Session(String),
+    Recorder(String),
+}
+
+fn lane_source(item: &ItemView) -> Option<LaneSource> {
+    let sessions: BTreeSet<_> = item
+        .observations
+        .iter()
+        .filter_map(|record| record.session.as_ref())
+        .collect();
+    if !sessions.is_empty() {
+        return (sessions.len() == 1)
+            .then(|| {
+                sessions
+                    .first()
+                    .map(|session| LaneSource::Session((*session).clone()))
+            })
+            .flatten();
+    }
+    let recorders: BTreeSet<_> = item
+        .observations
+        .iter()
+        .filter_map(|record| record.recorder.as_ref())
+        .collect();
+    (recorders.len() == 1)
+        .then(|| {
+            recorders
+                .first()
+                .map(|recorder| LaneSource::Recorder((*recorder).clone()))
+        })
+        .flatten()
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct Node {
     key: String,
     parents: Vec<String>,
     time: u64,
-    stream: Option<String>,
+    stream: Option<LaneSource>,
     git: bool,
 }
 
@@ -308,11 +343,6 @@ impl Layout {
             .items
             .iter()
             .map(|item| {
-                let streams: BTreeSet<_> = item
-                    .observations
-                    .iter()
-                    .filter_map(|record| record.session.as_ref())
-                    .collect();
                 let node = Node {
                     git: !item.observations.is_empty()
                         && item
@@ -331,9 +361,7 @@ impl Layout {
                         .filter_map(|record| record.time_ms)
                         .max()
                         .unwrap_or(0),
-                    stream: (streams.len() == 1)
-                        .then(|| streams.first().map(|stream| (*stream).clone()))
-                        .flatten(),
+                    stream: lane_source(item),
                 };
                 (item.key.clone(), node)
             })

@@ -4,9 +4,7 @@ use std::cell::RefCell;
 use std::fmt::Write as _;
 use std::rc::Rc;
 
-use app_core::history::{
-    ActivityKind, Event as HistoryEvent, ItemView, RequestState, Selected, ViewModel,
-};
+use app_core::history::{ActivityKind, Event as HistoryEvent, ItemView, RequestState, ViewModel};
 #[cfg(debug_assertions)]
 use dioxus::prelude::dioxus_signals;
 use dioxus::prelude::{
@@ -100,19 +98,12 @@ pub fn HistoryGraph(
     let select_state = Rc::clone(&state);
     let measure_state = Rc::clone(&state);
     let select = move |key: String| {
-        let mut state = select_state.borrow_mut();
-        if let Some(index) = state.viewport.index(&key) {
-            state.viewport.focus(index);
-        }
-        drop(state);
+        let action = select_state.borrow_mut().click(key);
         if let Some(mounted) = mounted.read().as_ref() {
             browser::focus(mounted);
         }
         invalidate(tick);
-        onaction.call(HistoryEvent::Select(Selected {
-            item: Some(key),
-            observation: None,
-        }));
+        onaction.call(action);
     };
     let measure = move |(key, height): (String, f64)| {
         if measure_state.borrow_mut().viewport.measure(&key, height) {

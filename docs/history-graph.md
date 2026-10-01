@@ -48,6 +48,12 @@ DAG. The graph reports an ordering problem and draws those connections too.
 Rendering clocks are local geometry, never changes to recorded timestamps or
 claims about completion.
 
+Lane continuation uses the item's recorded session. If no observation has a
+session, a single recorded recorder identity supplies the continuation instead.
+Session and recorder IDs remain separate domains; conflicting identities within
+an item do not choose an arbitrary source. Appending a linear recorder history
+without session metadata keeps the same lane as loading those records together.
+
 ## Viewport and interaction
 
 Only the visible rows, a small overscan region and an offscreen focused row remain
@@ -59,8 +65,11 @@ screen position, subject to the scroll bounds. A chain change clears geometry.
 
 The tree uses a stable active descendant. Arrow keys, Home, End and Page Up/Down
 move focus and reveal the item; Enter/Space select it; left/right request disclosure
-through app-core. Modified keys and IME composition keep native behavior. New
-selection targets are revealed when they become available, without taking DOM
+through app-core. Page Up and Page Down advance even across rows taller than the
+viewport. Pointer selection preserves the current scroll offset through the
+host's selection update, including clicks partway through a tall row. Modified
+keys and IME composition keep native behavior. External selection targets are
+revealed when they become available, without taking DOM
 focus from another control. Selection and disclosure never become local domain
 state.
 
@@ -109,7 +118,8 @@ CHROME_PATH=/path/to/chrome npm run test:history:browser
 
 The browser suite starts its own loopback server, fails if Chrome or built assets
 are missing, and checks both host compositions, late records/endpoints, keyboard
-focus, disclosure, removal, narrow layouts, zoom and reduced motion. Screenshots
-are written to `out/history-tests/`. The suite also checks SVG derivatives for
+focus, tall-row paging and selection, disclosure, removal, narrow layouts, zoom
+and reduced motion. Screenshots are written to `out/history-tests/`. The suite
+also checks SVG derivatives for
 sharp joins through disclosure, late arrivals and narrow layouts. CI runs these
 checks after the Rust suite.

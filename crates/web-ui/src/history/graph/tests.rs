@@ -17,6 +17,9 @@ use super::paths;
 use super::state::State;
 use super::viewport::Viewport;
 
+mod interaction;
+mod sources;
+
 fn observation(operation: &str, item: &str, time: u64, parents: &[&str]) -> ObservationView {
     ObservationView {
         record: RecordRef {

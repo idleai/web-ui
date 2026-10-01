@@ -24,6 +24,12 @@ jobs:
           ref: main
           path: app-core
           persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: idleai/editchain
+          ref: main
+          path: editchain
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.97.0
@@ -35,3 +41,22 @@ jobs:
       - name: Install cargo-deny
         run: cargo install cargo-deny --locked --version 0.20.2
       - run: bash scripts/check.sh
+      - name: Install browser fixture tools
+        run: cargo install wasm-bindgen-cli --locked --version 0.2.127
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web-ui/package-lock.json
+      - run: npm ci
+      - name: Install Chrome
+        id: chrome
+        run: |
+          OUTPUT="$(npx @puppeteer/browsers install chrome@stable --path "$RUNNER_TEMP/history-browser")"
+          CHROME_EXECUTABLE="$(printf '%s\n' "$OUTPUT" | tail -n 1 | awk '{print $NF}')"
+          test -x "$CHROME_EXECUTABLE"
+          echo "path=$CHROME_EXECUTABLE" >> "$GITHUB_OUTPUT"
+      - run: bash scripts/build-history.sh
+      - run: npm run test:history:browser
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.path }}

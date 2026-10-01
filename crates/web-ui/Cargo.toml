@@ -9,19 +9,28 @@ description = "Shared Dioxus components for Idle browser and VS Code hosts"
 repository = "https://github.com/idleai/web-ui"
 
 [dependencies]
+history-geometry = { path = "../history-geometry" }
 app-core = { path = "../../../app-core/crates/app-core", version = "0.1.0" }
-dioxus = { version = "=0.7.7", default-features = false, features = ["macro", "html", "signals"] }
+dioxus = { version = "=0.7.7", default-features = false, features = ["macro", "html", "signals", "hooks"] }
 
 [dev-dependencies]
 dioxus-ssr = { version = "=0.7.7", default-features = false }
 dioxus-html = { version = "=0.7.10", default-features = false, features = ["serialize"] }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "=0.2.127"
+web-sys = { version = "=0.3.104", features = ["Window", "Performance", "Element", "HtmlElement", "ScrollToOptions", "ScrollBehavior", "FocusOptions", "KeyboardEvent", "MouseEvent", "EventTarget", "DomTokenList"] }
+
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-dioxus-web = { version = "=0.7.7", default-features = false }
+dioxus-web = { version = "=0.7.7", default-features = false, features = ["mounted"] }
 wasm-bindgen = "=0.2.127"
 
 [[example]]
 name = "foundations"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "history"
 crate-type = ["cdylib"]
 
 [lints]

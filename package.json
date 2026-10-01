@@ -1,0 +1,11 @@
+{
+  "name": "idle-web-ui-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:history:browser": "node --test tests/history.browser.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "25.12.0"
+  }
+}

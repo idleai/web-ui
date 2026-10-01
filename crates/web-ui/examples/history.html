@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle activity graph fixture</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="history.css">
+<style>
+body { margin:0; background:#fafafa; }
+.history-gallery { padding:24px; max-width:1400px; margin:auto; }
+.fixture-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.fixture-action { overflow-wrap:anywhere; min-height:40px; font:12px ui-monospace,monospace; }
+.fixture-compositions { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.6fr); gap:24px; }
+.fixture-compositions section { min-width:0; padding:12px; }
+.fixture-compositions[data-narrow="true"] { grid-template-columns:320px 320px; overflow:auto; }
+.fixture-item { min-width:0; overflow-wrap:anywhere; width:100%; }
+.fixture-item strong { display:inline-block; margin-right:8px; }
+.fixture-item code { display:block; font-size:11px; }
+@media(max-width:760px) { .fixture-compositions { grid-template-columns:minmax(0,1fr); } .history-gallery { padding:12px; } }
+</style>
+<div id="main"></div>
+<script type="module" src="loader.js"></script>
+</html>

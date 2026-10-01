@@ -1,0 +1,44 @@
+/* Shared row and record content. All bounded panels scroll through full text. */
+.idle-theme .idle-history-row, .idle-theme .idle-history-details {
+  min-width: 0; width: 100%; overflow-wrap: anywhere;
+}
+.idle-theme .idle-history-row-heading, .idle-theme .idle-history-block-heading,
+.idle-theme .idle-history-native-actions {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--idle-space-2);
+}
+.idle-theme .idle-history-caption, .idle-theme .idle-history-identity {
+  color: var(--idle-color-muted); font-size: var(--idle-font-size-small);
+  margin: var(--idle-space-2) 0;
+}
+.idle-theme .idle-history-identity { font-family: var(--idle-font-mono); }
+.idle-theme .idle-history-warning { color: var(--idle-color-warning); }
+.idle-theme .idle-history-block p { margin-block: var(--idle-space-2); }
+.idle-theme .idle-history-block, .idle-theme .idle-history-observation,
+.idle-theme .idle-history-raw-record, .idle-theme .idle-history-field {
+  border: 1px solid var(--idle-color-hairline); border-radius: var(--idle-radius-control);
+  padding: var(--idle-space-3); margin-block: var(--idle-space-2); min-width: 0;
+}
+.idle-theme .idle-history-source {
+  margin: var(--idle-space-2) 0; padding: var(--idle-space-3);
+  font-family: var(--idle-font-mono); font-size: var(--idle-font-size-small);
+  white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4;
+  max-height: 24rem; overflow: auto; overscroll-behavior: contain;
+  background: var(--idle-color-background); border: 1px solid var(--idle-color-hairline);
+}
+.idle-theme .idle-history-source:focus-visible {
+  outline: var(--idle-focus-width) solid var(--idle-color-focus); outline-offset: 2px;
+}
+.idle-theme .idle-history-facts {
+  display: grid; grid-template-columns: minmax(7rem, 1fr) minmax(0, 3fr);
+  gap: var(--idle-space-2); font-size: var(--idle-font-size-small);
+}
+.idle-theme .idle-history-facts dt { color: var(--idle-color-muted); }
+.idle-theme .idle-history-facts dd { margin: 0; font-family: var(--idle-font-mono); white-space: pre-wrap; }
+.idle-theme .idle-history-details { padding-block: var(--idle-space-3); }
+.idle-theme .idle-history-operation { border-top: 1px solid var(--idle-color-hairline); margin-top: var(--idle-space-4); }
+.idle-theme .idle-history-field h5 { font-size: inherit; margin: 0; }
+.idle-theme .idle-history-item-paging { margin-block: var(--idle-space-3); }
+@media (max-width: 480px) {
+  .idle-theme .idle-history-facts { grid-template-columns: minmax(0, 1fr); }
+  .idle-theme .idle-history-facts dd { margin-bottom: var(--idle-space-2); }
+}

@@ -2,7 +2,7 @@
 
 use app_core::sessions::{
     Event as SessionEvent, SessionCapability, SessionGrant, SessionGrantStatus, SessionMutation,
-    SessionPermission, ViewModel,
+    SessionMutationState, SessionPermission, SessionRetryAdvice, ViewModel,
 };
 use dioxus::prelude::*;
 
@@ -146,7 +146,8 @@ pub fn SessionSharing(
                     for grant in &session.grants {
                         GrantRow {
                             key: "{grant.id}", grant: grant.clone(), now_ms,
-                            token: scoped.map(|draft| draft.token.clone()), enabled: editable,
+                            token: scoped.map(|draft| draft.token.clone()),
+                            state: revocation_state(&view, grant, editable),
                             onaction,
                         }
                     }
@@ -227,11 +228,38 @@ pub fn SessionSharing(
     }
 }
 
+fn revocation_state(view: &ViewModel, grant: &SessionGrant, enabled: bool) -> ControlState {
+    if grant.status != SessionGrantStatus::Active {
+        return ControlState::Disabled;
+    }
+    let unresolved = view.mutations.iter().any(|mutation| {
+        matches!(
+            &mutation.mutation,
+            SessionMutation::Revoke { session_id, grant_id, expected_revision }
+                if *session_id == grant.session_id && *grant_id == grant.id
+                    && *expected_revision == grant.revision
+        ) && match &mutation.state {
+            SessionMutationState::Pending
+            | SessionMutationState::Acknowledged(_)
+            | SessionMutationState::Unknown => true,
+            SessionMutationState::Failed(error) => error.retry != SessionRetryAdvice::Never,
+            SessionMutationState::Created(_) | SessionMutationState::RuntimeReported => false,
+        }
+    });
+    if unresolved {
+        ControlState::Busy
+    } else if enabled {
+        ControlState::Ready
+    } else {
+        ControlState::Disabled
+    }
+}
+
 #[component]
 fn GrantRow(
     grant: SessionGrant,
     token: Option<SessionActionToken>,
-    enabled: bool,
+    state: ControlState,
     now_ms: Option<u64>,
     onaction: EventHandler<SessionEvent>,
 ) -> Element {
@@ -246,7 +274,7 @@ fn GrantRow(
         }
         SessionGrantStatus::Active => ("Issued", StatusTone::Info),
     };
-    let can_revoke = enabled && grant.status == SessionGrantStatus::Active && token.is_some();
+    let can_revoke = state == ControlState::Ready && token.is_some();
     let grant_id = grant.id.clone();
     let permissions = grant
         .permissions
@@ -273,7 +301,7 @@ fn GrantRow(
             }
             Button {
                 label: "Revoke invitation", variant: ButtonVariant::Danger,
-                state: if can_revoke { ControlState::Ready } else { ControlState::Disabled },
+                state,
                 onpress: move |()| {
                     if can_revoke && let Some(token) = &token {
                         onaction.call(SessionEvent::Revoke { id: token.mutation.clone(), grant_id: grant_id.clone() });

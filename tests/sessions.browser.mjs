@@ -150,10 +150,24 @@ test('invitations and revocation wait for recorded grants and distinguish owners
       assert.match(await text(page, `#${host} [data-grant-id="extension-grant-0"]`), /contributor-bob.*Issued.*Read · Send prompts/s);
     }
     await clickButton(page, '#browser [data-grant-id="extension-grant-0"]', 'Revoke invitation');
+    const revocation = await text(page, '.fixture-action');
+    for (const host of ['browser', 'extension']) {
+      const grant = `#${host} [data-grant-id="extension-grant-0"]`;
+      assert.equal(await page.$eval(`${grant} button`, element => element.getAttribute('aria-busy')), 'true');
+      await clickButton(page, grant, 'Revoke invitation');
+      assert.equal(await text(page, '.fixture-action'), revocation, 'a fresh host token cannot duplicate a pending revocation');
+    }
     await clickButton(page, '.fixture-actions', 'Commit sharing');
     assert.doesNotMatch(await text(page, '#browser [data-grant-id="extension-grant-0"] .idle-badge'), /Revoked/);
+    for (const host of ['browser', 'extension']) {
+      const grant = `#${host} [data-grant-id="extension-grant-0"]`;
+      assert.equal(await page.$eval(`${grant} button`, element => element.getAttribute('aria-busy')), 'true', 'a commit still waits for the grant update');
+      await clickButton(page, grant, 'Revoke invitation');
+      assert.equal(await text(page, '.fixture-action'), revocation);
+    }
     await clickButton(page, '.fixture-actions', 'Publish sharing');
     assert.match(await text(page, '#extension [data-grant-id="extension-grant-0"] .idle-badge'), /Revoked/);
+    assert.equal(await page.$eval('#extension [data-grant-id="extension-grant-0"] button', element => element.disabled), true);
     await page.type('#browser-composer-text', 'Retain after revocation');
     await clickButton(page, '#browser [data-grant-id="grant-session-alice"]', 'Revoke invitation');
     await clickButton(page, '.fixture-actions', 'Commit sharing');

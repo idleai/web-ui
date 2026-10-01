@@ -14,6 +14,7 @@ use super::{SessionActionToken, SessionConversation};
 use crate::host::{HostCapabilities, HostKind};
 
 mod actions;
+mod history_scope;
 #[path = "../../examples/sessions/output.rs"]
 mod output;
 

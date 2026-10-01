@@ -227,15 +227,21 @@ fn RuntimeStatus(state: SessionInputState) -> Element {
 }
 
 fn belongs_to(item: &ItemView, session: Option<&String>) -> bool {
-    !item.observations.is_empty()
-        && item
-            .observations
-            .iter()
-            .all(|record| record.session.as_ref() == session)
-        && item
-            .observations
-            .iter()
-            .any(|record| matches!(record.kind, ActivityKind::Message | ActivityKind::Tool))
+    let Some(session) = session else {
+        return false;
+    };
+    // Full-item scans can add observations without repeated session context.
+    // Require a recorded binding and reject explicit item/session conflicts.
+    item.observations.iter().all(|record| {
+        record.item == item.key
+            && record
+                .session
+                .as_ref()
+                .is_none_or(|recorded| recorded == session)
+    }) && item.observations.iter().any(|record| {
+        record.session.as_ref() == Some(session)
+            && matches!(record.kind, ActivityKind::Message | ActivityKind::Tool)
+    })
 }
 
 #[component]

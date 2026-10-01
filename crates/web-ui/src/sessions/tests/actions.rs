@@ -19,6 +19,8 @@ use crate::sessions::{
     InvitationAccess, InvitationDraft, PromptComposer, PromptDraft, SessionSharing,
 };
 
+mod revocation;
+
 fn mount<P: Clone + 'static>(app: fn(P) -> Element, props: P) -> (VirtualDom, Mutations) {
     set_event_converter(Box::new(SerializedHtmlEventConverter));
     let mut dom = VirtualDom::new_with_props(app, props);

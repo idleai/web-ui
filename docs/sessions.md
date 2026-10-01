@@ -84,9 +84,12 @@ Bind a history reducer to `selected_history.chain` and set
 `history::Filter.session` to `selected_history.item`, the full logical session
 identity. A directory session ID is not a history item or an observation ID.
 Supply this view separately; app-core's session reducer does not populate history
-automatically. Both the chain/filter binding and each rendered item's observations
-must match. Read access must remain available in the session's supplied actions.
-The same checks prevent a retained inspector from showing another session's data.
+automatically. The chain/filter binding must match, and each rendered item needs
+a message or tool observation explicitly bound to that session. Full-item scans
+may add observations without repeated session fields; those remain visible with
+the same logical item. Explicitly conflicting item or session identities hide the
+item and its retained inspector. Read access must remain available in the
+session's supplied actions.
 
 The conversation reuses `HistoryRow` and `HistoryDetails`, preserving all loaded
 message bytes, distinct tool attempts/channels, incomplete prefixes, missing
@@ -106,6 +109,12 @@ permissions. Revocation sends `Revoke` with a fresh request ID and the existing
 grant ID; app-core supplies the expected revision. Pending, committed, failed and
 unknown changes remain visible. Grants change only when app-core returns updated
 records, including after a committed acknowledgement.
+
+A grant's revoke control stays busy while its current revision has a pending,
+uncertain, retryable or committed revocation. Reserving a fresh request ID does
+not unlock it; retry and lookup controls use the original request. A terminal
+failure or a newer active grant revision permits a new revocation. Other grants
+remain independently actionable.
 
 The participant roster keeps the session owner, grantee and original inviter
 separate. Issued, expired and revoked records remain distinguishable. An issued
@@ -143,8 +152,9 @@ assembly remains f43/f60; live shared input and remote runtime integration remai
 f14/f17/f62. The fixture checks verify the shared components, not a live Evo
 connection or execution authorization.
 
-Checked on 2026-10-01 against app-core `0ebae9d` and EditChain `3c75cf0` in isolated
-dependency checkouts. `./scripts/lint.sh` reported `RESULT: PASS` (exit 0), and
+The initial implementation was checked on 2026-10-01 against app-core `0ebae9d`
+and EditChain `3c75cf0` in isolated dependency checkouts. `./scripts/lint.sh`
+reported `RESULT: PASS` (exit 0), and
 `./scripts/check.sh` exited 0, including 68 Rust tests and native/WASM builds.
 All 21 Chrome scenarios passed without skips: seven graph, six history details
 and eight session scenarios. Desktop and narrow session screenshots were inspected.

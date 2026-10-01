@@ -33,5 +33,9 @@ crate-type = ["cdylib"]
 name = "history"
 crate-type = ["cdylib"]
 
+[[example]]
+name = "history_details"
+crate-type = ["cdylib"]
+
 [lints]
 workspace = true

@@ -9,6 +9,7 @@ use std::collections::BTreeSet;
 use std::fmt;
 use std::num::NonZeroU32;
 
+use app_core::history::OpenTarget;
 use dioxus::prelude::*;
 
 use crate::controls::{Button, ControlState};
@@ -33,6 +34,10 @@ pub enum HostCapability {
     OpenFile,
     /// Compare two explicitly supplied file targets.
     OpenDiff,
+    /// Open the exact retained operation encoding through history effects.
+    OpenRecord,
+    /// Open the captured Original through history effects.
+    OpenOriginal,
     /// Reveal a file in the host's explorer.
     RevealFile,
 }
@@ -74,6 +79,19 @@ impl HostCapabilities {
     #[must_use]
     pub fn supports(&self, capability: HostCapability) -> bool {
         self.supported.contains(&capability)
+    }
+
+    /// Whether a history native-open adapter is installed. Components dispatch
+    /// `app_core::history::Event::Open`; the host resolves its full record
+    /// reference through the selected chain and rechecks access at execution.
+    #[must_use]
+    pub fn supports_history(&self, target: OpenTarget) -> bool {
+        self.supports(match target {
+            OpenTarget::Record => HostCapability::OpenRecord,
+            OpenTarget::Original => HostCapability::OpenOriginal,
+            OpenTarget::File => HostCapability::OpenFile,
+            OpenTarget::Diff => HostCapability::OpenDiff,
+        })
     }
 
     /// Check a typed request before presenting or dispatching it.

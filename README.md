@@ -1,7 +1,8 @@
 # web-ui
 
 Shared Dioxus components for Idle's browser and VS Code clients: theme tokens,
-accessible controls, icons, status views and virtualized history graphs. Components render `app-core` state;
+accessible controls, icons, status views, virtualized history graphs and exact
+record details. Components render `app-core` state;
 hosts own credentials, networking and native actions.
 
 Source and assets live in [`crates/web-ui/`](crates/web-ui/).
@@ -32,3 +33,6 @@ component usage, accessibility behavior and host capabilities.
 
 See the [history graph guide](docs/history-graph.md) for app-core integration,
 relationship handling, the `history-geometry` package and browser checks.
+
+See the [history details guide](docs/history-details.md) for message/tool content,
+file revisions, Original drill-down, typed actions and host capabilities.

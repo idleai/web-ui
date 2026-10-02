@@ -18,7 +18,7 @@ surfaces retain their roadmap owners.
 ## Development
 
 Keep the `app-core` and `editchain` checkouts alongside this repository. CI uses
-their `main` branches. The Rust toolchain is pinned in `rust-toolchain.toml`.
+the paired revisions in `.github/workflows/ci.yml`. The Rust toolchain is pinned in `rust-toolchain.toml`.
 Run checks and builds from the repository root:
 
 ```sh
@@ -47,3 +47,16 @@ file revisions, Original drill-down, typed actions and host capabilities.
 
 See the [session guide](docs/sessions.md) for conversations, attributed prompt
 delivery/execution, invitation controls and the browser/extension preview.
+
+## Compatibility history renderer
+
+[`editchain-history-renderer`](crates/editchain-history-renderer) renders the
+existing history panel. Its host supplies the message API at startup; the VS Code
+loader owns platform API acquisition. Its stylesheet is
+`crates/editchain-history-renderer/assets/history.css`.
+
+`history-geometry::legacy_protocol` and `legacy_projection` adapt app-core's
+shared rows and semantic projections to graph layout. The moved projection/layout
+integration tests run in this workspace. The packaged compatibility panel and
+its generated assets are built and checked by vscode-extension's
+`history-renderer.yml` workflow.

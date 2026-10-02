@@ -8,7 +8,7 @@ use dioxus::prelude::{
     use_signal,
 };
 
-use crate::controls::{Button, Select, SelectOption, TextField, TextFieldKind};
+use crate::controls::{Button, ControlState, Select, SelectOption, TextField, TextFieldKind};
 use crate::history::details::HistoryTimeline;
 use crate::host::HostCapabilities;
 use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
@@ -66,7 +66,7 @@ pub fn WorkspaceSurface(
                         if !value.is_empty() { onaction.call(Event::Workspace(workspace::Event::SelectWorkspace(value))); }
                     },
                 }
-                if directory.workspaces.is_empty() { p { "Open a trusted workspace folder to browse its history." } }
+                if directory.workspaces.is_empty() { p { "No local history workspaces are available. Open a trusted workspace folder or check its history settings." } }
                 for state in [directory.directory_state, directory.snapshot_state] {
                     if let workspace::WorkspaceRequestState::Failed(error) = state {
                         p { role: "alert", "{error.message}" }
@@ -91,12 +91,7 @@ pub fn WorkspaceSurface(
                         PromptComposer { id: "idle-composer", view: view.sessions.clone(), draft: None, oninput: move |_text| {}, onaction: session_action }
                         SessionSharing { id: "idle-sharing", view: view.sessions, draft: None, recipients: Vec::new(), onchange: move |_draft| {}, onaction: session_action, now_ms: None }
                     } else {
-                        HistorySearch { key: "{view.history.chain:?}", text: view.history.search.text.clone(), onaction: history_action }
-                        if !view.history.search.text.is_empty() {
-                            p { "{view.history.search.matches.len()} loaded matches" }
-                            Button { label: "Next match", onpress: move |()| history_action.call(history::Event::NavigateMatch(1)) }
-                            Button { label: "Search more", onpress: move |()| history_action.call(history::Event::SearchMore) }
-                        }
+                        HistorySearch { key: "{view.history.chain:?}", view: view.history.search.clone(), onaction: history_action }
                         Button { label: "Refresh history", onpress: move |()| history_action.call(history::Event::Refresh) }
                         HistoryTimeline { id: "idle-history", view: view.history, capabilities, onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     }
@@ -107,11 +102,45 @@ pub fn WorkspaceSurface(
 }
 
 #[component]
-fn HistorySearch(text: String, onaction: EventHandler<history::Event>) -> Element {
-    let mut search = use_signal(|| text);
+fn HistorySearch(view: history::SearchView, onaction: EventHandler<history::Event>) -> Element {
+    let mut search = use_signal(|| view.text.clone());
+    let loading = view.paging.state == history::RequestState::Loading;
+    let search_state = if loading {
+        ControlState::Busy
+    } else {
+        ControlState::Ready
+    };
+    let more_state = if loading {
+        ControlState::Busy
+    } else if view.paging.exhausted {
+        ControlState::Disabled
+    } else {
+        ControlState::Ready
+    };
+    let next_state = if view.matches.is_empty() {
+        ControlState::Disabled
+    } else {
+        ControlState::Ready
+    };
+    let more_label = if matches!(view.paging.state, history::RequestState::Failed(_)) {
+        "Retry search"
+    } else {
+        "Search more"
+    };
     rsx! {
         TextField { id: "idle-search", label: "Search history", kind: TextFieldKind::Search, value: search(),
             oninput: move |value| search.set(value), oncommit: move |value| onaction.call(history::Event::Search(value)) }
-        Button { label: "Search", onpress: move |()| onaction.call(history::Event::Search(search())) }
+        Button { label: "Search", state: search_state, onpress: move |()| onaction.call(history::Event::Search(search())) }
+        if !view.text.is_empty() {
+            p { "{view.matches.len()} loaded matches" }
+            if loading { p { role: "status", "Searching history…" } }
+            if let history::RequestState::Failed(error) = view.paging.state { p { role: "alert", "{error.message}" } }
+            if !view.unavailable.is_empty() {
+                p { role: "status", "{view.unavailable.len()} fields could not be searched. Results may be incomplete." }
+            }
+            if view.paging.exhausted { p { "Search reached the end of the available history." } }
+            Button { label: "Next match", state: next_state, onpress: move |()| onaction.call(history::Event::NavigateMatch(1)) }
+            Button { label: more_label, state: more_state, onpress: move |()| onaction.call(history::Event::SearchMore) }
+        }
     }
 }

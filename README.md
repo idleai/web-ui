@@ -7,6 +7,14 @@ render `app-core` state; hosts own credentials, networking and native actions.
 
 Source and assets live in [`crates/web-ui/`](crates/web-ui/).
 
+`assembly::WorkspaceSurface` composes the available workspace selector, history
+graph/details and session components for compact sidebar or wider detail views.
+Mount one per document, supply a persistent app-core view and event dispatcher,
+and load the theme, graph, details and session styles. It advertises only supplied
+host actions; runtime-backed session actions remain unavailable until the host
+connects their provider and draft lifecycle. The full navigation/resource/settings
+surfaces retain their roadmap owners.
+
 ## Development
 
 Keep the `app-core` and `editchain` checkouts alongside this repository. CI uses

@@ -1,6 +1,7 @@
 //! Browser presentation only; application state belongs to app-core.
 //! Host credentials, networking and native actions stay with the hosts.
 
+pub mod assembly;
 pub mod configuration;
 pub mod controls;
 pub mod history;

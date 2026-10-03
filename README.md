@@ -2,8 +2,9 @@
 
 Shared Dioxus components for Idle's browser and VS Code clients: theme tokens,
 accessible controls, icons, status views, virtualized history graphs and exact
-record details, shared conversations, prompting and session sharing. Components
-render `app-core` state; hosts own credentials, networking and native actions.
+record details, shared conversations, prompting, session sharing and projection
+lists, tables, cards and task boards. Components render `app-core` state; hosts own
+credentials, networking and native actions.
 
 Source and assets live in [`crates/web-ui/`](crates/web-ui/).
 
@@ -47,3 +48,6 @@ file revisions, Original drill-down, typed actions and host capabilities.
 
 See the [session guide](docs/sessions.md) for conversations, attributed prompt
 delivery/execution, invitation controls and the browser/extension preview.
+
+See the [projection guide](docs/projections.md) for supplied counts and freshness,
+record links, controlled filters and compact/sidebar or wide/browser compositions.

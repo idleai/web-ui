@@ -74,3 +74,7 @@ jobs:
       - run: npm run test:sessions:browser
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.path }}
+      - run: bash scripts/build-projections.sh
+      - run: npm run test:projections:browser
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.path }}

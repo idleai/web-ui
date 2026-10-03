@@ -40,7 +40,7 @@ fn destination(view: &ViewModel, kind: ProjectionKind) -> &ProjectionView {
     }
 }
 
-fn title(kind: ProjectionKind) -> &'static str {
+pub(crate) fn title(kind: ProjectionKind) -> &'static str {
     match kind {
         ProjectionKind::Activity => "Activity",
         ProjectionKind::Task => "Tasks",

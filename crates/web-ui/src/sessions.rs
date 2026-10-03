@@ -28,7 +28,7 @@ fn selected(view: &ViewModel) -> Option<&SessionView> {
         .find(|session| Some(&session.session.id) == view.selected.as_ref())
 }
 
-fn ready(view: &ViewModel) -> bool {
+pub(crate) fn ready(view: &ViewModel) -> bool {
     view.context.is_some()
         && view.load == SessionLoadState::Ready
         && !matches!(view.updates, SessionLoadState::Failed(_))

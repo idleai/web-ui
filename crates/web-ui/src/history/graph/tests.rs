@@ -539,3 +539,46 @@ fn static_graph_mounts_only_the_window_and_exposes_partial_records() {
         "virtualized tree rows expose total count and stable focus"
     );
 }
+
+#[test]
+fn compact_rows_preserve_graph_anchors_measurements_and_chain_changes() {
+    let mut state = State::default();
+    state.viewport.set_compact(true);
+    let mut view = view(vec![item("parent", 1, &[]), item("child", 2, &["parent"])]);
+    state.reconcile(&view, 0.0);
+    assert!(
+        (state.viewport.total - 48.0).abs() < 0.5,
+        "compact rows have their own measured minimum"
+    );
+    let routes = paths::visible(
+        &state.snapshot.connections,
+        &state.layout,
+        &state.viewport,
+        &state.births,
+    );
+    assert!(
+        routes
+            .iter()
+            .all(|path| path.d.contains("12") && path.d.contains("36")),
+        "paths meet the compact dot centers"
+    );
+    assert!(
+        state.viewport.measure("child", 60.0),
+        "larger content remains measurable"
+    );
+    assert!(
+        (state.viewport.total - 84.0).abs() < 0.5,
+        "measured height is never clipped to compact minimum"
+    );
+    view.chain = Some("another-chain".into());
+    state.reconcile(&view, 1.0);
+    assert!(
+        (state.viewport.total - 48.0).abs() < 0.5,
+        "chain reset retains compact density but clears old measurements"
+    );
+    state.viewport.set_compact(false);
+    assert!(
+        (state.viewport.total - 80.0).abs() < 0.5,
+        "regular graph sizing remains the default"
+    );
+}

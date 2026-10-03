@@ -3,18 +3,18 @@
 Shared Dioxus components for Idle's browser and VS Code clients: theme tokens,
 accessible controls, icons, status views, virtualized history graphs and exact
 record details, shared conversations, prompting, session sharing and projection
-lists, tables, cards and task boards. Components render `app-core` state; hosts own
+lists, tables, cards, task boards and workspace navigation. Components render `app-core` state; hosts own
 credentials, networking and native actions.
 
 Source and assets live in [`crates/web-ui/`](crates/web-ui/).
 
-`assembly::WorkspaceSurface` composes the available workspace selector, history
-graph/details and session components for compact sidebar or wider detail views.
+`assembly::WorkspaceSurface` renders the ordered workspace navigation in its
+compact sidebar and composes history/details and sessions in wider detail views.
 Mount one per document, supply a persistent app-core view and event dispatcher,
-and load the theme, graph, details and session styles. It advertises only supplied
-host actions; runtime-backed session actions remain unavailable until the host
-connects their provider and draft lifecycle. The full navigation/resource/settings
-surfaces retain their roadmap owners.
+and load the theme, navigation, graph, details, session and projection styles. It advertises
+only supplied host actions; session creation requires a connected provider and
+a prepared request. Resource registration and configuration forms remain with
+their owning surfaces.
 
 ## Development
 
@@ -51,3 +51,6 @@ delivery/execution, invitation controls and the browser/extension preview.
 
 See the [projection guide](docs/projections.md) for supplied counts and freshness,
 record links, controlled filters and compact/sidebar or wide/browser compositions.
+
+See the [navigation guide](docs/navigation.md) for section ordering, supplied
+counts/statuses, identity boundaries, selection events and creation requirements.

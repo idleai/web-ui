@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle workspace navigation</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="history.css">
+<link rel="stylesheet" href="navigation.css">
+<style>
+body { margin:0; background:#e9edf0; }
+.navigation-gallery { padding:24px; max-width:1160px; margin:auto; }
+.fixture-header { padding:24px; margin-bottom:24px; border-radius:8px; }
+.fixture-header h1 { font-size:30px; margin:8px 0; }
+.fixture-header p { overflow-wrap:anywhere; }
+.fixture-header > p:first-child { font-size:11px; letter-spacing:.12em; }
+.fixture-actions { display:flex; flex-wrap:wrap; gap:8px; }
+#last-action,#selection { font-family:var(--idle-font-mono); font-size:12px; }
+.fixture-compositions { display:grid; grid-template-columns:320px minmax(0,1fr); gap:32px; align-items:start; }
+.fixture-compositions > .idle-theme { min-width:0; border:1px solid var(--idle-color-hairline); }
+@media(max-width:720px) { .navigation-gallery { padding:12px; } .fixture-header { padding:16px; } .fixture-compositions { grid-template-columns:minmax(0,1fr); gap:24px; } }
+</style>
+<div id="main"></div>
+<script type="module" src="loader.js"></script>
+</html>

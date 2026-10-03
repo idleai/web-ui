@@ -25,6 +25,7 @@ use crate::controls::{Button, ControlState};
 /// foundation stylesheet. `render_item` receives the complete app-core item for
 /// f31 content; row measurements, focus and scrolling remain graph-owned.
 /// Hosts dispatch `onaction` into their Crux runtime and supply its next view.
+/// `compact` uses 24-pixel rows for short previews while retaining measured heights.
 #[component]
 pub fn HistoryGraph(
     id: String,
@@ -32,6 +33,7 @@ pub fn HistoryGraph(
     onaction: EventHandler<HistoryEvent>,
     #[props(default = "Activity history".into())] label: String,
     #[props(default = 480)] height: u32,
+    #[props(default)] compact: bool,
     render_item: Option<Callback<ItemView, Element>>,
 ) -> Element {
     let state = use_hook(|| Rc::new(RefCell::new(State::default())));
@@ -41,6 +43,7 @@ pub fn HistoryGraph(
     let now = browser::now();
     let (rows, paths, top, total, graph_width, active, warning, unresolved) = {
         let mut state = state.borrow_mut();
+        state.viewport.set_compact(compact);
         state.reconcile(&view, now);
         let rows: Vec<_> = state
             .viewport
@@ -113,7 +116,7 @@ pub fn HistoryGraph(
     let busy = view.paging.state == RequestState::Loading;
     let can_page = !view.paging.exhausted;
     rsx! {
-        section { class: "idle-history", aria_label: label.clone(),
+        section { class: "idle-history", "data-compact": compact.to_string(), aria_label: label.clone(),
             div { class: "idle-history-legend", aria_label: "Connection types",
                 span { "Causal parent" }
                 span { "· · Logical cause" }

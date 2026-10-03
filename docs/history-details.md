@@ -118,7 +118,7 @@ remain separate f43/f60 work.
 
 ## Verification and local preview
 
-Keep app-core and EditChain alongside this repository, as described in the
+Keep app-core, host-tools and EditChain alongside this repository, as described in the
 repository README. Run:
 
 ```sh

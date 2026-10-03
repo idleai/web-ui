@@ -110,12 +110,11 @@ components over app-core's full typed data. Legacy coordinate/wire objects,
 derived row summaries and stringified native-open envelopes are not inputs to
 these components.
 
-The existing renderer remains compatibility code for its existing host mount,
-as recorded in EditChain's `GRAPH-MIGRATION.md`. f43 switches that mount and
-removes the old viewer; f60 connects the browser host. Removing the old row code
-before those switches would break existing consumers. This branch owns the
-details module, the additive host capability variants, stylesheet, example,
-tests and their Cargo/npm/CI wiring. It changes no app-core schema or reducer.
+Both current hosts use the shared components. The old renderer, its generated
+assets and coordinate service have been removed. This repository owns the
+details module, host capability variants, stylesheet, example and browser tests;
+app-core owns their typed data and reducers. Production provider connections
+remain separate f43/f60 work.
 
 ## Verification and local preview
 

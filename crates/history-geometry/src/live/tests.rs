@@ -1,7 +1,7 @@
 use super::tests::fixture::{HistoryRow, LiveBlockMeta};
 use super::*;
 use crate::layout::LayoutContext;
-use editchain_core::taxonomy::ChainState;
+use idle_history::taxonomy::ChainState;
 mod fixture;
 type LiveGraph = super::LiveGraph<LiveBlockMeta>;
 

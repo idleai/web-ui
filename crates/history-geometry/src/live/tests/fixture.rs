@@ -15,7 +15,7 @@ pub(super) struct LiveBlockMeta {
     pub(super) node_key: String,
     pub(super) human_stream: Option<String>,
     pub(super) parents: Vec<String>,
-    pub(super) chain_state: editchain_core::taxonomy::ChainState,
+    pub(super) chain_state: idle_history::taxonomy::ChainState,
 }
 impl GraphNode for LiveBlockMeta {
     fn key(&self) -> &String {

@@ -94,15 +94,11 @@ each neighboring vertical run, keeping close turns smooth as row heights change.
 Logical side routes and self-loops use the same tangent rule; node attachments
 stay at their measured centers.
 
-EditChain's layout module, live-graph module, growth module and coordinate module
-are compatibility exports/adapters. The legacy direct DOM renderer and its
-coordinate-based service remain until f31/f43 replace their content and host
-consumers. Remove those adapters with that switch. Engine storage and relationship
-queries remain in EditChain.
-
-Land the web-ui geometry package before the paired EditChain consumers. EditChain
-CI checks out web-ui beside app-core; the new web-ui package can build against the
-previous engine main because its dependencies are only core and index crates.
+`history-geometry` owns layout, live graph, growth and viewport calculations used
+by Dioxus. Its old projection/protocol adapters and the direct DOM renderer have
+been removed after both current hosts adopted the shared components. Pure layout
+regressions remain with the geometry package. EditChain owns storage and queries
+and has no dependency on this repository or application display classifications.
 
 ## Local checks
 

@@ -21,7 +21,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 use editchain_core::OpId;
 
-use editchain_core::taxonomy::ChainState;
+use idle_history::taxonomy::ChainState;
 
 /// A single row in the [`compute_lanes`] layout.
 #[derive(Debug, Clone)]

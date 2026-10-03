@@ -86,10 +86,7 @@ pub fn WorkspaceSurface(
                 }
                 if let Some(error) = error { p { role: "alert", "{error}" } }
                 if selected.is_some() {
-                    if surface == Surface::Detail { nav { aria_label: "Workspace views",
-                        Button { label: "Activity", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Activity))) }
-                        Button { label: "Sessions", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Sessions))) }
-                    } }
+                    if surface == Surface::Detail { DetailNavigation { current: directory.section, onaction } }
                     if let Some(destination) = destination { {destination} }
                     else if session_selected {
                         if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }
@@ -112,6 +109,33 @@ pub fn WorkspaceSurface(
                             ProjectionPanel { id: format!("idle-projection-{kind:?}"), view: view.projections.clone(), kind, onaction: move |event| onaction.call(Event::Projections(event)) }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn DetailNavigation(
+    current: workspace::NavigationSection,
+    onaction: EventHandler<Event>,
+) -> Element {
+    use workspace::NavigationSection;
+    rsx! {
+        nav { class: "idle-detail-navigation", aria_label: "Workspace views",
+            for (section, label) in [
+                (NavigationSection::Workspace, "Workspace"),
+                (NavigationSection::Members, "Users"),
+                (NavigationSection::Sessions, "Sessions"),
+                (NavigationSection::Projections, "Projections"),
+                (NavigationSection::ComputeHosts, "Compute hosts"),
+                (NavigationSection::ModelProviders, "Model providers"),
+                (NavigationSection::Activity, "Activity"),
+                (NavigationSection::Settings, "Settings"),
+                (NavigationSection::AgentRules, "Agent Rules"),
+            ] {
+                button { key: "{section:?}", r#type: "button", class: "idle-button", aria_current: if current == section { "page" } else { "false" },
+                    onclick: move |_| onaction.call(Event::Workspace(workspace::Event::Navigate(section))), "{label}"
                 }
             }
         }

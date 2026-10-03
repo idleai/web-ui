@@ -31,6 +31,22 @@ pub enum IconName {
     File,
     /// Compare two file revisions.
     Diff,
+    /// Workspace or repository directory.
+    Workspace,
+    /// Contributor identity, independent of a compute host.
+    User,
+    /// Agent session.
+    Session,
+    /// Projection table.
+    Table,
+    /// Compute host.
+    Host,
+    /// Model provider connection.
+    Provider,
+    /// Workspace configuration.
+    Settings,
+    /// Agent rules document.
+    Rules,
 }
 
 impl IconName {
@@ -49,6 +65,16 @@ impl IconName {
             Self::Copy => "M8 8h13v13H8zM16 8V3H3v13h5",
             Self::File => "M14 2H4v20h16V8l-6-6v6h6M8 13h8M8 17h8",
             Self::Diff => "M9 3H3v18h6M15 3h6v18h-6M7 12h4M15 10v4M13 12h4",
+            Self::Workspace => "M3 6h7l2 2h9v13H3zM3 6V3h7l2 3h7M7 12h10M7 16h6",
+            Self::User => "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2",
+            Self::Session => "M3 4h18v13H3zM8 21h8M12 17v4M7 8l3 3-3 3M13 13h4",
+            Self::Table => "M3 3h18v18H3zM3 9h18M3 15h18M9 3v18",
+            Self::Host => "M3 4h18v13H3zM8 21h8M12 17v4",
+            Self::Provider => "M8 3v5M16 3v5M5 8h14v3a7 7 0 0 1-14 0zM12 18v4",
+            Self::Settings => {
+                "M10 3h4l1 3 3 1 3 3v4l-3 3-3 1-1 3h-4l-1-3-3-1-3-3v-4l3-3 3-1zM16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0"
+            }
+            Self::Rules => "M14 2H4v20h16V8l-6-6v6h6M8 12h8M8 16h8M8 19h5",
         }
     }
 }

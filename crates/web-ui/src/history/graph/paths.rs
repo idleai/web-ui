@@ -40,7 +40,10 @@ pub(super) fn visible(
 ) -> Vec<Path> {
     let anchor = |key: &str| {
         let row = viewport.row(key)?;
-        Some((x(*layout.lanes.get(key)?), row.top + 20.0))
+        Some((
+            x(*layout.lanes.get(key)?),
+            row.top + viewport.row_height / 2.0,
+        ))
     };
     let mut paths = Vec::new();
     let mut segments = Vec::new();
@@ -111,7 +114,11 @@ pub(super) fn visible(
 fn routed_path(points: &[(String, usize)], viewport: &Viewport) -> Option<String> {
     let points: Option<Vec<_>> = points
         .iter()
-        .map(|(key, lane)| viewport.row(key).map(|row| (x(*lane), row.top + 20.0)))
+        .map(|(key, lane)| {
+            viewport
+                .row(key)
+                .map(|row| (x(*lane), row.top + viewport.row_height / 2.0))
+        })
         .collect();
     smooth_route(&points?)
 }

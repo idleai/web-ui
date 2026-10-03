@@ -25,12 +25,17 @@ pub(super) struct State {
 impl State {
     pub(super) fn reconcile(&mut self, view: &ViewModel, now: f64) {
         if self.chain != view.chain {
-            let (width, height) = (self.viewport.width, self.viewport.height);
+            let (width, height, row_height) = (
+                self.viewport.width,
+                self.viewport.height,
+                self.viewport.row_height,
+            );
             *self = Self {
                 chain: view.chain.clone(),
                 ..Self::default()
             };
             let _resized = self.viewport.resize(width, height);
+            self.viewport.row_height = row_height;
         }
         if self.snapshot.items != view.items {
             let next = GraphSnapshot::from_view(view);

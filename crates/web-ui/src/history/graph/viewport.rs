@@ -23,6 +23,7 @@ pub(super) struct Viewport {
     pub(super) width: f64,
     pub(super) total: f64,
     pub(super) focused: Option<String>,
+    pub(super) row_height: f64,
 }
 
 impl Default for Viewport {
@@ -36,11 +37,23 @@ impl Default for Viewport {
             width: 800.0,
             total: 0.0,
             focused: None,
+            row_height: ROW_HEIGHT,
         }
     }
 }
 
 impl Viewport {
+    pub(super) fn set_compact(&mut self, compact: bool) {
+        let height = if compact { 24.0 } else { ROW_HEIGHT };
+        if (self.row_height - height).abs() < 0.5 {
+            return;
+        }
+        self.row_height = height;
+        self.measured.clear();
+        let keys: Vec<_> = self.rows.iter().map(|row| row.key.clone()).collect();
+        self.update(&keys);
+    }
+
     pub(super) fn update(&mut self, keys: &[String]) {
         let anchor_index = self
             .rows
@@ -54,7 +67,7 @@ impl Viewport {
         self.rows = keys
             .iter()
             .map(|key| {
-                let height = self.measured.get(key).copied().unwrap_or(ROW_HEIGHT);
+                let height = self.measured.get(key).copied().unwrap_or(self.row_height);
                 let row = Row {
                     key: key.clone(),
                     top,
@@ -110,8 +123,8 @@ impl Viewport {
     }
 
     pub(super) fn measure(&mut self, key: &str, height: f64) -> bool {
-        let height = finite(height, ROW_HEIGHT).clamp(ROW_HEIGHT, 1_000_000.0);
-        let previous = self.measured.get(key).copied().unwrap_or(ROW_HEIGHT);
+        let height = finite(height, self.row_height).clamp(self.row_height, 1_000_000.0);
+        let previous = self.measured.get(key).copied().unwrap_or(self.row_height);
         if !self.indices.contains_key(key) || (previous - height).abs() < 0.5 {
             return false;
         }

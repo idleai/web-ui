@@ -1,6 +1,6 @@
-//! Initial host composition of the completed history and session surfaces.
+//! Host composition of workspace navigation, history and session surfaces.
 
-use app_core::{Event, ViewModel, history, sessions, workspace};
+use app_core::{Event, ViewModel, history, projections, sessions, workspace};
 #[cfg(debug_assertions)]
 use dioxus::prelude::dioxus_signals;
 use dioxus::prelude::{
@@ -11,6 +11,8 @@ use dioxus::prelude::{
 use crate::controls::{Button, ControlState, Select, SelectOption, TextField, TextFieldKind};
 use crate::history::details::HistoryTimeline;
 use crate::host::HostCapabilities;
+use crate::navigation::{SessionCreation, WorkspaceNavigation};
+use crate::projections::ProjectionPanel;
 use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
 use crate::theme::{Density, Theme, ThemeProvider};
 
@@ -25,7 +27,10 @@ pub enum Surface {
 }
 
 /// Assemble available shared components over a persistent host-owned app-core.
-/// Mount one surface per document and load the theme, graph, details and session stylesheets.
+/// Mount one surface per document and load the theme, navigation, graph, details
+/// and session/projection stylesheets. Sidebar selections retain the existing
+/// history and session details. Supply `destination` for host-composed member,
+/// resource and configuration screens selected through app-core.
 #[component]
 pub fn WorkspaceSurface(
     view: ViewModel,
@@ -34,6 +39,9 @@ pub fn WorkspaceSurface(
     #[props(default)] surface: Surface,
     #[props(default = Theme::VsCode)] theme: Theme,
     error: Option<String>,
+    creation: Option<SessionCreation>,
+    now_ms: Option<u64>,
+    destination: Option<Element>,
 ) -> Element {
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
     let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));
@@ -58,9 +66,11 @@ pub fn WorkspaceSurface(
     };
     rsx! {
         ThemeProvider { theme, density,
-            main { class: "idle-shell idle-stack",
+            main { class: if surface == Surface::Sidebar { "idle-workspace-sidebar" } else { "idle-shell idle-stack" },
+                if surface == Surface::Sidebar {
+                    WorkspaceNavigation { id: "idle-navigation", view: view.clone(), onaction, creation, now_ms }
+                } else {
                 h1 { class: "idle-heading", "Idle" }
-                if let Some(error) = error { p { role: "alert", "{error}" } }
                 Select { id: "idle-workspace", label: "Workspace", value: selected.clone().unwrap_or_default(), options,
                     onchange: move |value: String| {
                         if !value.is_empty() { onaction.call(Event::Workspace(workspace::Event::SelectWorkspace(value))); }
@@ -73,12 +83,15 @@ pub fn WorkspaceSurface(
                     }
                 }
                 Button { label: "Reload workspaces", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Load)) }
+                }
+                if let Some(error) = error { p { role: "alert", "{error}" } }
                 if selected.is_some() {
-                    nav { aria_label: "Workspace views",
+                    if surface == Surface::Detail { nav { aria_label: "Workspace views",
                         Button { label: "Activity", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Activity))) }
                         Button { label: "Sessions", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Sessions))) }
-                    }
-                    if session_selected {
+                    } }
+                    if let Some(destination) = destination { {destination} }
+                    else if session_selected {
                         if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }
                         SessionFeedback { view: view.sessions.clone(), onaction: session_action }
                         for session in &view.sessions.sessions {
@@ -90,10 +103,14 @@ pub fn WorkspaceSurface(
                         SessionConversation { id: "idle-session", view: view.sessions.clone(), history: Some(view.history.clone()), capabilities: capabilities.clone(), onaction: session_action, onhistoryaction: history_action, now_ms: None }
                         PromptComposer { id: "idle-composer", view: view.sessions.clone(), draft: None, oninput: move |_text| {}, onaction: session_action }
                         SessionSharing { id: "idle-sharing", view: view.sessions, draft: None, recipients: Vec::new(), onchange: move |_draft| {}, onaction: session_action, now_ms: None }
-                    } else {
+                    } else if directory.section == workspace::NavigationSection::Activity || (surface == Surface::Detail && directory.section == workspace::NavigationSection::Workspace) {
                         HistorySearch { key: "{view.history.chain:?}", view: view.history.search.clone(), onaction: history_action }
                         Button { label: "Refresh history", onpress: move |()| history_action.call(history::Event::Refresh) }
                         HistoryTimeline { id: "idle-history", view: view.history, capabilities, onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
+                    } else if directory.section == workspace::NavigationSection::Projections {
+                        for kind in [projections::ProjectionKind::Task, projections::ProjectionKind::Error, projections::ProjectionKind::Triage, projections::ProjectionKind::NeedInput] {
+                            ProjectionPanel { id: format!("idle-projection-{kind:?}"), view: view.projections.clone(), kind, onaction: move |event| onaction.call(Event::Projections(event)) }
+                        }
                     }
                 }
             }

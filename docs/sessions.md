@@ -123,7 +123,7 @@ Session grants never imply compute, file, process or model permission.
 
 ## Preview and verification
 
-Keep app-core and EditChain next to this checkout. Run:
+Keep app-core, host-tools and EditChain next to this checkout. Run:
 
 ```sh
 ./scripts/lint.sh

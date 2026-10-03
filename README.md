@@ -17,7 +17,7 @@ surfaces retain their roadmap owners.
 
 ## Development
 
-Keep the `app-core` and `editchain` checkouts alongside this repository. CI uses
+Keep the `app-core`, `host-tools` and `editchain` checkouts alongside this repository. CI uses
 the paired revisions in `.github/workflows/ci.yml`. The Rust toolchain is pinned in `rust-toolchain.toml`.
 Run checks and builds from the repository root:
 

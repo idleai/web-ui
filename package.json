@@ -5,7 +5,8 @@
   "scripts": {
     "test:history:browser": "node --test tests/history.browser.mjs",
     "test:history-details:browser": "node --test tests/history-details.browser.mjs",
-    "test:sessions:browser": "node --test tests/sessions.browser.mjs"
+    "test:sessions:browser": "node --test tests/sessions.browser.mjs",
+    "test:projections:browser": "node --test tests/projections.browser.mjs"
   },
   "devDependencies": {
     "puppeteer-core": "25.12.0"

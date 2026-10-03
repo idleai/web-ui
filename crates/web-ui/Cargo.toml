@@ -42,5 +42,9 @@ crate-type = ["cdylib"]
 name = "sessions"
 crate-type = ["cdylib"]
 
+[[example]]
+name = "projections"
+crate-type = ["cdylib"]
+
 [lints]
 workspace = true

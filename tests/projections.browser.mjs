@@ -55,6 +55,18 @@ async function click(page, root, label) {
   await settle(page);
 }
 
+async function replace(page, command) {
+  await (await button(page, '.fixture-actions', command)).evaluate(element => element.click());
+  await settle(page);
+}
+
+async function openRecords(page, selector) {
+  await page.$eval(`${selector} .idle-projection-records`, element => {
+    if (!element.open) element.querySelector('summary').click();
+  });
+  await settle(page);
+}
+
 const text = (page, selector) => page.$eval(selector, element => element.textContent);
 const row = (host, key) => `#${host}-tasks [data-row-key="${key}"]`;
 const counts = (page, host) => text(page, `#${host}-tasks .idle-projection-counts`);
@@ -191,6 +203,106 @@ test('live replacements preserve keyed DOM, disclosure, focus and scroll, then c
     for (const host of ['browser', 'sidebar']) {
       assert.equal(await page.$(row(host, 'task/review')), null);
       assert.equal(await page.$$eval(`#${host}-tasks .idle-projection-title[aria-pressed="true"]`, elements => elements.length), 0);
+    }
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('inserting source and related records preserves the focused address in every layout, including duplicates', async () => {
+  const { page, errors } = await open();
+  try {
+    for (const layout of ['list', 'table', 'cards', 'board']) {
+      await page.select('#layout', layout);
+      await settle(page);
+      for (const group of ['source', 'related']) {
+        await replace(page, 'Reset');
+        const selector = row('browser', 'task/checks');
+        await openRecords(page, selector);
+        const target = await button(page, selector, `Inspect ${group} 1`);
+        await target.focus();
+        await target.evaluate(element => { window.retainedReference = element; });
+        for (const position of [2, 3]) {
+          await replace(page, 'Prepend records');
+          assert.equal(await page.evaluate(() => document.activeElement === window.retainedReference), true, `${layout}: focus follows the retained ${group}`);
+          assert.equal(await target.evaluate(element => element.textContent), `Inspect ${group} ${position}`);
+          await page.keyboard.press('Enter');
+          await settle(page);
+          const action = await text(page, '#last-action');
+          assert.match(action, /Inspect.*task\/checks/s);
+          if (group === 'source') {
+            for (const prefix of ['30', 'a0', 'b0']) assert.ok(action.includes(prefix.repeat(32)));
+          } else {
+            assert.match(action, /observation: None, item: Some/);
+            assert.ok(action.includes('c0'.repeat(32)));
+          }
+        }
+        assert.equal(await page.$$eval(`${selector} .idle-projection-records button`, elements => elements.length), 7, 'duplicate references remain separate usable links');
+        await click(page, selector, 'Inspect source 1');
+        assert.ok((await text(page, '#last-action')).includes('01'.repeat(32)));
+        await click(page, selector, 'Inspect source 2');
+        assert.ok((await text(page, '#last-action')).includes('01'.repeat(32)));
+      }
+    }
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('status changes preserve board disclosures and semantic focus without stealing focus from another control', async () => {
+  const { page, errors } = await open();
+  try {
+    const selector = row('browser', 'task/checks');
+    await click(page, selector, 'Run workspace checks');
+    for (const focus of ['title', 'summary', 'source', 'related']) {
+      await openRecords(page, selector);
+      const target = focus === 'title' ? await page.$(`${selector} .idle-projection-title`)
+        : focus === 'summary' ? await page.$(`${selector} details summary`)
+        : await button(page, selector, `Inspect ${focus} 1`);
+      await target.focus();
+      const label = await target.evaluate(element => element.textContent);
+      const previousAction = await text(page, '#last-action');
+      for (const status of ['queued', 'active']) {
+        await replace(page, 'Move task');
+        assert.equal(await text(page, `${selector} .idle-projection-status`), status);
+        assert.equal(await page.$eval(`${selector} details`, element => element.open), true);
+        assert.equal(await page.$eval(`${selector} .idle-projection-title`, element => element.getAttribute('aria-pressed')), 'true');
+        assert.deepEqual(await page.evaluate(() => ({ row: document.activeElement.closest('[data-row-key]')?.dataset.rowKey, label: document.activeElement.textContent })), { row: 'task/checks', label });
+        assert.equal(await text(page, '#last-action'), previousAction, 'restoring presentation state emits no semantic action');
+      }
+      if (focus === 'source' || focus === 'related') {
+        await page.keyboard.press('Enter');
+        await settle(page);
+        assert.ok((await text(page, '#last-action')).includes((focus === 'source' ? '30' : 'c0').repeat(32)));
+      }
+    }
+    await page.focus('#browser-tasks-filters-text');
+    await replace(page, 'Move task');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'browser-tasks-filters-text');
+    await page.click(`${selector} details summary`);
+    await replace(page, 'Move task');
+    assert.equal(await page.$eval(`${selector} details`, element => element.open), false, 'a closed disclosure stays closed');
+    assert.equal(await page.evaluate(() => document.activeElement.tagName), 'SUMMARY');
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('standalone layouts wrap long provider fields in a narrow container without a panel', async () => {
+  const { page, errors } = await open();
+  try {
+    await page.click('#standalone > summary');
+    await replace(page, 'Long fields');
+    for (const width of [1500, 320]) {
+      await page.setViewport({ width, height: 1000 });
+      for (const layout of ['list', 'cards', 'board', 'card', 'table']) {
+        const host = `#standalone-${layout}`;
+        const selector = `${host} [data-row-key="task/checks"]`;
+        await openRecords(page, selector);
+        assert.equal(await page.$eval(host, element => element.closest('.idle-projection-panel')), null);
+        assert.equal(await page.$eval(host, element => element.scrollWidth <= element.clientWidth + 1), true, `${layout} fits its standalone container at ${width}px`);
+        await click(page, selector, 'Inspect source 1');
+        assert.ok((await text(page, '#last-action')).includes('30'.repeat(32)));
+      }
+      assert.equal(await page.$eval('#standalone-table .idle-projection-table-scroll', element => element.scrollWidth > element.clientWidth), true, 'table columns scroll within their own container');
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
     }
     assert.deepEqual(errors, []);
   } finally { await page.close(); }

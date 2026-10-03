@@ -90,6 +90,9 @@ provider key. Native buttons support Enter and Space and report `aria-pressed`.
 Clear selection emits `Select(None)`. App-core retains a selected key when filters
 hide it, and the panel reports that condition. Replacement rows use stable keys;
 inserting rows preserves retained DOM, keyboard focus and open record details.
+When a task changes board columns, its disclosure state and focused control are
+restored by row key and exact record address. Restoration does not move focus
+away from another control or emit an app-core action.
 Retractions and context changes follow app-core's returned selection.
 
 `SetFilter` carries the complete filter. Text is a literal, case-sensitive
@@ -103,6 +106,8 @@ Each row's **Records** disclosure exposes source and related addresses separatel
 Inspection emits `Inspect { selection, reference }` with the complete supplied
 observation, logical item and record digest. Item-only and observation-only links
 remain distinct. No prefixes, URLs or inferred addresses replace those fields.
+Record links retain their identity across insertions, including repeated copies
+of the same reference, so a focused link keeps its inspection target.
 App-core validates the link and routes it into history; hosts mount the shared
 history details surface and execute its effects. Record inspection does not also
 select the enclosing projection row. Provider strings render as text, preserving
@@ -122,13 +127,15 @@ The development preview uses a real app-core instance and explicit presentation
 scenarios behind its projection effect boundary. It shows light browser and dark
 compact sidebar compositions sharing filters, selection and refresh state. Use
 the fixture controls to complete/fail a pending read, interrupt/reconnect, insert
-or retract rows, or supply empty/partial/unavailable results. The preview supplies
-no live controller or history-content adapter; record selection still runs through
-app-core. These scenarios live only in the example and tests.
+or retract rows, move tasks between columns, prepend record links, display long
+fields in standalone layouts, or supply empty/partial/unavailable results. The
+preview supplies no live controller or history-content adapter; record selection
+still runs through app-core. These scenarios live only in the example and tests.
 
 Native tests cover counts, freshness, empty states, semantic markup and exact
 typed actions. Browser tests cover all four layouts, both compositions, keyboard
-selection, filters, record inspection, keyed updates, reconnect and 320px layouts.
+selection, filters, record inspection, keyed updates, status changes, reconnect
+and standalone layouts in narrow containers, including 320px pages.
 They save wide/narrow screenshots under `out/test-artifacts/`. CI builds the
 preview and runs the same browser tests after the canonical Rust checks.
 

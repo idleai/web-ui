@@ -151,6 +151,8 @@ pub fn ProjectionBoard(
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
 ) -> Element {
+    #[cfg(target_arch = "wasm32")]
+    let preserve = super::board_state::use_board_state(&view);
     let mut statuses = Vec::new();
     for row in &view.rows {
         if !statuses.contains(&row.status) {
@@ -158,7 +160,13 @@ pub fn ProjectionBoard(
         }
     }
     rsx! {
-        div { class: "idle-projection-board",
+        div { class: "idle-projection-board", "data-projection-kind": format!("{:?}", view.kind),
+            onmounted: move |event| {
+                #[cfg(target_arch = "wasm32")]
+                preserve.call(event);
+                #[cfg(not(target_arch = "wasm32"))]
+                let _event = event;
+            },
             for status in statuses {
                 section { key: "{status:?}", class: "idle-projection-column", aria_label: super::status_label(status.as_deref()),
                     h3 { class: "idle-projection-column-heading", "{super::status_label(status.as_deref())}" }

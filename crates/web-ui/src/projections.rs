@@ -6,6 +6,8 @@
 //! meanings or supporting local task transitions. Load [`STYLESHEET`] with the
 //! theme stylesheet and choose density through [`crate::theme::ThemeProvider`].
 
+#[cfg(target_arch = "wasm32")]
+mod board_state;
 mod feedback;
 mod filters;
 mod panel;

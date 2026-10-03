@@ -13,7 +13,10 @@ use web_sys as _;
 
 use fixture::Fixture;
 use web_ui::controls::{Button, Select, SelectOption};
-use web_ui::projections::{ProjectionLayout, ProjectionPanel};
+use web_ui::projections::{
+    ProjectionBoard, ProjectionCard, ProjectionCards, ProjectionLayout, ProjectionList,
+    ProjectionPanel, ProjectionTable,
+};
 use web_ui::theme::{Density, Theme, ThemeProvider};
 
 /// Mount a development-only gallery with no network or runtime dependencies.
@@ -47,6 +50,9 @@ pub fn Gallery() -> Element {
                 Command::Disconnect => fixture.dispatch(ProjectionEvent::Disconnect),
                 Command::Prepend => fixture.prepend(),
                 Command::Retract => fixture.retract(),
+                Command::MoveTask => fixture.move_task(),
+                Command::PrependRecords => fixture.prepend_records(),
+                Command::LongFields => fixture.long_fields(),
                 Command::Empty(availability) => fixture.empty(availability),
             };
             if let Err(error) = result {
@@ -92,6 +98,9 @@ pub fn Gallery() -> Element {
                         Button { label: "Reconnect", onpress: move |()| control.call(Command::Reconnect) }
                         Button { label: "Prepend task", onpress: move |()| control.call(Command::Prepend) }
                         Button { label: "Retract selected", onpress: move |()| control.call(Command::Retract) }
+                        Button { label: "Move task", onpress: move |()| control.call(Command::MoveTask) }
+                        Button { label: "Prepend records", onpress: move |()| control.call(Command::PrependRecords) }
+                        Button { label: "Long fields", onpress: move |()| control.call(Command::LongFields) }
                         Button { label: "Empty", onpress: move |()| control.call(Command::Empty(ProjectionAvailability::Complete)) }
                         Button { label: "Partial empty", onpress: move |()| control.call(Command::Empty(ProjectionAvailability::Partial)) }
                         Button { label: "Unavailable", onpress: move |()| control.call(Command::Empty(ProjectionAvailability::Unavailable)) }
@@ -103,6 +112,26 @@ pub fn Gallery() -> Element {
                     summary { "App-core actions and history selection" }
                     pre { id: "last-action", "{action}" }
                     pre { id: "history-selection", "{inspection}" }
+                }
+                details { id: "standalone", class: "fixture-standalone",
+                    summary { "Standalone layouts in a narrow container" }
+                    div { id: "standalone-list",
+                        ProjectionList { view: view.tasks.clone(), selected: view.selected.clone(), onaction: dispatch }
+                    }
+                    div { id: "standalone-cards",
+                        ProjectionCards { view: view.tasks.clone(), selected: view.selected.clone(), onaction: dispatch }
+                    }
+                    div { id: "standalone-board",
+                        ProjectionBoard { view: view.tasks.clone(), selected: view.selected.clone(), onaction: dispatch }
+                    }
+                    div { id: "standalone-table",
+                        ProjectionTable { view: view.tasks.clone(), selected: view.selected.clone(), onaction: dispatch }
+                    }
+                    div { id: "standalone-card",
+                        if let Some(row) = view.tasks.rows.first() {
+                            ProjectionCard { kind: view.tasks.kind, row: row.clone(), selected: view.selected.clone(), onaction: dispatch }
+                        }
+                    }
                 }
             }
             div { class: "fixture-compositions",
@@ -138,5 +167,8 @@ enum Command {
     Disconnect,
     Prepend,
     Retract,
+    MoveTask,
+    PrependRecords,
+    LongFields,
     Empty(ProjectionAvailability),
 }

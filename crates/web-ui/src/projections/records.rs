@@ -1,5 +1,7 @@
 //! Exact source/related addresses and supplied limitations.
 
+use std::collections::BTreeMap;
+
 use app_core::projections::{
     Event as ProjectionEvent, ProjectionGap, ProjectionKind, ProjectionReference, ProjectionRow,
 };
@@ -17,14 +19,14 @@ pub(super) fn RecordLinks(
         details { class: "idle-projection-records",
             summary { "Records ({row.sources.len()} sources, {row.related.len()} related)" }
             ul {
-                for (index, reference) in row.sources.iter().enumerate() {
-                    RecordLink { key: "source-{index}", label: format!("Inspect source {}", index.saturating_add(1)),
-                        selection: super::selection(kind, &row.key), reference: reference.clone(), onaction,
+                for (index, (key, reference)) in keyed_references("source", &row.sources).into_iter().enumerate() {
+                    RecordLink { key: "{key}", identity: key, label: format!("Inspect source {}", index.saturating_add(1)),
+                        selection: super::selection(kind, &row.key), reference, onaction,
                     }
                 }
-                for (index, reference) in row.related.iter().enumerate() {
-                    RecordLink { key: "related-{index}", label: format!("Inspect related {}", index.saturating_add(1)),
-                        selection: super::selection(kind, &row.key), reference: reference.clone(), onaction,
+                for (index, (key, reference)) in keyed_references("related", &row.related).into_iter().enumerate() {
+                    RecordLink { key: "{key}", identity: key, label: format!("Inspect related {}", index.saturating_add(1)),
+                        selection: super::selection(kind, &row.key), reference, onaction,
                     }
                 }
             }
@@ -32,8 +34,28 @@ pub(super) fn RecordLinks(
     }
 }
 
+// Occurrences distinguish duplicate addresses without tying retained links to
+// their position among unrelated records. Debug encoding preserves Option fields.
+fn keyed_references(
+    group: &str,
+    references: &[ProjectionReference],
+) -> Vec<(String, ProjectionReference)> {
+    let mut occurrences = BTreeMap::new();
+    references
+        .iter()
+        .map(|reference| {
+            let address = format!("{reference:?}");
+            let occurrence = occurrences.entry(address.clone()).or_insert(0_usize);
+            let key = format!("{group}:{address}:{occurrence}");
+            *occurrence = occurrence.saturating_add(1);
+            (key, reference.clone())
+        })
+        .collect()
+}
+
 #[component]
 fn RecordLink(
+    identity: String,
     label: String,
     selection: app_core::projections::ProjectionSelection,
     reference: ProjectionReference,
@@ -41,7 +63,7 @@ fn RecordLink(
 ) -> Element {
     let address = reference.clone();
     rsx! {
-        li {
+        li { "data-projection-reference": identity,
             Button { label, onpress: move |()| onaction.call(ProjectionEvent::Inspect { selection: selection.clone(), reference: reference.clone() }) }
             RecordAddress { reference: address }
         }

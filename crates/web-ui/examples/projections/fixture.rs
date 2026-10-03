@@ -137,6 +137,46 @@ impl Fixture {
         self.complete()
     }
 
+    pub(super) fn move_task(&mut self) -> Result<(), String> {
+        self.update_task(|row| {
+            row.status = Some(if row.status.as_deref() == Some("active") {
+                "queued".into()
+            } else {
+                "active".into()
+            });
+        })
+    }
+
+    pub(super) fn prepend_records(&mut self) -> Result<(), String> {
+        self.update_task(|row| {
+            row.sources.insert(0, reference(1));
+            row.related.insert(0, reference(2));
+        })
+    }
+
+    pub(super) fn long_fields(&mut self) -> Result<(), String> {
+        self.update_task(|row| {
+            row.title = "title".repeat(30);
+            row.summary = Some("summary".repeat(30));
+            row.status = Some("status".repeat(30));
+            row.labels = vec!["label".repeat(30)];
+        })
+    }
+
+    fn update_task(&mut self, update: impl FnOnce(&mut ProjectionRow)) -> Result<(), String> {
+        if let Some(row) = self
+            .snapshot
+            .inputs
+            .iter_mut()
+            .find(|input| input.kind == ProjectionKind::Task)
+            .and_then(|input| input.rows.iter_mut().find(|row| row.key == "task/checks"))
+        {
+            update(row);
+        }
+        self.dispatch(Event::Refresh)?;
+        self.complete()
+    }
+
     pub(super) fn empty(&mut self, availability: ProjectionAvailability) -> Result<(), String> {
         for input in &mut self.snapshot.inputs {
             input.rows.clear();

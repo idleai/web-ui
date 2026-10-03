@@ -440,6 +440,17 @@ fn row_replacement_retains_keys_until_retracted_and_empty_status_is_filterable()
         key: "task/checks".into(),
     })));
     props.fixture.borrow_mut().prepend().expect("prepend");
+    props.fixture.borrow_mut().move_task().expect("move task");
+    props
+        .fixture
+        .borrow_mut()
+        .prepend_records()
+        .expect("prepend records");
+    props
+        .fixture
+        .borrow_mut()
+        .long_fields()
+        .expect("long provider fields");
     assert_eq!(
         props
             .fixture
@@ -449,7 +460,7 @@ fn row_replacement_retains_keys_until_retracted_and_empty_status_is_filterable()
             .as_ref()
             .map(|value| value.key.as_str()),
         Some("task/checks"),
-        "a lower observation ID cannot change selection"
+        "insertions, status changes and updated fields cannot change selection"
     );
     props.fixture.borrow_mut().retract().expect("retract");
     assert!(

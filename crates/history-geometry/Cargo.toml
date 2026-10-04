@@ -9,12 +9,12 @@ description = "History graph layout, retained routes, motion and viewport geomet
 repository = "https://github.com/idleai/web-ui"
 
 [dependencies]
-idle-history = { path = "../../../host-tools/crates/idle-history" }
-editchain-core = { path = "../../../editchain/crates/editchain-core" }
 editchain-index = { path = "../../../editchain/crates/editchain-index" }
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
+idle-history = { path = "../../../host-tools/crates/idle-history" }
+editchain-core = { path = "../../../editchain/crates/editchain-core" }
 serde_json = "1"
 
 [lints]

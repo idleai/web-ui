@@ -1,6 +1,5 @@
 use super::tests::fixture::{HistoryRow, LiveBlockMeta};
 use super::*;
-use crate::layout::LayoutContext;
 use idle_history::taxonomy::ChainState;
 mod fixture;
 type LiveGraph = super::LiveGraph<LiveBlockMeta>;
@@ -123,52 +122,39 @@ fn a_child_arriving_first_cannot_take_the_parent_execution_lane() {
     assert_eq!(row(&graph, "merge", 0).lane, main_lane);
 }
 
-fn assert_activity_geometry(graph: &LiveGraph) {
-    let keys: Vec<_> = graph.order.iter().map(|order| order.1.clone()).collect();
-    let layout = LayoutContext::new_with_chain_state(
-        &keys,
-        &|key| graph.nodes.get(key).unwrap().parents.clone(),
-        &|key| is_git(graph.nodes.get(key).unwrap()),
-        &|key| graph.nodes.get(key).unwrap().chain_state,
-    );
-    for (index, key) in keys.iter().enumerate() {
-        let actual = row(graph, key, 0);
-        let mut transitions = layout.row_transitions.get(index).unwrap().clone();
-        transitions.sort_unstable();
-        let mut muted = layout.row_muted_transitions.get(index).unwrap().clone();
-        muted.sort_unstable();
-        assert_eq!(
-            actual.lane,
-            layout.lanes.get(index).unwrap().lane,
-            "{key}: lane"
-        );
-        assert_eq!(
-            &actual.above,
-            layout.row_above.get(index).unwrap(),
-            "{key}: above"
-        );
-        assert_eq!(
-            &actual.below,
-            layout.row_below.get(index).unwrap(),
-            "{key}: below"
-        );
-        assert_eq!(actual.transitions, transitions, "{key}: bends");
-        assert_eq!(
-            &actual.muted_above,
-            layout.row_muted_above.get(index).unwrap(),
-            "{key}: muted above"
-        );
-        assert_eq!(
-            &actual.muted_below,
-            layout.row_muted_below.get(index).unwrap(),
-            "{key}: muted below"
-        );
-        assert_eq!(actual.muted_transitions, muted, "{key}: muted bends");
-    }
+// Captured while the former snapshot layout and LiveGraph agreed on every
+// bootstrap, mute edit, insertion and retraction in these fixtures.
+fn activity_geometry(test: &str) -> std::vec::IntoIter<serde_json::Value> {
+    let mut snapshots: BTreeMap<String, Vec<serde_json::Value>> =
+        serde_json::from_str(include_str!("tests/activity_geometry.json")).unwrap();
+    snapshots.remove(test).unwrap().into_iter()
+}
+
+fn assert_activity_geometry(graph: &LiveGraph, expected: &serde_json::Value) {
+    let actual: Vec<_> = graph
+        .ordered_keys()
+        .map(|key| {
+            let row = row(graph, key, 0);
+            serde_json::json!([
+                key,
+                row.lane,
+                row.above,
+                row.below,
+                row.transitions,
+                row.muted_above,
+                row.muted_below,
+                row.muted_transitions
+            ])
+        })
+        .collect();
+    assert_eq!(serde_json::json!(actual), *expected);
 }
 
 #[test]
 fn bootstrap_matches_established_activity_layout_for_forks_merges_sessions_and_anchors() {
+    let mut expected = activity_geometry(
+        "bootstrap_matches_established_activity_layout_for_forks_merges_sessions_and_anchors",
+    );
     let cases = [
         vec![
             node("c", 3, &["b"]),
@@ -210,7 +196,7 @@ fn bootstrap_matches_established_activity_layout_for_forks_merges_sessions_and_a
             }
             let mut graph = LiveGraph::default();
             graph.edit(&[], &nodes);
-            assert_activity_geometry(&graph);
+            assert_activity_geometry(&graph, &expected.next().unwrap());
             for node in &mut nodes {
                 node.chain_state = if node.chain_state.is_active() {
                     ChainState::Muted
@@ -218,14 +204,20 @@ fn bootstrap_matches_established_activity_layout_for_forks_merges_sessions_and_a
                     ChainState::Active
                 };
                 graph.edit(&[], std::slice::from_ref(node));
-                assert_activity_geometry(&graph);
+                assert_activity_geometry(&graph, &expected.next().unwrap());
             }
         }
     }
+    assert!(
+        expected.next().is_none(),
+        "every saved geometry is exercised"
+    );
 }
 
 #[test]
 fn adjacent_edges_stay_straight_and_retractions_do_not_leave_ghost_paths() {
+    let mut expected =
+        activity_geometry("adjacent_edges_stay_straight_and_retractions_do_not_leave_ghost_paths");
     let middle = node("middle", 2, &["old"]);
     let mut graph = LiveGraph::default();
     graph.edit(
@@ -236,9 +228,9 @@ fn adjacent_edges_stay_straight_and_retractions_do_not_leave_ghost_paths() {
             node("old", 1, &[]),
         ],
     );
-    assert_activity_geometry(&graph);
+    assert_activity_geometry(&graph, &expected.next().unwrap());
     graph.edit(&[], &[node("tip", 4, &["new"])]);
-    assert_activity_geometry(&graph);
+    assert_activity_geometry(&graph, &expected.next().unwrap());
     assert_eq!(graph.max_lane(), 0);
     assert!(row(&graph, "middle", 0).transitions.is_empty());
     graph.edit(&["middle".into()], &[]);
@@ -246,9 +238,13 @@ fn adjacent_edges_stay_straight_and_retractions_do_not_leave_ghost_paths() {
     assert!(row(&graph, "new", 0).below.is_empty());
     assert!(row(&graph, "old", 0).above.is_empty());
     graph.edit(&[], &[middle]);
-    assert_activity_geometry(&graph);
+    assert_activity_geometry(&graph, &expected.next().unwrap());
     assert_eq!(row(&graph, "middle", 1).above, vec![0]);
     assert_eq!(row(&graph, "middle", 1).below, vec![0]);
+    assert!(
+        expected.next().is_none(),
+        "every saved geometry is exercised"
+    );
 }
 
 #[test]
@@ -320,12 +316,18 @@ fn adding_shared_git_spines_does_not_shift_existing_lanes() {
 
 #[test]
 fn inserting_before_a_merge_parent_moves_only_its_jog_boundary() {
+    let mut expected =
+        activity_geometry("inserting_before_a_merge_parent_moves_only_its_jog_boundary");
     let mut graph = LiveGraph::default();
     graph.edit(&[], &[node("a", 6, &["git:old"]), node("git:old", 1, &[])]);
     graph.edit(&[], &[node("other", 3, &[])]);
-    assert_activity_geometry(&graph);
+    assert_activity_geometry(&graph, &expected.next().unwrap());
     graph.edit(&["other".into()], &[]);
-    assert_activity_geometry(&graph);
+    assert_activity_geometry(&graph, &expected.next().unwrap());
+    assert!(
+        expected.next().is_none(),
+        "every saved geometry is exercised"
+    );
 }
 
 #[test]

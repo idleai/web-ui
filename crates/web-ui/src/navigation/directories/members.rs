@@ -24,10 +24,10 @@ pub(in crate::navigation) fn Users(
                 for user in &view.members {
                     li { key: "{user.member.contributor_id}", "data-contributor": user.member.contributor_id.clone(),
                         div { class: "idle-navigation-row", title: "{user.member.display_name} · {user.member.contributor_id}",
-                            Status { status: presence(user) }
+                            Status { status: connection_status(user) }
                             Icon { name: IconName::User }
                             span { class: "idle-navigation-name", "{user.member.display_name}" }
-                            span { class: "idle-navigation-detail", "{presence(user).label}" }
+                            span { class: "idle-navigation-detail", "{connection_status(user).label}" }
                         }
                         if !user.connections.is_empty() {
                             ul { class: "idle-navigation-connections",
@@ -45,8 +45,8 @@ pub(in crate::navigation) fn Users(
                 }
             }
             match view.presence_state {
-                WorkspaceRequestState::Idle => rsx! { Notice { text: "Presence not loaded" } },
-                WorkspaceRequestState::Loading => rsx! { Notice { text: "Updating presence…" } },
+                WorkspaceRequestState::Idle => rsx! { Notice { text: "Online status not loaded" } },
+                WorkspaceRequestState::Loading => rsx! { Notice { text: "Updating online status…" } },
                 WorkspaceRequestState::Ready => rsx! {},
                 WorkspaceRequestState::Failed(error) => rsx! { Notice { text: error.message, error: true } },
             }
@@ -55,12 +55,12 @@ pub(in crate::navigation) fn Users(
     }
 }
 
-fn presence(user: &workspace::MemberView) -> RowStatus {
+fn connection_status(user: &workspace::MemberView) -> RowStatus {
     let (label, tone) = if user.member.status == MemberStatus::Revoked {
         ("Revoked", "danger")
     } else {
         match user.presence {
-            PresenceStatus::Unknown => ("Presence unknown", "neutral"),
+            PresenceStatus::Unknown => ("Online status unknown", "neutral"),
             PresenceStatus::Online => ("Online", "success"),
             PresenceStatus::Away => ("Away", "warning"),
             PresenceStatus::Offline => ("Offline", "neutral"),

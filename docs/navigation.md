@@ -61,7 +61,7 @@ retained rows keep their count during refresh or failure. Projection badges use
 `total`, including a supplied zero or a large integer; an absent total says
 “Total unknown.” Loaded rows, completeness and freshness remain distinct.
 Control phase, ownership gaps, effective resource availability, connection state
-and presence come from app-core. Runner rows show the supplied Owned/Invited
+and peer activity come from app-core. Runner rows show the supplied Owned/Invited
 relationship because the current session directory has no session-wide execution
 status or age. No relative ages, branch activity or execution states are inferred.
 

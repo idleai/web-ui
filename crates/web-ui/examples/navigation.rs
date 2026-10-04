@@ -63,7 +63,7 @@ pub fn Gallery() -> Element {
                     h1 { "One workspace. Shared context." }
                     p { "Development fixture · app-core selections · independent user and compute identities" }
                     div { class: "fixture-actions",
-                        Button { label: "Expire presence and health", onpress: move |()| command(Command::Expire) }
+                        Button { label: "Expire member status and host health", onpress: move |()| command(Command::Expire) }
                         Button { label: "Fail resource refresh", onpress: move |()| command(Command::Fail) }
                         Button { label: "Disconnect", onpress: move |()| command(Command::Disconnect) }
                         Button { label: "Reset managed", onpress: move |()| fixture.set(Fixture::new(WorkspaceMode::Managed)) }

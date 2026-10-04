@@ -8,7 +8,7 @@ use dioxus::prelude::{Element, EventHandler, Props, component, dioxus_core, diox
 
 use super::{RepositoryFeedback, SourceLink, SourceReports};
 
-/// Idle membership and current presence, followed by separate recorded author lists.
+/// Idle membership and online status, followed by separate recorded author lists.
 #[component]
 pub fn RepositoryUsers(
     view: ViewModel,
@@ -20,8 +20,8 @@ pub fn RepositoryUsers(
     rsx! {
         section { class: "idle-repository idle-stack", aria_label: "Workspace users",
             h2 { "Users" }
-            section { aria_label: "Idle members and presence",
-                h3 { "Idle members and presence" }
+            section { aria_label: "Idle members and online status",
+                h3 { "Idle members and online status" }
                 for user in &workspace.members {
                     article { key: "{user.member.contributor_id}", class: "idle-repository-person",
                         h4 { "{user.member.display_name}" }

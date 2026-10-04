@@ -128,7 +128,7 @@ fn reference_order_control_first_supplied_counts_and_distinct_identities() {
             "MacBook Pro",
             "prod-cluster",
             "Host: host-shared",
-            "Presence unknown",
+            "Online status unknown",
             "Ambient · Running",
             "24",
             "Partial results",
@@ -374,8 +374,8 @@ fn unavailable_loading_failure_and_expiry_do_not_become_success_or_zero_counts()
     props.fixture.borrow_mut().expire().expect("expiry");
     props.view = props.fixture.borrow().view();
     assert!(
-        markup(props.clone()).contains("Presence unknown"),
-        "expired presence is unknown"
+        markup(props.clone()).contains("Online status unknown"),
+        "expired member activity has unknown online status"
     );
     props.view.projections.tasks.total = Some(u64::MAX);
     props.view.projections.tasks.loaded_count = 9;

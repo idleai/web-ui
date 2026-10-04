@@ -115,8 +115,8 @@ test('workspace switches, expiry and refresh failure never reuse old status or a
   try {
     await page.select('#sidebar-repository', 'repository-two'); await settle(page);
     assert.equal(await page.$eval('#browser-repository', element => element.value), 'repository-two');
-    await toolbar(page, 'Expire presence and health');
-    assert.match(await text(page, '#sidebar [data-contributor="contributor-alice"]'), /Presence unknown/);
+    await toolbar(page, 'Expire member status and host health');
+    assert.match(await text(page, '#sidebar [data-contributor="contributor-alice"]'), /Online status unknown/);
     assert.match(await text(page, '#sidebar [data-identity="session-control"]'), /Lease expired/);
     await toolbar(page, 'Fail resource refresh');
     assert.match(await text(page, '#sidebar [data-section="ComputeHosts"]'), /MacBook Pro.*Resource provider is offline/s);

@@ -118,7 +118,7 @@ remain independently actionable.
 
 The participant roster keeps the session owner, grantee and original inviter
 separate. Issued, expired and revoked records remain distinguishable. An issued
-grant label is a recorded state, not a claim about current membership or presence.
+grant label is a recorded state, not a claim about current membership or online status.
 Session grants never imply compute, file, process or model permission.
 
 ## Preview and verification

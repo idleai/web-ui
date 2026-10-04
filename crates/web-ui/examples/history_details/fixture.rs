@@ -10,7 +10,7 @@ pub(super) fn id(value: u64) -> String {
     format!("{value:064x}")
 }
 
-fn reference(value: u64) -> RecordRef {
+pub(super) fn reference(value: u64) -> RecordRef {
     RecordRef {
         operation: id(value),
         hash: id(value.saturating_add(1000)),
@@ -25,7 +25,7 @@ pub(super) fn complete_scan() -> Paging {
     }
 }
 
-fn observation(value: u64, kind: ActivityKind) -> ObservationView {
+pub(super) fn observation(value: u64, kind: ActivityKind) -> ObservationView {
     ObservationView {
         record: reference(value),
         item: id(value.saturating_mul(10)),
@@ -63,7 +63,7 @@ fn content(value: u64, bytes: &[u8]) -> BlockView {
     }
 }
 
-fn item(observation: ObservationView, blocks: Vec<BlockView>) -> ItemView {
+pub(super) fn item(observation: ObservationView, blocks: Vec<BlockView>) -> ItemView {
     ItemView {
         key: observation.item.clone(),
         observations: vec![observation],
@@ -148,7 +148,7 @@ fn field(operation: u64, selector: &str, value: ContentValue) -> FieldContent {
 }
 
 pub(super) fn details(operation: &str, late: bool) -> OperationDetails {
-    let value = (1..=7).find(|value| id(*value) == operation).unwrap_or(0);
+    let value = (1..=10).find(|value| id(*value) == operation).unwrap_or(0);
     let reference = reference(value);
     let mut details = OperationDetails {
         operation: operation.into(),
@@ -169,6 +169,12 @@ pub(super) fn details(operation: &str, late: bool) -> OperationDetails {
             value,
             r#"{"Record":"Content"}"#,
             ContentValue::Available(b"{\"z\": 1, \"a\":2}\r\n\0\xff".to_vec()),
+        )];
+    } else if value == 8 {
+        details.fields = vec![field(
+            value,
+            "\"FileAfter\"",
+            ContentValue::Available(super::activity::text().into_bytes()),
         )];
     } else if value == 3 {
         details.comparison = Some(if late {

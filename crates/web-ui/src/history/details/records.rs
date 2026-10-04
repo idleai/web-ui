@@ -12,7 +12,7 @@ use super::observation::Fact;
 use crate::host::HostCapabilities;
 
 #[component]
-pub(super) fn OperationPanel(
+pub(crate) fn OperationPanel(
     id: String,
     operation: String,
     state: OperationDetailsState,

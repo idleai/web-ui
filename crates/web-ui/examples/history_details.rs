@@ -3,6 +3,9 @@
 #[path = "history_details/fixture.rs"]
 mod fixture;
 
+#[path = "history_details/activity.rs"]
+mod activity;
+
 use app_core::history::{
     Event as HistoryEvent, ItemView, OperationDetailsState, OperationDetailsView, RequestState,
     ViewModel,
@@ -29,7 +32,12 @@ pub fn start() {
 /// Browser and extension use the same typed views and actions.
 #[component]
 pub fn Gallery() -> Element {
-    let mut view = use_signal(fixture::view);
+    let mut view = use_signal(|| {
+        let mut view = fixture::view();
+        view.items.push(activity::file());
+        view
+    });
+    let mut activity_data = use_signal(activity::snapshot);
     let mut last_action = use_signal(|| "No history action dispatched".to_owned());
     let mut adapters = use_signal(|| true);
     let mut late_bytes = use_signal(|| false);
@@ -55,16 +63,26 @@ pub fn Gallery() -> Element {
                     Button { label: "Make late bytes available", onpress: move |()| late_bytes.set(true) }
                     Button { label: "Revoke native adapters", onpress: move |()| adapters.set(false) }
                     Button { label: "Report native failure", onpress: move |()| view.write().open = RequestState::Failed(app_core::module::EffectError { message: "Fixture editor is offline".into() }) }
+                    Button { label: "Supply another revision", onpress: move |()| activity_data.write().revision = Some(fixture::id(801)) }
+                    Button { label: "Restore activity", onpress: move |()| activity_data.set(activity::snapshot()) }
+                    Button { label: "Clear activity observations", onpress: move |()| activity_data.write().indicators.clear() }
+                    Button { label: "Report activity failure", onpress: move |()| activity_data.write().state = RequestState::Failed(app_core::module::EffectError { message: "Fixture activity source is offline".into() }) }
+                    Button { label: "Retract AI source", onpress: move |()| {
+                        let mut details = fixture::details(&fixture::id(9), false);
+                        details.status = app_core::history::RecordLookupStatus::Conflicted;
+                        details.observation = None;
+                        view.write().operation_details.push(OperationDetailsView { operation: fixture::id(9), state: OperationDetailsState::Ready(details) });
+                    } }
                 }
                 p { class: "fixture-action", role: "status", "{last_action}" }
                 p { class: "fixture-availability", "Late bytes available to next lookup: {late_bytes}" }
                 div { class: "fixture-compositions",
                     section { h2 { "Browser" }
-                        HistoryTimeline { id: "browser-history", view: view(), capabilities: HostCapabilities::new(HostKind::Browser), onaction: dispatch, height: 440 }
+                        HistoryTimeline { id: "browser-history", view: view(), capabilities: HostCapabilities::new(HostKind::Browser), onaction: dispatch, activity: (view().selected.observation == Some(fixture::id(8))).then(|| activity_data.read().clone()), height: 440 }
                     }
                     ThemeProvider { theme: Theme::Dark,
                         section { h2 { "Extension" }
-                            HistoryTimeline { id: "extension-history", view: view(), capabilities: extension, onaction: dispatch, height: 440 }
+                            HistoryTimeline { id: "extension-history", view: view(), capabilities: extension, onaction: dispatch, activity: (view().selected.observation == Some(fixture::id(8))).then(|| activity_data.read().clone()), height: 440 }
                         }
                     }
                 }

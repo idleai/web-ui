@@ -10,6 +10,7 @@ use super::records::OperationPanel;
 use super::row::{HistoryRow, ItemPaging};
 use crate::history::graph::HistoryGraph;
 use crate::host::HostCapabilities;
+use crate::provenance::{ActivitySnapshot, AuthorActivity};
 
 /// History graph with rich rows and an inspector that survives virtualization.
 ///
@@ -24,6 +25,7 @@ pub fn HistoryTimeline(
     capabilities: HostCapabilities,
     onaction: EventHandler<HistoryEvent>,
     #[props(default = 480)] height: u32,
+    activity: Option<ActivitySnapshot>,
 ) -> Element {
     let row_prefix = id.clone();
     let render_item = Callback::new(move |item: ItemView| {
@@ -32,7 +34,7 @@ pub fn HistoryTimeline(
     rsx! {
         div { class: "idle-history-timeline",
             HistoryGraph { id: id.clone(), view: view.clone(), onaction, render_item, height }
-            HistoryDetails { id: "{id}-details", view, capabilities, onaction }
+            HistoryDetails { id: "{id}-details", view, capabilities, onaction, activity }
         }
     }
 }
@@ -46,6 +48,7 @@ pub fn HistoryDetails(
     view: ViewModel,
     capabilities: HostCapabilities,
     onaction: EventHandler<HistoryEvent>,
+    activity: Option<ActivitySnapshot>,
 ) -> Element {
     let item = view
         .selected_item
@@ -65,6 +68,7 @@ pub fn HistoryDetails(
     rsx! {
         section { id: id.clone(), class: "idle-history-details", aria_label: "History record details",
             h2 { "History details" }
+            AuthorActivity { id: "{id}-activity", view: view.clone(), capabilities: capabilities.clone(), onaction, activity }
             if view.selected.item.is_none() && view.selected.observation.is_none() {
                 p { "Inspect an item to read its observations and exact recorded content." }
             }

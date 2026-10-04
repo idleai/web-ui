@@ -7,7 +7,7 @@ use crate::controls::{Button, ControlState};
 use crate::host::HostCapabilities;
 
 #[component]
-pub(super) fn OpenButton(
+pub(crate) fn OpenButton(
     id: String,
     record: RecordRef,
     target: OpenTarget,

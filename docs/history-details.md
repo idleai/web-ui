@@ -33,6 +33,12 @@ also supply `HistoryRow` through `HistoryGraph::render_item` and place
 `HistoryDetails` elsewhere in their layout. Each row's disclosure ID must be
 unique across all mounts.
 
+The optional `activity` property on both detail components accepts supplied
+author classifications and mapped code ranges. The shared author/activity panel
+also presents known file-level actions when that input is absent. See the
+[author activity guide](author-activity.md) for revision matching, unknown
+coverage and the provider boundary.
+
 | User action | Typed event |
 | --- | --- |
 | Expand or collapse an item | `ToggleDisclosure(full_item_key)` |

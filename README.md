@@ -26,8 +26,9 @@ actions. Mount these through `destination` and load `configuration.css` and
 
 ## Development
 
-Keep the `app-core`, `host-tools` and `editchain` checkouts alongside this repository. CI uses
-the paired revisions in `.github/workflows/ci.yml`. The Rust toolchain is pinned in `rust-toolchain.toml`.
+Cargo resolves the app-core, host-tools and engine packages from their GitHub
+releases using `Cargo.lock`. CI checks out this repository. The Rust toolchain
+is pinned in `rust-toolchain.toml`.
 Run checks and builds from the repository root:
 
 ```sh
@@ -65,3 +66,27 @@ record links, controlled filters and compact/sidebar or wide/browser composition
 
 See the [navigation guide](docs/navigation.md) for section ordering, supplied
 counts/statuses, identity boundaries, selection events and creation requirements.
+
+## Package releases
+
+Our reusable crates are stored as `.crate` assets in this repository's GitHub
+Releases. The `cargo-index` branch contains the Cargo sparse index; its entries
+include immutable archive checksums. `.cargo/config.toml` registers the indexes.
+Normal checks use the committed lockfile and need only this repository's source.
+
+Release-plz accumulates version and changelog changes in a release PR. Merging
+that PR creates package tags and runs `scripts/release-crates.py` to verify and
+publish the archives and update the index. Releases can batch several feature
+PRs. Dependabot groups compatible Rust dependency updates for review.
+
+
+## Coordinated development
+
+For ordinary local Rust work, add a temporary Cargo patch for the relevant
+registry and pass it with `cargo --config /absolute/path/local.toml ...`.
+Keep these overrides out of committed manifests and lockfiles. Full checks with
+an unpublished producer can use `memos/scripts/check-integration.py` with
+explicit `--producer` and `--consumer` checkout paths. It temporarily patches
+Cargo, builds candidate native bundles when needed, runs the consumer's normal
+check script and restores its dependency files. The manual **Unpublished package
+integration** workflow in memos runs the same check for selected branches.

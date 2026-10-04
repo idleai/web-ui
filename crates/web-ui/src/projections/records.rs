@@ -14,8 +14,10 @@ pub(super) fn RecordLinks(
     kind: ProjectionKind,
     row: ProjectionRow,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     rsx! {
+        if let Some(url) = &row.url { crate::repository::SourceLink { label: "Open source page", url: url.clone(), onopen } }
         details { class: "idle-projection-records",
             summary { "Records ({row.sources.len()} sources, {row.related.len()} related)" }
             ul {

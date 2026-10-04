@@ -10,6 +10,7 @@ pub mod icons;
 pub mod navigation;
 pub mod projections;
 pub mod provenance;
+pub mod repository;
 pub mod resources;
 pub mod sessions;
 pub mod status;

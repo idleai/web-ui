@@ -191,7 +191,8 @@ impl Fixture {
                 | Effect::Subscription(_)
                 | Effect::Session(_)
                 | Effect::Resource(_)
-                | Effect::Configuration(_)) => {
+                | Effect::Configuration(_)
+                | Effect::Repository(_)) => {
                     self.pending.push(other);
                     continue;
                 }

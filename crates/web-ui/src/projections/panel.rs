@@ -38,6 +38,7 @@ pub fn ProjectionPanel(
     kind: ProjectionKind,
     #[props(default)] layout: ProjectionLayout,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     let projection = super::destination(&view, kind).clone();
     let loading = view.load == ProjectionLoadState::Loading;
@@ -72,10 +73,10 @@ pub fn ProjectionPanel(
                         ResultEmpty { view: projection.clone() }
                     } else {
                         {match layout {
-                            ProjectionLayout::List => rsx! { ProjectionList { view: projection.clone(), selected: selected.clone(), onaction } },
-                            ProjectionLayout::Table => rsx! { ProjectionTable { view: projection.clone(), selected: selected.clone(), onaction } },
-                            ProjectionLayout::Cards => rsx! { ProjectionCards { view: projection.clone(), selected: selected.clone(), onaction } },
-                            ProjectionLayout::Board => rsx! { ProjectionBoard { view: projection.clone(), selected: selected.clone(), onaction } },
+                            ProjectionLayout::List => rsx! { ProjectionList { view: projection.clone(), selected: selected.clone(), onaction, onopen } },
+                            ProjectionLayout::Table => rsx! { ProjectionTable { view: projection.clone(), selected: selected.clone(), onaction, onopen } },
+                            ProjectionLayout::Cards => rsx! { ProjectionCards { view: projection.clone(), selected: selected.clone(), onaction, onopen } },
+                            ProjectionLayout::Board => rsx! { ProjectionBoard { view: projection.clone(), selected: selected.clone(), onaction, onopen } },
                         }}
                     }
                     Gaps { gaps: projection.gaps }

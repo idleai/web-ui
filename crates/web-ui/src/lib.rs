@@ -2,6 +2,7 @@
 //! Host credentials, networking and native actions stay with the hosts.
 
 pub mod assembly;
+pub mod assets;
 pub mod configuration;
 pub mod controls;
 pub mod history;

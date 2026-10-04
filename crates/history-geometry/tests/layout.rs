@@ -1,20 +1,19 @@
-//! Tests for the lane layout module.
+//! Graph regressions exercised through the application's retained graph.
 
 use editchain_index as _;
 use serde as _;
 use serde_json as _;
 
 use editchain_core::{NodeId, OpId};
-use history_geometry::layout::{
-    GridPoint, LaneEdge, LayoutContext, compute_graph_layout, compute_lanes,
-};
+mod support;
 use idle_history::taxonomy::ChainState;
+use support::{GraphFixture, GridPoint, LaneEdge, graph_layout, operation_rows};
 
 fn op(node: u64, seq: u64) -> OpId {
     OpId::new(NodeId(node), 0, seq)
 }
 
-/// Build a `compute_graph_layout` parents closure from a map of child → parents.
+/// Build a `graph_layout` parents closure from a map of child → parents.
 fn parents_from<'a>(map: &'a [(&'a str, &'a [&'a str])]) -> impl Fn(&str) -> Vec<String> + 'a {
     move |key: &str| {
         for (child, parents) in map {
@@ -56,7 +55,7 @@ fn linear_history_single_lane() {
             Vec::new()
         }
     };
-    let rows = compute_lanes(&nodes, parents);
+    let rows = operation_rows(&nodes, parents);
     assert_eq!(rows.len(), 3);
     // All on lane 0.
     assert!(rows.iter().all(|r| r.lane == 0));
@@ -73,7 +72,7 @@ fn branch_uses_two_lanes() {
             Vec::new()
         }
     };
-    let rows = compute_lanes(&nodes, parents);
+    let rows = operation_rows(&nodes, parents);
     assert_eq!(rows.len(), 3);
     // The merge node and its two parents occupy distinct lanes.
     let lanes: std::collections::HashSet<usize> = rows.iter().map(|r| r.lane).collect();
@@ -85,7 +84,7 @@ fn graph_layout_linear_single_lane() {
     // C -> B -> A (newest-first: C, B, A), all on one lane.
     let nodes = vec!["C".to_string(), "B".to_string(), "A".to_string()];
     let parents = parents_from(&[("C", &["B"]), ("B", &["A"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     assert_eq!(layout.rows.len(), 3);
     assert!(layout.rows.iter().all(|r| r.lane == 0));
     // Two edges: C→B and B→A.
@@ -97,7 +96,7 @@ fn graph_layout_merge_two_lanes() {
     // C (merge of A and B) -> A, B (newest-first: C, B, A).
     let nodes = vec!["C".to_string(), "B".to_string(), "A".to_string()];
     let parents = parents_from(&[("C", &["B", "A"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     assert_eq!(layout.rows.len(), 3);
     // Merge node and its two parents occupy distinct lanes.
     let lanes: std::collections::HashSet<usize> = layout.rows.iter().map(|r| r.lane).collect();
@@ -113,7 +112,7 @@ fn graph_layout_branch_out_distinct_lanes() {
     // diverging from the shared root rather than collapsing onto one column.
     let nodes = vec!["C".to_string(), "B".to_string(), "A".to_string()];
     let parents = parents_from(&[("B", &["A"]), ("C", &["A"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     assert_ne!(
         lane_of("B"),
@@ -135,7 +134,7 @@ fn graph_layout_fork_then_merge_diamond_distinct_lanes() {
         "A".to_string(),
     ];
     let parents = parents_from(&[("D", &["B", "C"]), ("B", &["A"]), ("C", &["A"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     assert_ne!(
         lane_of("B"),
@@ -157,7 +156,7 @@ fn graph_layout_edge_points_are_continuous() {
         "A".to_string(),
     ];
     let parents = parents_from(&[("E", &["D"]), ("D", &["C"]), ("C", &["B"]), ("B", &["A"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
 
     // Every edge's points must be contiguous: consecutive points differ by
     // exactly one row step, and the path starts at the child's row and ends at
@@ -200,7 +199,7 @@ fn git_commits_occupy_leftmost_lane() {
     ];
     let parents = parents_from(&[("G2", &["G1"]), ("O2", &["O1"])]);
     let is_git = |k: &str| -> bool { k.starts_with('G') };
-    let layout = compute_graph_layout(&nodes, parents, &is_git);
+    let layout = graph_layout(&nodes, parents, &is_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     assert_eq!(lane_of("G2"), 0, "git commit should be on lane 0");
     assert_eq!(lane_of("G1"), 0, "git commit should be on lane 0");
@@ -219,11 +218,11 @@ fn git_commits_occupy_leftmost_lane() {
 #[test]
 fn graph_layout_breaks_cycles_deterministically() {
     // A cycle: A -> B -> C -> A (each node's parent is the next in the ring).
-    // `compute_graph_layout` must break the cycle deterministically rather than
+    // `graph_layout` must break the cycle deterministically rather than
     // dropping nodes or emitting them unsorted, so every node still appears.
     let nodes = vec!["A".to_string(), "B".to_string(), "C".to_string()];
     let parents = parents_from(&[("A", &["C"]), ("B", &["A"]), ("C", &["B"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
 
     // All three nodes must be present (none dropped).
     assert_eq!(layout.rows.len(), 3);
@@ -235,7 +234,7 @@ fn graph_layout_breaks_cycles_deterministically() {
 }
 
 #[test]
-fn edges_for_window_emits_edge_entering_from_above() {
+fn visible_rows_keep_connections_entering_from_above() {
     // A long edge N0 -> N3 spanning several rows (newest-first: N0..N3).
     // When scrolling to a window that contains only N3 (the parent) but not N0
     // (the child above it), the edge must still be emitted so the line enters
@@ -247,26 +246,23 @@ fn edges_for_window_emits_edge_entering_from_above() {
         "N3".to_string(),
     ];
     let parents = parents_from(&[("N0", &["N3"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
-    // Window covering rows 0..1 (N0,N1): child N0 inside -> emitted normally.
-    let edges = ctx.edges_for_window(0, 2);
-    assert!(
-        edges.iter().any(|e| e.child == "N0" && e.parent == "N3"),
-        "edge N0->N3 should be emitted when its child is in the window"
-    );
-
-    // Window covering rows 2..4 (N2,N3): only the PARENT N3 is inside; N0 is
-    // above it. The edge must still be emitted so it enters from offscreen.
-    let edges2 = ctx.edges_for_window(2, 2);
-    assert!(
-        edges2.iter().any(|e| e.child == "N0" && e.parent == "N3"),
-        "edge N0->N3 should be emitted when its parent is in the window even if its child is above"
-    );
+    let lane = *ctx.lane_at.get("N0").unwrap();
+    let edge = ctx.edge("N0", "N3");
+    assert_eq!(edge.points.first().unwrap().row, 0);
+    assert_eq!(edge.points.last().unwrap().row, 3);
+    for row in 1..=3 {
+        assert!(
+            ctx.row_above.get(row).unwrap().contains(&lane),
+            "visible rows retain the connection from the offscreen child"
+        );
+    }
+    assert!(ctx.row_below.get(2).unwrap().contains(&lane));
 }
 
 #[test]
-fn edges_for_window_emits_edge_for_parent_at_window_top() {
+fn parent_at_window_top_keeps_its_incoming_merge_route() {
     // The exact scroll boundary: a merge child M sits immediately above the
     // window (row `offset - 1`) and its parent Y is the first visible row
     // (row `offset`). The parent-emitting pass used to start at `offset + 1`,
@@ -277,7 +273,7 @@ fn edges_for_window_emits_edge_for_parent_at_window_top() {
     // lane), so the M->Y edge jogs lanes.
     let nodes = vec!["M".to_string(), "Y".to_string(), "X".to_string()];
     let parents = parents_from(&[("M", &["X", "Y"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
     let m_lane = *ctx.lane_at.get("M").expect("merge child lane");
     let y_lane = *ctx.lane_at.get("Y").expect("merge parent lane");
     assert_ne!(
@@ -285,34 +281,26 @@ fn edges_for_window_emits_edge_for_parent_at_window_top() {
         "merge child and its extra parent must occupy distinct lanes"
     );
 
-    // Window covering exactly row 1 (Y, the first visible row): M is one row
-    // above it, so the edge must still be emitted, entering from offscreen.
-    let edges = ctx.edges_for_window(1, 1);
-    let boundary: Vec<_> = edges
-        .iter()
-        .filter(|e| e.child == "M" && e.parent == "Y")
-        .collect();
+    // Decorating only the first visible row retains its incoming connection.
+    assert!(ctx.row_above.get(1).unwrap().contains(&y_lane));
+    assert_eq!(ctx.row_transitions.first().unwrap(), &[(m_lane, y_lane)]);
     assert_eq!(
-        boundary.len(),
-        1,
-        "edge M->Y must be emitted exactly once for the boundary window"
-    );
-    assert_eq!(
-        boundary
-            .first()
-            .expect("boundary edge emitted exactly once")
-            .points,
+        ctx.edge("M", "Y").points,
         vec![
             GridPoint {
-                row: 1,
+                row: 0,
                 lane: m_lane
+            },
+            GridPoint {
+                row: 0,
+                lane: y_lane
             },
             GridPoint {
                 row: 1,
                 lane: y_lane
             },
         ],
-        "clamped edge must enter at the window top and jog onto the parent's lane"
+        "the full route keeps its merge bend above the viewport"
     );
 }
 
@@ -334,7 +322,7 @@ fn disconnected_non_overlapping_chains_share_lane() {
         "A1".to_string(),
     ];
     let parents = parents_from(&[("B2", &["B1"]), ("A2", &["A1"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     assert_eq!(
         lane_of("B2"),
@@ -358,7 +346,7 @@ fn disconnected_overlapping_chains_get_distinct_lanes() {
         "B1".to_string(),
     ];
     let parents = parents_from(&[("A2", &["A1"]), ("B2", &["B1"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     let lanes: Vec<usize> = layout.rows.iter().map(|r| r.lane).collect();
     assert_ne!(
@@ -393,7 +381,7 @@ fn overlapping_component_does_not_collide_with_active_fork_lane() {
         ("left", &["root"]),
         ("B2", &["B1"]),
     ]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |key: &str| layout.rows.iter().find(|row| row.node == key).unwrap().lane;
     let fork_lanes: std::collections::HashSet<usize> =
         [lane_of("right"), lane_of("left")].into_iter().collect();
@@ -438,7 +426,7 @@ fn disconnected_session_reuses_operation_lane_inside_git_only_component_gap() {
         ("G1", &["G0"]),
     ]);
     let is_git = |key: &str| key.starts_with('G');
-    let layout = compute_graph_layout(&nodes, parents, &is_git);
+    let layout = graph_layout(&nodes, parents, &is_git);
     let lane_of = |key: &str| layout.rows.iter().find(|row| row.node == key).unwrap().lane;
 
     assert_eq!(lane_of("G2"), 0);
@@ -471,7 +459,7 @@ fn ended_chain_lane_is_reused_by_later_chain() {
         "A1".to_string(),
     ];
     let parents = parents_from(&[("C2", &["C1"]), ("B2", &["B1"]), ("A2", &["A1"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     // All three disjoint chains pack onto a single base column.
     assert_eq!(
@@ -502,7 +490,7 @@ fn reuse_preserves_merge_two_lanes() {
         "Z".to_string(),
     ];
     let parents = parents_from(&[("M", &["X", "Y"])]);
-    let layout = compute_graph_layout(&nodes, parents, &no_git);
+    let layout = graph_layout(&nodes, parents, &no_git);
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     assert_ne!(
         lane_of("X"),
@@ -552,11 +540,15 @@ fn sequential_explicit_git_links_reuse_operation_lanes() {
             .map(|(_, ps)| ps.clone())
             .unwrap_or_default()
     };
-    let ctx = LayoutContext::new(&nodes, &parents_of, &is_git);
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
-    let max_lane = ctx.lanes.iter().map(|r| r.lane).max().unwrap_or(0);
-    let mut lanes: Vec<usize> = ctx.lanes.iter().map(|r| r.lane).collect();
-    lanes.extend(ctx.session_git_spine_lanes.values().copied());
+    let ctx = GraphFixture::new(&nodes, &parents_of, &is_git);
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
+    let max_lane = ctx.rows.iter().map(|r| r.lane).max().unwrap_or(0);
+    let mut lanes: Vec<usize> = ctx.rows.iter().map(|r| r.lane).collect();
+    lanes.extend(
+        ctx.edges
+            .iter()
+            .flat_map(|edge| edge.points.iter().map(|point| point.lane)),
+    );
     // Everything is one component (each branch reaches the shared Git chain),
     // yet the sequential branches must pack onto one reusable direct op lane.
     // Each Git target has only one session child, so there are no spines.
@@ -564,7 +556,16 @@ fn sequential_explicit_git_links_reuse_operation_lanes() {
         max_lane, 1,
         "sequential branches linked to a shared Git chain must reuse one op lane"
     );
-    assert!(ctx.session_git_spine_lanes.is_empty());
+    assert!(
+        ctx.edges.iter().all(|edge| {
+            let child = ctx.lane_at.get(&edge.child).unwrap();
+            let parent = ctx.lane_at.get(&edge.parent).unwrap();
+            edge.points
+                .iter()
+                .all(|point| point.lane == *child || point.lane == *parent)
+        }),
+        "separate Git targets do not allocate shared routing spines"
+    );
     assert_lanes_are_dense(&lanes);
     for key in &nodes {
         let expected = usize::from(!is_git(key));
@@ -614,11 +615,11 @@ fn sequential_fork_diamonds_reuse_the_freed_branch_lane() {
             .map(|(_, ps)| ps.clone())
             .unwrap_or_default()
     };
-    let ctx = LayoutContext::new(&nodes, &parents_of, &no_git);
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
-    let max_lane = ctx.lanes.iter().map(|r| r.lane).max().unwrap_or(0);
-    let lanes_used: std::collections::HashSet<usize> = ctx.lanes.iter().map(|r| r.lane).collect();
-    let lanes: Vec<usize> = ctx.lanes.iter().map(|r| r.lane).collect();
+    let ctx = GraphFixture::new(&nodes, &parents_of, &no_git);
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
+    let max_lane = ctx.rows.iter().map(|r| r.lane).max().unwrap_or(0);
+    let lanes_used: std::collections::HashSet<usize> = ctx.rows.iter().map(|r| r.lane).collect();
+    let lanes: Vec<usize> = ctx.rows.iter().map(|r| r.lane).collect();
     assert_eq!(
         max_lane, 1,
         "sequential fork diamonds must reuse one branch lane, not one per diamond"
@@ -685,11 +686,15 @@ fn intermediate_lane_merges_but_later_lane_cannot_densifies_survivors() {
         ("G0", &[]),
     ]);
     let is_git = |k: &str| -> bool { k.starts_with('G') };
-    let ctx = LayoutContext::new(&nodes, &parents_of, &is_git);
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
-    let max_lane = ctx.lanes.iter().map(|r| r.lane).max().unwrap_or(0);
-    let mut lanes: Vec<usize> = ctx.lanes.iter().map(|r| r.lane).collect();
-    lanes.extend(ctx.session_git_spine_lanes.values().copied());
+    let ctx = GraphFixture::new(&nodes, &parents_of, &is_git);
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
+    let max_lane = ctx.rows.iter().map(|r| r.lane).max().unwrap_or(0);
+    let mut lanes: Vec<usize> = ctx.rows.iter().map(|r| r.lane).collect();
+    lanes.extend(
+        ctx.edges
+            .iter()
+            .flat_map(|edge| edge.points.iter().map(|point| point.lane)),
+    );
     // A and B merged onto one reusable op lane; C (overlapping B) kept its own.
     assert_eq!(
         lane_of("B1"),
@@ -702,7 +707,16 @@ fn intermediate_lane_merges_but_later_lane_cannot_densifies_survivors() {
         "C's overlapping op lane must stay distinct"
     );
     assert_eq!(max_lane, 2, "git=0 and two dense direct operation lanes");
-    assert!(ctx.session_git_spine_lanes.is_empty());
+    assert!(
+        ctx.edges.iter().all(|edge| {
+            let child = ctx.lane_at.get(&edge.child).unwrap();
+            let parent = ctx.lane_at.get(&edge.parent).unwrap();
+            edge.points
+                .iter()
+                .all(|point| point.lane == *child || point.lane == *parent)
+        }),
+        "separate Git targets do not allocate shared routing spines"
+    );
     assert_lanes_are_dense(&lanes);
     assert_eq!(lane_of("A1"), 1);
     assert_eq!(lane_of("B1"), 1);
@@ -746,33 +760,34 @@ fn pass_through_skips_gap_between_merged_lane_runs_but_crosses_real_segment() {
         ("G0", &[]),
     ]);
     let is_git = |k: &str| -> bool { k.starts_with('G') };
-    let ctx = LayoutContext::new(&nodes, &parents_of, &is_git);
+    let ctx = GraphFixture::new(&nodes, &parents_of, &is_git);
     let merged_op_lane = *ctx.lane_at.get("A1").expect("merged operation lane");
-    // Window at row 3: the gap between the merged operation runs [0,2] and
-    // [4,6].
-    let edges = ctx.edges_for_window(3, 1);
-    assert!(
-        !edges
-            .iter()
-            .any(|edge| { edge.child == format!("__pass_through_{merged_op_lane}") }),
-        "must not draw a pass-through line inside the merged lane's gap"
-    );
-    // Window rows 4..5: the git chain's continuous same-lane run [2,8] crosses
-    // with no git node inside the window — the sparse-chain line must still be
-    // drawn (and the merged op lane has its nodes inside, so no second line).
-    let edges = ctx.edges_for_window(4, 2);
-    assert!(
-        edges
-            .iter()
-            .any(|e| e.child.starts_with("__pass_through_0")),
-        "continuous segment crossing the window must draw a pass-through line"
-    );
-    assert!(
-        !edges
-            .iter()
-            .any(|edge| { edge.child == format!("__pass_through_{merged_op_lane}") }),
-        "no pass-through on the op lane whose nodes are inside the window"
-    );
+    // The gap between the merged operation runs must stay empty.
+    assert!(!ctx.row_above.get(3).unwrap().contains(&merged_op_lane));
+    assert!(!ctx.row_below.get(3).unwrap().contains(&merged_op_lane));
+    // Git crosses these rows even though both endpoints are offscreen.
+    for row in 4..=5 {
+        assert!(ctx.row_above.get(row).unwrap().contains(&0));
+        assert!(ctx.row_below.get(row).unwrap().contains(&0));
+        assert!(
+            ctx.row_above
+                .get(row)
+                .unwrap()
+                .iter()
+                .filter(|lane| **lane == merged_op_lane)
+                .count()
+                <= 1
+        );
+        assert!(
+            ctx.row_below
+                .get(row)
+                .unwrap()
+                .iter()
+                .filter(|lane| **lane == merged_op_lane)
+                .count()
+                <= 1
+        );
+    }
 }
 
 /// A lane must NEVER be reused across overlapping branch activity: a fork
@@ -799,8 +814,8 @@ fn concurrent_branch_overlap_never_reuses_a_lane() {
         ("M", &["C1", "X"]),
         ("Y", &["C1"]),
     ]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     // The long C2->X branch and the Y/M branch overlap in display rows, so they
     // must NOT be merged onto one lane even though both reuse compaction.
     assert_ne!(
@@ -825,9 +840,9 @@ fn concurrent_branch_overlap_never_reuses_a_lane() {
 
 /// A full, comparable snapshot of a layout's lane geometry (lanes, per-row
 /// above/below/transitions, and every edge's point path).
-fn geometry_snapshot(ctx: &LayoutContext, edges: &[LaneEdge]) -> String {
+fn geometry_snapshot(ctx: &GraphFixture, edges: &[LaneEdge]) -> String {
     let mut parts = Vec::new();
-    for (row, r) in ctx.lanes.iter().enumerate() {
+    for (row, r) in ctx.rows.iter().enumerate() {
         parts.push(format!(
             "{}:{} a={:?} b={:?} t={:?}",
             r.node,
@@ -873,8 +888,8 @@ fn lane_geometry_is_identical_across_repeated_builds() {
     let parents = parents_from(&[("M", &["A", "B"]), ("E2", &["E1"]), ("F2", &["F1"])]);
 
     let build = || {
-        let ctx = LayoutContext::new(&nodes, &parents, &no_git);
-        let layout = compute_graph_layout(&nodes, &parents, &no_git);
+        let ctx = GraphFixture::new(&nodes, &parents, &no_git);
+        let layout = graph_layout(&nodes, &parents, &no_git);
         geometry_snapshot(&ctx, &layout.edges)
     };
     let first = build();
@@ -889,9 +904,9 @@ fn lane_geometry_is_identical_across_repeated_builds() {
     // Deterministic tie-break canary: the per-component topological queue seeds
     // from display order, so the newer root B owns the base lane and the merge
     // M inherits the older root A's second lane.
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
     let lane_of = |k: &str| {
-        ctx.lanes
+        ctx.rows
             .iter()
             .find(|r| r.node == k)
             .expect("node in rows")
@@ -934,7 +949,7 @@ fn lane_geometry_is_identical_across_repeated_builds() {
         &[0, 1][..]
     );
 
-    let layout = compute_graph_layout(&nodes, &parents, &no_git);
+    let layout = graph_layout(&nodes, &parents, &no_git);
     let edge_points = |child: &str, parent: &str| -> Vec<(usize, usize)> {
         layout
             .edges
@@ -985,19 +1000,14 @@ fn pass_through_skips_lane_with_no_node_in_window() {
         ("N1", &["M"]),
         ("M", &["A", "B"]),
     ]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
-    // Window rows 2..6 = N3,N2,N1,M,A. Lane 0 (B's lane) has no node inside.
-    let edges = ctx.edges_for_window(2, 5);
-    // The trunk edges are present.
-    assert!(edges.iter().any(|e| e.child == "N3" && e.parent == "N2"));
-    assert!(edges.iter().any(|e| e.child == "N1" && e.parent == "M"));
-    // No pass-through line on lane 0: B is at row 7, below the window.
-    assert!(
-        !edges
-            .iter()
-            .any(|e| e.child.starts_with("__pass_through_0")),
-        "must not draw a pass-through line on lane 0 (B is below the window)"
-    );
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
+    assert_eq!(ctx.edge("N3", "N2").points.first().unwrap().row, 2);
+    assert_eq!(ctx.edge("N1", "M").points.last().unwrap().row, 5);
+    let branch_lane = *ctx.lane_at.get("B").unwrap();
+    for row in 2..5 {
+        assert!(!ctx.row_above.get(row).unwrap().contains(&branch_lane));
+        assert!(!ctx.row_below.get(row).unwrap().contains(&branch_lane));
+    }
 }
 
 /// A genuinely sparse chain — one component occupying a lane both above and
@@ -1005,8 +1015,8 @@ fn pass_through_skips_lane_with_no_node_in_window() {
 /// line so the chain stays continuous while scrolling.
 #[test]
 fn pass_through_draws_sparse_chain_across_window() {
-    // One component: N0 (row 0) -> ... -> N9 (row 9), all on one lane. View a
-    // middle window with no node inside it; the line must still be drawn.
+    // Both adjacent chains and sparse offscreen connections stay continuous
+    // when only their middle rows are decorated.
     let nodes: Vec<String> = (0..10).map(|i| format!("N{i}")).collect();
     let parents = parents_from(&[
         ("N0", &["N1"]),
@@ -1019,13 +1029,18 @@ fn pass_through_draws_sparse_chain_across_window() {
         ("N7", &["N8"]),
         ("N8", &["N9"]),
     ]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
-    // Window rows 3..7 has no node inside it (all nodes are at rows 0..9).
-    let edges = ctx.edges_for_window(3, 4);
-    assert!(
-        edges.iter().any(|e| e.child.starts_with("__pass_through_")),
-        "sparse chain spanning the window must draw a pass-through line"
-    );
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
+    let lane = *ctx.lane_at.get("N0").unwrap();
+    for row in 3..7 {
+        assert!(ctx.row_above.get(row).unwrap().contains(&lane));
+        assert!(ctx.row_below.get(row).unwrap().contains(&lane));
+    }
+    let sparse = GraphFixture::new(&nodes, &parents_from(&[("N0", &["N9"])]), &no_git);
+    let sparse_lane = *sparse.lane_at.get("N0").unwrap();
+    for row in 3..7 {
+        assert!(sparse.row_above.get(row).unwrap().contains(&sparse_lane));
+        assert!(sparse.row_below.get(row).unwrap().contains(&sparse_lane));
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1057,12 +1072,12 @@ fn per_row_active_lanes_and_transitions_for_merge() {
         ("N1", &["M"]),
         ("M", &["A", "B"]),
     ]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
     // Lane assignment: trunk + A share one lane, B is on a different lane.
     // (Absolute lane numbers are nondeterministic due to HashMap iteration order
     // in the reuse algorithm, so assert the RELATIVE structure.)
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     let trunk_lane = lane_of("N5");
     assert_eq!(lane_of("A"), trunk_lane, "A shares the trunk lane");
     assert_ne!(lane_of("B"), trunk_lane, "B is on a distinct lane");
@@ -1130,9 +1145,9 @@ fn per_row_transitions_for_fork_then_merge_diamond() {
         "A".to_string(),
     ];
     let parents = parents_from(&[("D", &["B", "C"]), ("B", &["A"]), ("C", &["A"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     let b_lane = lane_of("B");
     let c_lane = lane_of("C");
     assert_ne!(b_lane, c_lane, "diamond branches must be on distinct lanes");
@@ -1168,9 +1183,9 @@ fn per_row_transitions_for_fork_then_merge_diamond() {
 fn adjacent_cross_lane_transition_direction_and_exact_halves() {
     let nodes = vec!["M".to_string(), "Y".to_string(), "X".to_string()];
     let parents = parents_from(&[("M", &["X", "Y"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     let m_lane = lane_of("M");
     let y_lane = lane_of("Y");
     let x_lane = lane_of("X");
@@ -1235,9 +1250,9 @@ fn adjacent_cross_lane_transition_direction_and_exact_halves() {
 fn lone_adjacent_fork_anchors_transition_at_parent() {
     let nodes = vec!["C".to_string(), "B".to_string(), "A".to_string()];
     let parents = parents_from(&[("B", &["A"]), ("C", &["A"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     let a_lane = lane_of("A");
     let b_lane = lane_of("B");
     let c_lane = lane_of("C");
@@ -1307,13 +1322,13 @@ fn lone_session_git_anchor_uses_one_direct_branch() {
     let nodes = vec!["session".to_string(), "git".to_string()];
     let parents = parents_from(&[("session", &["git"])]);
     let is_git = |key: &str| key == "git";
-    let ctx = LayoutContext::new(&nodes, &parents, &is_git);
-    let lane_of = |key: &str| ctx.lanes.iter().find(|row| row.node == key).unwrap().lane;
+    let ctx = GraphFixture::new(&nodes, &parents, &is_git);
+    let lane_of = |key: &str| ctx.rows.iter().find(|row| row.node == key).unwrap().lane;
     let session_lane = lane_of("session");
     let git_lane = lane_of("git");
     assert_ne!(session_lane, git_lane, "session and Git use distinct lanes");
     assert!(
-        ctx.session_git_spine_lanes.is_empty(),
+        ctx.max_lane() == 1,
         "one session must not allocate an edge-only spine"
     );
     assert_eq!(
@@ -1337,7 +1352,7 @@ fn lone_session_git_anchor_uses_one_direct_branch() {
         "the direct edge enters the Git row"
     );
 
-    let layout = compute_graph_layout(&nodes, &parents, &is_git);
+    let layout = graph_layout(&nodes, &parents, &is_git);
     assert_eq!(layout.edges.len(), 1);
     let edge = layout.edges.first().expect("session-to-Git edge");
     assert_eq!(
@@ -1363,41 +1378,45 @@ fn session_git_anchor_joins_spine_before_offscreen_parent() {
     ];
     let parents = parents_from(&[("session", &["git"]), ("peer-session", &["git"])]);
     let is_git = |key: &str| key == "git";
-    let ctx = LayoutContext::new(&nodes, &parents, &is_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &is_git);
     let session_lane = *ctx.lane_at.get("session").expect("session lane");
     let git_lane = *ctx.lane_at.get("git").expect("Git lane");
-    let spine_lane = *ctx
-        .session_git_spine_lanes
-        .get(&("session".to_string(), "git".to_string()))
-        .expect("session-base spine");
+    let spine_lane = ctx.spine_lane("session", "git");
     assert_ne!(session_lane, git_lane);
 
-    // Only the session row is visible. Row 1 is the lower viewport boundary;
-    // the real Git-side curve belongs at row 2, so this slice contains only the
-    // session-side peel followed by a straight spine continuation.
-    let edge = ctx
-        .edges_for_window(0, 1)
-        .into_iter()
-        .find(|edge| edge.child == "session" && edge.parent == "git")
-        .expect("session-to-Git edge");
     assert_eq!(
-        edge.points,
+        ctx.edge("session", "git").points,
         vec![
             GridPoint {
                 row: 0,
-                lane: session_lane,
+                lane: session_lane
             },
             GridPoint {
                 row: 0,
-                lane: spine_lane,
+                lane: spine_lane
             },
             GridPoint {
-                row: 1,
-                lane: spine_lane,
+                row: 3,
+                lane: spine_lane
+            },
+            GridPoint {
+                row: 3,
+                lane: git_lane
             },
         ],
-        "an offscreen Git anchor must keep its parent-side bend offscreen"
+        "the shared spine bends into Git only at the real parent"
     );
+    for row in 0..3 {
+        assert!(
+            !ctx.row_transitions
+                .get(row)
+                .unwrap()
+                .iter()
+                .any(|(_, target)| *target == git_lane),
+            "Git-side bend stays offscreen"
+        );
+        assert!(ctx.row_below.get(row).unwrap().contains(&spine_lane));
+    }
 }
 
 /// Sequential sessions based on one commit reuse an operation lane while all
@@ -1419,16 +1438,10 @@ fn sessions_with_one_git_base_share_spine_and_reuse_operation_lane() {
         ("old-root", &["git"]),
     ]);
     let is_git = |key: &str| key == "git";
-    let ctx = LayoutContext::new(&nodes, &parents, &is_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &is_git);
     let lane_of = |key: &str| *ctx.lane_at.get(key).expect("node lane");
-    let new_spine = *ctx
-        .session_git_spine_lanes
-        .get(&("new-root".to_string(), "git".to_string()))
-        .expect("new session spine");
-    let old_spine = *ctx
-        .session_git_spine_lanes
-        .get(&("old-root".to_string(), "git".to_string()))
-        .expect("old session spine");
+    let new_spine = ctx.spine_lane("new-root", "git");
+    let old_spine = ctx.spine_lane("old-root", "git");
 
     assert_eq!(new_spine, old_spine, "one Git target owns one spine");
     assert_eq!(lane_of("new-tip"), lane_of("old-tip"));
@@ -1469,20 +1482,14 @@ fn overlapping_git_base_spines_use_distinct_lanes() {
         ("session-b-old", &["git-b"]),
     ]);
     let is_git = |key: &str| key.starts_with("git-");
-    let ctx = LayoutContext::new(&nodes, &parents, &is_git);
-    let spine_a = *ctx
-        .session_git_spine_lanes
-        .get(&("session-a-new".to_string(), "git-a".to_string()))
-        .expect("first spine");
-    let spine_b = *ctx
-        .session_git_spine_lanes
-        .get(&("session-b-new".to_string(), "git-b".to_string()))
-        .expect("second spine");
+    let ctx = GraphFixture::new(&nodes, &parents, &is_git);
+    let spine_a = ctx.spine_lane("session-a-new", "git-a");
+    let spine_b = ctx.spine_lane("session-b-new", "git-b");
 
     assert_ne!(spine_a, spine_b);
     assert!(spine_a > 0 && spine_b > 0);
     assert!(
-        ctx.lanes
+        ctx.rows
             .iter()
             .filter(|row| !is_git(&row.node))
             .all(|row| row.lane > spine_a.max(spine_b)),
@@ -1508,9 +1515,9 @@ fn mixed_incoming_long_edge_preserves_shared_source_halves() {
         "X".to_string(),
     ];
     let parents = parents_from(&[("N2", &["M"]), ("M", &["X", "Y", "Z"])]);
-    let ctx = LayoutContext::new(&nodes, &parents, &no_git);
+    let ctx = GraphFixture::new(&nodes, &parents, &no_git);
 
-    let lane_of = |k: &str| ctx.lanes.iter().find(|r| r.node == k).unwrap().lane;
+    let lane_of = |k: &str| ctx.rows.iter().find(|r| r.node == k).unwrap().lane;
     let m_lane = lane_of("M");
     let y_lane = lane_of("Y");
     let z_lane = lane_of("Z");
@@ -1594,7 +1601,7 @@ fn adjacent_cross_lane_edge_points_have_no_duplicate_open_start() {
         "X".to_string(),
     ];
     let parents = parents_from(&[("M", &["X", "Y", "Z"])]);
-    let layout = compute_graph_layout(&nodes, &parents, &no_git);
+    let layout = graph_layout(&nodes, &parents, &no_git);
 
     let lane_of = |k: &str| layout.rows.iter().find(|r| r.node == k).unwrap().lane;
     let row_of = |k: &str| layout.rows.iter().position(|r| r.node == k).unwrap();
@@ -1686,7 +1693,7 @@ fn muted_same_lane_edge_marks_both_row_halves() {
             ChainState::Active
         }
     };
-    let ctx = LayoutContext::new_with_chain_state(&nodes, &parents, &no_git, &state);
+    let ctx = GraphFixture::with_state(&nodes, &parents, &no_git, &state);
     let lane = *ctx.lane_at.get("cancelled").expect("cancelled lane");
 
     assert_eq!(ctx.lane_at.get("parent").copied(), Some(lane));
@@ -1720,7 +1727,7 @@ fn muted_fork_edge_stays_gray_through_the_parent_row_bend() {
             ChainState::Active
         }
     };
-    let ctx = LayoutContext::new_with_chain_state(&nodes, &parents, &no_git, &state);
+    let ctx = GraphFixture::with_state(&nodes, &parents, &no_git, &state);
     let muted_lane = *ctx.lane_at.get("muted-tip").expect("muted tip lane");
     let root_lane = *ctx.lane_at.get("root").expect("root lane");
 

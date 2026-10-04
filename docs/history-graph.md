@@ -81,12 +81,11 @@ both effects. Paths and rows use shared theme tokens.
 
 ## Extracted implementation
 
-The `history-geometry` workspace crate owns the former EditChain layout planner,
-retained lane/routes/coverage state, connection growth timing and coordinate types.
-It has no Dioxus, app-core, host or network dependency. Its generic `GraphNode` and
-`GraphRow` adapters let the old viewer use the moved implementation without a
-dependency cycle. The new component uses the same lanes and route corners for
-causal paths and adds a separate logical-relationship layer.
+The `history-geometry` workspace crate owns bootstrap lane planning, retained
+routes and coverage, connection growth timing and exact coordinate conversion.
+It has no Dioxus, app-core, host or network dependency. Its generic `GraphNode`
+and `GraphRow` adapters supply the component's causal lanes and route corners;
+the component adds a separate logical-relationship layer.
 
 Lane transitions use cubic curves with vertical tangents at both ends, so forks
 and merges meet their tracks without sharp corners. Turns borrow at most half of
@@ -96,8 +95,10 @@ stay at their measured centers.
 
 `history-geometry` owns layout, live graph, growth and viewport calculations used
 by Dioxus. Its old projection/protocol adapters and the direct DOM renderer have
-been removed after both current hosts adopted the shared components. Pure layout
-regressions remain with the geometry package. EditChain owns storage and queries
+been removed after both current hosts adopted the shared components. Layout
+regressions exercise `LiveGraph` directly, including offscreen connections and
+muted paths. Saved row geometry preserves the former snapshot implementation's
+results across bootstrap, insertion, retraction and mute edits. EditChain owns storage and queries
 and has no dependency on this repository or application display classifications.
 
 ## Local checks

@@ -95,11 +95,9 @@ pub fn WorkspaceSurface(
                         crate::repository::RepositoryUsers { view: view.repository.clone(), workspace: view.workspace.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
                     } else if session_selected && view.repository.context.is_some() {
                         crate::repository::RecordedSessions { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), now_ms }
-                        if view.repository.selected_session.is_some() || view.history.selected.observation.is_some() {
-                            HistorySearch { key: "recorded:{view.repository.selected_session:?}", view: view.history.search.clone(), onaction: history_action }
-                            Button { label: "Refresh session history", onpress: move |()| history_action.call(history::Event::Refresh) }
-                            HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
-                        }
+                        {rsx! { HistorySearch { key: "recorded:{view.repository.selected_session:?}", view: view.history.search.clone(), onaction: history_action } }}
+                        Button { label: "Refresh recorded history", onpress: move |()| history_action.call(history::Event::Refresh) }
+                        HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     }
                     else if session_selected {
                         if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }

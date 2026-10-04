@@ -58,9 +58,10 @@ pub fn RepositoryOverview(
                         SourceLink { label: "Open repository on GitHub", url: repository.url.clone(), onopen }
                     }
                 }
-                p { class: "idle-muted", "GitHub access: " {snapshot.account.clone().unwrap_or_else(|| "public, signed out".into())} }
+                p { class: "idle-muted", "GitHub account: " {snapshot.account.clone().unwrap_or_else(|| "No account connected".into())} }
             }
             Button { label: "Connect GitHub repository access", state: control_state(&view), onpress: move |()| onaction.call(Event::SignIn) }
+            p { class: "idle-muted", "Connecting may ask for additional repository permissions." }
             SourceReports { view, prefix: String::new(), now_ms }
         }
     }

@@ -128,7 +128,15 @@ test('workspace switches, expiry and refresh failure never reuse old status or a
     await toolbar(page, 'Disconnect');
     assert.equal(await page.$eval('#sidebar [title="Settings"]', element => element.disabled), true);
     await toolbar(page, 'Reset standalone');
-    assert.equal(await page.$$eval('#sidebar-repository option', elements => elements.length), 1, 'standalone has exactly its bound repository');
+    for (const host of ['sidebar', 'browser']) {
+      assert.equal(await page.$$eval(`#${host} .idle-navigation-selectors select`, elements => elements.length), 1, 'standalone exposes one workspace choice');
+      assert.equal(await page.$(`#${host}-repository`), null, 'the automatically bound repository has no duplicate picker');
+    }
+    await page.select('#sidebar-workspace', 'workspace-two'); await settle(page);
+    assert.equal(await page.$eval('#browser-workspace', element => element.value), 'workspace-two');
+    await page.select('#sidebar-workspace', 'workspace-one'); await settle(page);
+    assert.equal(await page.$('#sidebar-repository'), null);
+    assert.ok(await page.$('#sidebar [data-identity="session-control"]'), 'returning to a standalone workspace restores its bound data');
     assert.deepEqual(errors, []);
   } finally { await page.close(); }
 });

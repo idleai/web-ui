@@ -13,8 +13,16 @@ compact sidebar and composes history/details and sessions in wider detail views.
 Mount one per document, supply a persistent app-core view and event dispatcher,
 and load the theme, navigation, graph, details, session and projection styles. It advertises
 only supplied host actions; session creation requires a connected provider and
-a prepared request. Resource registration and configuration forms remain with
-their owning surfaces.
+a prepared request. Detail navigation exposes every workspace destination.
+
+`configuration::ConfigurationEditor` provides independent Settings and Agent Rules
+forms with validation, conflicts, saved revisions and recovery controls. Its
+`onsave` callback asks the host to allocate and durably retain the write identity.
+`resources::ResourceDirectory` renders compute, providers, served models,
+installation choices and controller state. It emits typed navigation/recovery
+events and runtime mutation intents; capabilities and grants control available
+actions. Mount these through `destination` and load `configuration.css` and
+`resources.css`. Hosts retain credentials and perform all persistence/execution.
 
 ## Development
 

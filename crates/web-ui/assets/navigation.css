@@ -35,3 +35,5 @@
 .idle-theme .idle-navigation-activity-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (pointer: coarse) { .idle-theme .idle-navigation { --idle-control-height: 2.75rem; } }
 @media (forced-colors: active) { .idle-theme .idle-navigation-status { background: CanvasText; outline: 1px solid CanvasText; } }
+.idle-detail-navigation { display: flex; flex-wrap: wrap; gap: 6px; }
+.idle-detail-navigation [aria-current="page"] { outline: 1px solid currentColor; }

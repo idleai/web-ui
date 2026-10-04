@@ -67,7 +67,8 @@ impl Fixture {
                 | Effect::Subscription(_)
                 | Effect::Session(_)
                 | Effect::Resource(_)
-                | Effect::Configuration(_) => {}
+                | Effect::Configuration(_)
+                | Effect::Repository(_) => {}
             }
         }
         Ok(())
@@ -218,6 +219,7 @@ fn row(key: &str, title: &str, status: Option<&str>, value: u8) -> ProjectionRow
     ProjectionRow {
         key: key.into(), title: title.into(),
         summary: Some("Supplied details remain linked to their recorded sources.\nSecond line <literal text>.".into()),
+        url: None,
         status: status.map(str::to_owned), labels: vec!["workspace".into(), "owner,infra".into()],
         sources: vec![reference(value)],
         related: vec![ProjectionReference { observation: None, item: Some("c0".repeat(32)), record_hash: None },

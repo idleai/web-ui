@@ -141,6 +141,9 @@ test('narrow layouts, larger text and coarse pointers keep controls accessible',
     const overflow = await page.$eval('#sidebar', element => element.scrollWidth > element.clientWidth + 1);
     assert.equal(overflow, false, 'sidebar has no horizontal overflow at increased text size');
     await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    // Mobile emulation reloads the page and restarts the WASM application.
+    await page.waitForSelector('#sidebar [title="Settings"]');
+    await page.addStyleTag({ content: 'html { font-size: 20px; }' });
     await settle(page);
     assert.ok(await page.$eval('#sidebar [title="Settings"]', element => element.getBoundingClientRect().height) >= 44);
     assert.equal(await page.$$eval('label[for]', elements => elements.every(element => !!document.getElementById(element.htmlFor))), true);

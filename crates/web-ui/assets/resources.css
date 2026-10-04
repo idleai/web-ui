@@ -1,0 +1,16 @@
+.idle-resource-heading, .idle-resource-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--idle-space-2, 8px);
+}
+.idle-resource-heading { justify-content: space-between; }
+.idle-resource-card {
+  border: 1px solid var(--idle-border, #8886);
+  border-radius: var(--idle-radius, 6px);
+  padding: var(--idle-space-3, 12px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.idle-resource-card p { margin-block: 6px; }
+.idle-resource-model { margin-inline-start: var(--idle-space-3, 12px); }

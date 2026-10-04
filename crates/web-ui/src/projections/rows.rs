@@ -17,12 +17,13 @@ pub fn ProjectionList(
     view: ProjectionView,
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     rsx! {
         ul { class: "idle-projection-list", aria_label: super::title(view.kind),
             for row in view.rows {
                 li { key: "{row.key}",
-                    ProjectionCard { kind: view.kind, row, selected: selected.clone(), onaction }
+                    ProjectionCard { kind: view.kind, row, selected: selected.clone(), onaction, onopen }
                 }
             }
         }
@@ -35,12 +36,13 @@ pub fn ProjectionCards(
     view: ProjectionView,
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     rsx! {
         ul { class: "idle-projection-cards", aria_label: super::title(view.kind),
             for row in view.rows {
                 li { key: "{row.key}",
-                    ProjectionCard { kind: view.kind, row, selected: selected.clone(), onaction }
+                    ProjectionCard { kind: view.kind, row, selected: selected.clone(), onaction, onopen }
                 }
             }
         }
@@ -54,6 +56,7 @@ pub fn ProjectionCard(
     row: ProjectionRow,
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     let active = selected.as_ref() == Some(&super::selection(kind, &row.key));
     rsx! {
@@ -61,7 +64,7 @@ pub fn ProjectionCard(
             h3 { RowTitle { kind, row: row.clone(), selected, onaction } }
             if let Some(summary) = &row.summary { p { class: "idle-projection-row-summary", "{summary}" } }
             RowMetadata { row: row.clone() }
-            RecordLinks { kind, row: row.clone(), onaction }
+            RecordLinks { kind, row: row.clone(), onaction, onopen }
         }
     }
 }
@@ -112,6 +115,7 @@ pub fn ProjectionTable(
     view: ProjectionView,
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     rsx! {
         div { class: "idle-projection-table-scroll", tabindex: "0", role: "region", aria_label: format!("{} table", super::title(view.kind)),
@@ -133,7 +137,7 @@ pub fn ProjectionTable(
                             }
                             td { "{super::status_label(row.status.as_deref())}" }
                             td { Labels { labels: row.labels.clone() } }
-                            td { RecordLinks { kind: view.kind, row: row.clone(), onaction } }
+                            td { RecordLinks { kind: view.kind, row: row.clone(), onaction, onopen } }
                         }
                     }
                 }
@@ -150,6 +154,7 @@ pub fn ProjectionBoard(
     view: ProjectionView,
     selected: Option<ProjectionSelection>,
     onaction: EventHandler<ProjectionEvent>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     #[cfg(target_arch = "wasm32")]
     let preserve = super::board_state::use_board_state(&view);
@@ -173,7 +178,7 @@ pub fn ProjectionBoard(
                     ul {
                         for row in view.rows.iter().filter(|row| row.status == status) {
                             li { key: "{row.key}",
-                                ProjectionCard { kind: view.kind, row: row.clone(), selected: selected.clone(), onaction }
+                                ProjectionCard { kind: view.kind, row: row.clone(), selected: selected.clone(), onaction, onopen }
                             }
                         }
                     }

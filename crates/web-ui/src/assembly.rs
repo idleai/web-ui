@@ -42,6 +42,7 @@ pub fn WorkspaceSurface(
     creation: Option<SessionCreation>,
     now_ms: Option<u64>,
     destination: Option<Element>,
+    onopen: Option<EventHandler<String>>,
 ) -> Element {
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
     let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));
@@ -86,11 +87,18 @@ pub fn WorkspaceSurface(
                 }
                 if let Some(error) = error { p { role: "alert", "{error}" } }
                 if selected.is_some() {
-                    if surface == Surface::Detail { nav { aria_label: "Workspace views",
-                        Button { label: "Activity", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Activity))) }
-                        Button { label: "Sessions", onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Navigate(workspace::NavigationSection::Sessions))) }
-                    } }
+                    if surface == Surface::Detail { DetailNavigation { current: directory.section, onaction } }
                     if let Some(destination) = destination { {destination} }
+                    else if directory.section == workspace::NavigationSection::Workspace && view.repository.context.is_some() {
+                        crate::repository::RepositoryOverview { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
+                    } else if directory.section == workspace::NavigationSection::Members {
+                        crate::repository::RepositoryUsers { view: view.repository.clone(), workspace: view.workspace.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
+                    } else if session_selected && view.repository.context.is_some() {
+                        crate::repository::RecordedSessions { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), now_ms }
+                        {rsx! { HistorySearch { key: "recorded:{view.repository.selected_session:?}", view: view.history.search.clone(), onaction: history_action } }}
+                        Button { label: "Refresh recorded history", onpress: move |()| history_action.call(history::Event::Refresh) }
+                        HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
+                    }
                     else if session_selected {
                         if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }
                         SessionFeedback { view: view.sessions.clone(), onaction: session_action }
@@ -108,10 +116,41 @@ pub fn WorkspaceSurface(
                         Button { label: "Refresh history", onpress: move |()| history_action.call(history::Event::Refresh) }
                         HistoryTimeline { id: "idle-history", view: view.history, capabilities, onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     } else if directory.section == workspace::NavigationSection::Projections {
+                        if view.repository.context.is_some() {
+                            p { "Tasks show open GitHub issues and pull requests. Errors show failed checks and workflow runs for the recorded checkout HEAD. Triage and Human input use explicit labels and review requests." }
+                            crate::repository::SourceReports { view: view.repository.clone(), prefix: "github", now_ms }
+                        }
                         for kind in [projections::ProjectionKind::Task, projections::ProjectionKind::Error, projections::ProjectionKind::Triage, projections::ProjectionKind::NeedInput] {
-                            ProjectionPanel { id: format!("idle-projection-{kind:?}"), view: view.projections.clone(), kind, onaction: move |event| onaction.call(Event::Projections(event)) }
+                            ProjectionPanel { id: format!("idle-projection-{kind:?}"), view: view.projections.clone(), kind, onaction: move |event| onaction.call(Event::Projections(event)), onopen }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn DetailNavigation(
+    current: workspace::NavigationSection,
+    onaction: EventHandler<Event>,
+) -> Element {
+    use workspace::NavigationSection;
+    rsx! {
+        nav { class: "idle-detail-navigation", aria_label: "Workspace views",
+            for (section, label) in [
+                (NavigationSection::Workspace, "Workspace"),
+                (NavigationSection::Members, "Users"),
+                (NavigationSection::Sessions, "Sessions"),
+                (NavigationSection::Projections, "Projections"),
+                (NavigationSection::ComputeHosts, "Compute hosts"),
+                (NavigationSection::ModelProviders, "Model providers"),
+                (NavigationSection::Activity, "Activity"),
+                (NavigationSection::Settings, "Settings"),
+                (NavigationSection::AgentRules, "Agent Rules"),
+            ] {
+                button { key: "{section:?}", r#type: "button", class: "idle-button", aria_current: if current == section { "page" } else { "false" },
+                    onclick: move |_| onaction.call(Event::Workspace(workspace::Event::Navigate(section))), "{label}"
                 }
             }
         }

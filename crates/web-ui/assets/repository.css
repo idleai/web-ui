@@ -1,0 +1,15 @@
+.idle-repository { min-width: 0; }
+.idle-repository-facts { display: grid; grid-template-columns: minmax(5rem, auto) minmax(0, 1fr); gap: .35rem .8rem; margin: .5rem 0; }
+.idle-repository-facts dt { color: var(--idle-color-muted); }
+.idle-repository-facts dd { margin: 0; }
+.idle-repository code, .idle-repository p, .idle-repository dd { overflow-wrap: anywhere; }
+.idle-repository-person, .idle-recorded-session, .idle-repository-control { padding: .7rem; border: 1px solid var(--idle-color-border); border-radius: var(--idle-radius, .35rem); }
+.idle-repository-person h4 { margin: 0; }
+.idle-repository-person p, .idle-recorded-session p { margin: .35rem 0; }
+.idle-repository-reports ul { padding-left: 1.2rem; }
+.idle-repository-reports li { margin: .7rem 0; }
+.idle-repository-notice { border-left: 2px solid var(--idle-color-border); padding-left: .6rem; }
+.idle-repository-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.idle-repository-feedback p { flex-basis: 100%; margin: .2rem 0; }
+.idle-recorded-session[data-selected="true"] { border-color: var(--idle-color-focus); }
+.idle-source-link { max-width: 100%; white-space: normal; }

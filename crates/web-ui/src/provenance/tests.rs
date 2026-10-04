@@ -11,6 +11,9 @@ use super::{
 };
 use crate::host::{HostCapabilities, HostKind};
 
+mod retries;
+mod sources;
+
 fn reference(value: u64) -> RecordRef {
     RecordRef {
         operation: format!("{value:064x}"),
@@ -423,7 +426,8 @@ fn both_hosts_render_escaped_labels_and_keep_source_and_original_identities() {
     }
     for host in [HostKind::Browser, HostKind::VsCode] {
         let mut dom = VirtualDom::new_with_props(fixture, host);
-        dom.rebuild_in_place();
+        let mutations = dom.rebuild_to_vec();
+        sources::toggle(&mut dom, &mutations, "activity-sources-0-summary");
         let html = dioxus_ssr::render(&dom);
         for label in [
             "Human attribution",

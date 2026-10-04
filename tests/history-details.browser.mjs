@@ -282,6 +282,37 @@ test('activity updates retract stale revisions and conflicted sources without as
   } finally { await page.close(); }
 });
 
+test('source disclosures mount loaded content only while open', async () => {
+  const { page, errors } = await open();
+  try {
+    await select(page, 5);
+    for (const host of ['browser', 'extension']) {
+      const sources = `#${host}-history-details-activity .idle-activity-sources`;
+      assert.equal(await page.$$eval(`${sources} .idle-history-operation`, panels => panels.length), 0, 'collapsed sources do not mount record panels');
+    }
+    const source = `#browser-history-details-activity .idle-activity-source[data-operation="${id(9)}"]`;
+    const summary = `${source} > summary`;
+    const original = `${source} [id$="-original"]`;
+    await page.click(summary);
+    await clickButton(page, original, 'Load exact records and content');
+    assert.match(await page.$eval(original, element => element.textContent), /00 ff/, 'expanded sources retain the complete captured bytes');
+    assert.equal(await page.$$eval('.idle-activity-source:not([open]) .idle-history-operation', panels => panels.length), 0, 'loading a shared Original does not populate other collapsed sources');
+    const lastAction = await page.$eval('.fixture-action', element => element.textContent);
+    await page.click(summary);
+    await page.waitForFunction(selector => !document.querySelector(selector).open, {}, source);
+    assert.equal(await page.$(`${source} .idle-history-operation`), null, 'closing a source removes its payload panels');
+    await page.focus(summary);
+    await page.keyboard.press('Space');
+    await page.waitForSelector(original);
+    assert.match(await page.$eval(original, element => element.textContent), /00 ff/, 'keyboard reopening restores already loaded bytes');
+    assert.equal(await page.$eval('.fixture-action', element => element.textContent), lastAction, 'reopening needs no extra history request');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(selector => !document.querySelector(selector).open, {}, source);
+    assert.equal(await page.$(`${source} .idle-history-operation`), null);
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
 test('narrow activity heatmaps support keyboard range selection and source disclosure', async () => {
   const { page, errors } = await open(390);
   try {

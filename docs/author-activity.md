@@ -54,6 +54,9 @@ empty or unavailable; their range coverage stays unknown.
 - Invalid, reversed, empty, out-of-bounds and split-UTF-8 ranges are excluded.
   Conflicted, missing or replaced source records retract their marks when those
   lookup results arrive; the source records remain inspectable.
+- Once a source lookup is requested, pending and failed lookups leave its marks
+  unavailable until an accepted result arrives. Snapshot retries also withhold
+  range marks until matching resulting bytes are available.
 - A missing snapshot differs from a recorded empty snapshot. When an exact
   `FileAfter` lookup is available, it must agree with the supplied text. Before
   snapshots are never painted with resulting-revision ranges.
@@ -69,7 +72,9 @@ sources” restores the full list; changing the selected chain or record resets
 range selection. Rendering preserves the complete text, including Unicode and
 line endings, in a bounded scroll region.
 
-Source disclosure reuses the exact history record/Original panels. Inline loads
+Source disclosure reuses the exact history record/Original panels. Their content
+is mounted only while the source disclosure is open; closing it removes the text
+and hexadecimal payloads from the rendered view. Inline loads
 dispatch `LoadOperationDetails` and keep the selected file in place. Native
 record opens dispatch `Open` with the full supplied record ID and digest; native
 Original opens use the loaded Original's own record identity. Capability

@@ -121,7 +121,7 @@ pub(super) fn source_available(view: &ViewModel, record: &RecordRef) -> bool {
             }
             OperationDetailsState::Idle
             | OperationDetailsState::Loading
-            | OperationDetailsState::Failed(_) => true,
+            | OperationDetailsState::Failed(_) => false,
         })
 }
 
@@ -152,7 +152,8 @@ pub(super) fn prepare(
     if !source_available(view, &observation.record) {
         result.indicators.clear();
         result.issues.push(
-            "The selected record is missing, conflicted or invalid. Activity is unknown.".into(),
+            "The selected record is unavailable or awaiting verification. Activity is unknown."
+                .into(),
         );
         return Some(result);
     }
@@ -213,7 +214,7 @@ pub(super) fn prepare(
         valid
     });
     if result.indicators.len() != before {
-        result.issues.push("Some marks have missing or conflicted sources, unavailable text, or invalid byte ranges and cannot be displayed.".into());
+        result.issues.push("Some marks have unavailable sources or text, pending source checks, or invalid byte ranges and cannot be displayed.".into());
     }
     result.issues.push("Only supplied observations are shown. Missing observations do not establish unread or untouched code. Visibility and read intervals do not establish review or comprehension.".into());
     match &view.reconciliation {
@@ -235,7 +236,7 @@ fn snapshot_matches(view: &ViewModel, data: &ActivitySnapshot) -> bool {
         .filter(|entry| entry.operation == data.record.operation)
         .all(|entry| {
             let OperationDetailsState::Ready(details) = &entry.state else {
-                return true;
+                return false;
             };
             details
                 .fields

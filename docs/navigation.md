@@ -38,7 +38,7 @@ not a claim that a record is the latest observation.
 | Control | App-core intent |
 | --- | --- |
 | Workspace selector | `Workspace(SelectWorkspace(id))` |
-| Repository selector | `Workspace(SelectRepository(Some(id)))`; the managed All repositories choice sends `None` |
+| Repository selector (managed workspaces) | `Workspace(SelectRepository(Some(id)))`; the All repositories choice sends `None` |
 | Section heading, Settings, Agent Rules | `Workspace(Navigate(section))` |
 | Session row | `Sessions(Select(Some(id)))`, then Sessions navigation |
 | Compute row | `Resources(SelectHost(Some(id)))`, then Compute hosts navigation |
@@ -46,6 +46,10 @@ not a claim that a record is the latest observation.
 | Activity item | Existing `History` selection event, then Activity navigation |
 | Prepared Add session | `Sessions(Create { id, draft })`, then Sessions navigation |
 | Reload workspaces | `Workspace(Load)` |
+
+Standalone mode shows only the workspace selector. App-core automatically selects
+that workspace's single repository; switching workspaces retains the explicit
+repository/chain binding. Managed workspaces also expose repository selection.
 
 Users are keyed by contributor ID and display their supplied member names.
 Connection summaries, branches and host IDs are secondary, explicitly labelled

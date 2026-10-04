@@ -35,22 +35,22 @@ pub(super) fn WorkspacePicker(
         .as_ref()
         .map(|snapshot| &snapshot.workspace)
         .filter(|workspace| Some(&workspace.id) == view.selected_workspace.as_ref());
-    let repositories = selected.map(|workspace| {
-        let mut options = Vec::new();
-        if workspace.mode == WorkspaceMode::Managed {
+    let repositories = selected
+        .filter(|workspace| workspace.mode == WorkspaceMode::Managed)
+        .map(|workspace| {
+            let mut options = Vec::new();
             options.push(SelectOption {
                 value: String::new(),
                 label: "All repositories".into(),
                 disabled: false,
             });
-        }
-        options.extend(workspace.repositories.iter().map(|repo| SelectOption {
-            value: repo.id.clone(),
-            label: repo.name.clone(),
-            disabled: false,
-        }));
-        options
-    });
+            options.extend(workspace.repositories.iter().map(|repo| SelectOption {
+                value: repo.id.clone(),
+                label: repo.name.clone(),
+                disabled: false,
+            }));
+            options
+        });
     let loading = view.directory_state == WorkspaceRequestState::Loading;
     let empty = view.directory_state == WorkspaceRequestState::Ready && view.workspaces.is_empty();
     let connected = connection

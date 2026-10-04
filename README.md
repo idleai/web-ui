@@ -54,6 +54,9 @@ relationship handling, the `history-geometry` package and browser checks.
 See the [history details guide](docs/history-details.md) for message/tool content,
 file revisions, Original drill-down, typed actions and host capabilities.
 
+See the [author activity guide](docs/author-activity.md) for shared attribution
+heatmaps, observed exposure/touch, unknown coverage and exact source drill-down.
+
 See the [session guide](docs/sessions.md) for conversations, attributed prompt
 delivery/execution, invitation controls and the browser/extension preview.
 

@@ -4,11 +4,11 @@
 //! Hosts execute the resulting effects; these components never resolve files or
 //! reconstruct streams. Load [`STYLESHEET`] alongside the graph and theme styles.
 
-mod actions;
+pub(crate) mod actions;
 mod content;
 mod inspector;
 mod observation;
-mod records;
+pub(crate) mod records;
 mod row;
 
 pub use inspector::{HistoryDetails, HistoryDetailsProps, HistoryTimeline, HistoryTimelineProps};

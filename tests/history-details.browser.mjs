@@ -52,7 +52,9 @@ async function settle(page) {
 async function clickButton(page, root, label) {
   const buttons = await page.$$(`${root} button`);
   for (const button of buttons) {
-    if ((await button.evaluate(element => element.textContent)).trim() === label) {
+    if ((await button.evaluate(element => element.textContent)).trim() === label
+      && await button.isVisible()
+      && await button.evaluate(element => !element.closest('details:not([open])'))) {
       await button.click();
       await settle(page);
       return;
@@ -208,5 +210,99 @@ test('narrow layouts keep bytes and keyboard-accessible scroll regions inside th
     assert.deepEqual(errors, []);
     await mkdir('out/history-details-tests', { recursive: true });
     await page.screenshot({ path: 'out/history-details-tests/narrow.png', fullPage: true });
+  } finally { await page.close(); }
+});
+
+test('shared activity heatmaps preserve exact text and drill down into range sources and Originals', async () => {
+  const { page, errors } = await open();
+  try {
+    await select(page, 5);
+    const expected = 'fn greet() {\n    let name = "Ada 🙂";\n    println!("Hello, {name}");\n}\n';
+    for (const host of ['browser', 'extension']) {
+      const panel = `#${host}-history-details-activity`;
+      assert.equal(await page.$eval(`${panel} .idle-activity-heatmap code`, element => element.textContent), expected);
+      assert.equal(await page.$$eval(`${panel} .idle-activity-range`, ranges => ranges.length), 3);
+      const tops = await page.$$eval(`${panel} .idle-activity-range`, ranges => ranges.map(range => range.getClientRects()[0].top));
+      assert.ok(tops[0] < tops[1] && tops[1] < tops[2], 'separate source lines retain their vertical order');
+      assert.equal(await page.$$eval(`${panel} .idle-activity-source`, sources => sources.length), 3, 'each exact source record appears once');
+      const text = await page.$eval(panel, element => element.textContent);
+      for (const label of ['Human attribution', 'AI attribution', 'Exposure observed', 'Touch observed', 'Capture gap']) assert.ok(text.includes(label), label);
+      const unknown = await page.$eval(`${panel} .idle-activity-range[data-attribution=unknown]`, element => element.getAttribute('aria-label'));
+      assert.match(unknown, /Exposure unknown.*Touch unknown/);
+      assert.equal(await page.$eval(`${panel} .idle-activity-range[data-attribution=human]`, element => element.getAttribute('data-exposure')), 'true');
+      await mkdir('out/history-details-tests', { recursive: true });
+      await (await page.$(panel)).screenshot({ path: `out/history-details-tests/activity-${host}.png` });
+    }
+    const ai = '#browser-history-details-activity .idle-activity-range[data-attribution=ai]';
+    await page.focus(ai);
+    await page.keyboard.press('Enter');
+    assert.equal(await page.$eval(ai, element => element.getAttribute('aria-pressed')), 'true');
+    const source = `#browser-history-details-activity .idle-activity-source[data-operation="${id(9)}"]`;
+    await page.click(`${source} > summary`);
+    await clickButton(page, `${source} [id$="-record"]`, 'Load exact records and content');
+    assert.match(await page.$eval('.fixture-action', element => element.textContent), new RegExp(`LoadOperationDetails.*${id(9)}`));
+    assert.ok(await page.$(ai), 'inline source inspection retains the selected file heatmap');
+    await clickButton(page, `${source} [id$="-original"]`, 'Load exact records and content');
+    assert.match(await page.$eval(`${source} [id$="-original"]`, element => element.textContent), /00 ff/);
+    const extensionSource = `#extension-history-details-activity .idle-activity-source[data-operation="${id(9)}"]`;
+    await page.click(`${extensionSource} > summary`);
+    await clickButton(page, extensionSource, 'Open stored record');
+    const action = await page.$eval('.fixture-action', element => element.textContent);
+    assert.ok(action.includes(id(9)) && action.includes(id(1009)) && action.includes('target: Record'), 'native source retains the full digest');
+    await clickButton(page, '.fixture-actions', 'Revoke native adapters');
+    assert.ok(await page.$$eval(`${extensionSource} .idle-history-open button`, buttons => buttons.every(button => button.disabled)));
+    assert.deepEqual(errors, []);
+    await page.screenshot({ path: 'out/history-details-tests/activity-desktop.png', fullPage: true });
+  } finally { await page.close(); }
+});
+
+test('activity updates retract stale revisions and conflicted sources without asserting inactivity', async () => {
+  const { page, errors } = await open();
+  try {
+    await select(page, 5);
+    const panel = '#browser-history-details-activity';
+    await clickButton(page, '.fixture-actions', 'Supply another revision');
+    assert.equal(await page.$(`${panel} .idle-activity-heatmap`), null);
+    assert.match(await page.$eval(panel, element => element.textContent), /different chain, record or revision/);
+    await clickButton(page, '.fixture-actions', 'Restore activity');
+    assert.ok(await page.$(`${panel} [data-attribution=ai]`));
+    await clickButton(page, '.fixture-actions', 'Retract AI source');
+    assert.equal(await page.$(`${panel} .idle-activity-range[data-attribution=ai]`), null);
+    const source = `${panel} .idle-activity-source[data-operation="${id(9)}"]`;
+    await page.click(`${source} > summary`);
+    assert.match(await page.$eval(source, element => element.textContent), /Conflicted observation/);
+    await clickButton(page, '.fixture-actions', 'Clear activity observations');
+    assert.equal(await page.$$eval(`${panel} .idle-activity-range`, ranges => ranges.length), 1);
+    assert.match(await page.$eval(`${panel} .idle-activity-summary`, element => element.textContent), /Unknown attribution.*Exposure unknown.*Touch observed/);
+    assert.match(await page.$eval(`${panel} .idle-activity-range`, element => element.getAttribute('aria-label')), /Touch unknown/, 'a known file edit does not establish touched ranges');
+    await clickButton(page, '.fixture-actions', 'Report activity failure');
+    assert.match(await page.$eval(`${panel} [role=alert]`, element => element.textContent), /activity source is offline/);
+    assert.equal(await page.$(`${panel} .idle-activity-heatmap`), null);
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
+test('narrow activity heatmaps support keyboard range selection and source disclosure', async () => {
+  const { page, errors } = await open(390);
+  try {
+    await select(page, 5);
+    const panel = '#browser-history-details-activity';
+    const human = `${panel} .idle-activity-range[data-attribution=human]`;
+    await page.focus(human);
+    await page.keyboard.press('Space');
+    assert.equal(await page.$eval(human, element => element.getAttribute('aria-pressed')), 'true');
+    assert.match(await page.$eval(`${panel} [role=status]`, element => element.textContent), /Sources for bytes/);
+    await clickButton(page, panel, 'Show all activity sources');
+    const summary = `${panel} .idle-activity-source > summary`;
+    await page.focus(summary);
+    await page.keyboard.press('Enter');
+    assert.ok(await page.$eval(`${panel} .idle-activity-source`, element => element.open));
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'activity and long record IDs stay inside the page');
+    const ids = await page.$$eval('[id]', elements => elements.map(element => element.id));
+    assert.equal(ids.length, new Set(ids).size, 'source drill-down IDs are unique across mounts');
+    assert.deepEqual(errors, []);
+    await page.click(summary);
+    await (await page.$(panel)).screenshot({ path: 'out/history-details-tests/activity-narrow-panel.png' });
+    await page.screenshot({ path: 'out/history-details-tests/activity-narrow.png', fullPage: true });
   } finally { await page.close(); }
 });

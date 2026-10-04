@@ -13,6 +13,7 @@ use crate::history::details::HistoryTimeline;
 use crate::host::HostCapabilities;
 use crate::navigation::{SessionCreation, WorkspaceNavigation};
 use crate::projections::ProjectionPanel;
+use crate::provenance::ActivitySnapshot;
 use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
 use crate::theme::{Density, Theme, ThemeProvider};
 
@@ -43,6 +44,7 @@ pub fn WorkspaceSurface(
     now_ms: Option<u64>,
     destination: Option<Element>,
     onopen: Option<EventHandler<String>>,
+    activity: Option<ActivitySnapshot>,
 ) -> Element {
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
     let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));
@@ -97,7 +99,7 @@ pub fn WorkspaceSurface(
                         crate::repository::RecordedSessions { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), now_ms }
                         {rsx! { HistorySearch { key: "recorded:{view.repository.selected_session:?}", view: view.history.search.clone(), onaction: history_action } }}
                         Button { label: "Refresh recorded history", onpress: move |()| history_action.call(history::Event::Refresh) }
-                        HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
+                        HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, activity: activity.clone(), height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     }
                     else if session_selected {
                         if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }
@@ -114,7 +116,7 @@ pub fn WorkspaceSurface(
                     } else if directory.section == workspace::NavigationSection::Activity || (surface == Surface::Detail && directory.section == workspace::NavigationSection::Workspace) {
                         HistorySearch { key: "{view.history.chain:?}", view: view.history.search.clone(), onaction: history_action }
                         Button { label: "Refresh history", onpress: move |()| history_action.call(history::Event::Refresh) }
-                        HistoryTimeline { id: "idle-history", view: view.history, capabilities, onaction: history_action, height: if surface == Surface::Sidebar { 400 } else { 640 } }
+                        HistoryTimeline { id: "idle-history", view: view.history, capabilities, onaction: history_action, activity, height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     } else if directory.section == workspace::NavigationSection::Projections {
                         if view.repository.context.is_some() {
                             p { "Tasks show open GitHub issues and pull requests. Errors show failed checks and workflow runs for the recorded checkout HEAD. Triage and Human input use explicit labels and review requests." }

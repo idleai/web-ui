@@ -574,9 +574,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-ssr"
-version = "0.7.7"
+version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aa8abccb3124dd16ff0e557c5659fbe00f8ae3b6a29c1be01e4e440fb69f7c7"
+checksum = "4544ecf908962909de403bfdf94f771b036e9e1857e371cd3279841a15a892e6"
 dependencies = [
  "askama_escape",
  "dioxus-core",

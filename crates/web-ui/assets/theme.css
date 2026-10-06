@@ -164,7 +164,8 @@
 }
 .idle-theme .idle-button[aria-busy="true"] { cursor: progress; }
 .idle-theme .idle-icon-button { padding: var(--idle-space-1); }
-.idle-theme .idle-icon { width: var(--idle-icon-size); height: var(--idle-icon-size); flex: none; vertical-align: middle; }
+.idle-theme .idle-icon { display: inline-flex; width: var(--idle-icon-size); height: var(--idle-icon-size); flex: none; vertical-align: middle; }
+.idle-theme .idle-icon > svg { width: 100%; height: 100%; }
 .idle-theme .idle-disclosure { width: 100%; border-bottom: var(--idle-border-width) solid var(--idle-color-hairline); }
 .idle-theme .idle-disclosure-trigger { width: 100%; justify-content: flex-start; text-align: start; }
 .idle-theme .idle-disclosure-panel { padding: var(--idle-space-3); }

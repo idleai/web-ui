@@ -11,7 +11,7 @@ use dioxus::prelude::{
 use crate::controls::{Button, ControlState, Select, SelectOption, TextField, TextFieldKind};
 use crate::history::details::HistoryTimeline;
 use crate::host::HostCapabilities;
-use crate::navigation::{SessionCreation, WorkspaceNavigation};
+use crate::navigation::{SessionCreation, WorkspaceNavigation, WorkspaceNavigationPane};
 use crate::projections::ProjectionPanel;
 use crate::provenance::ActivitySnapshot;
 use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
@@ -23,6 +23,8 @@ pub enum Surface {
     /// Narrow workspace sidebar.
     #[default]
     Sidebar,
+    /// Content of one native host view; its header and divider belong to the host.
+    SidebarPane(workspace::NavigationSection),
     /// Wider editor tab.
     Detail,
 }
@@ -46,6 +48,16 @@ pub fn WorkspaceSurface(
     onopen: Option<EventHandler<String>>,
     activity: Option<ActivitySnapshot>,
 ) -> Element {
+    if let Surface::SidebarPane(section) = surface {
+        return rsx! {
+            ThemeProvider { theme, density: Density::Compact,
+                main { class: "idle-workspace-sidebar idle-native-pane",
+                    WorkspaceNavigationPane { id: "idle-navigation", section, view, onaction, creation, now_ms }
+                    if let Some(error) = error { p { role: "alert", "{error}" } }
+                }
+            }
+        };
+    }
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
     let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));
     let directory = view.workspace.clone();
@@ -91,7 +103,7 @@ pub fn WorkspaceSurface(
                 if selected.is_some() {
                     if surface == Surface::Detail { DetailNavigation { current: directory.section, onaction } }
                     if let Some(destination) = destination { {destination} }
-                    else if directory.section == workspace::NavigationSection::Workspace && view.repository.context.is_some() {
+                    else if surface == Surface::Detail && directory.section == workspace::NavigationSection::Workspace && view.repository.context.is_some() {
                         crate::repository::RepositoryOverview { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
                     } else if directory.section == workspace::NavigationSection::Members {
                         crate::repository::RepositoryUsers { view: view.repository.clone(), workspace: view.workspace.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }

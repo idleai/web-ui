@@ -7,11 +7,20 @@ the relative order within each group remains the supplied order. When no Control
 session is visible, an ambient control summary opens the Sessions destination
 without inventing a session identity.
 
+Section headers collapse and expand with the mouse, Enter or Space. Their toolbar
+actions open the section destination without changing expansion. Compact navigation
+uses 22-pixel rows, inline member activity and a branch label beside the workspace
+picker. Full connection details remain in row tooltips. Repository inspection is
+rendered only by `assembly::Surface::Detail`.
+
 Load `theme::STYLESHEET`, `history::graph::STYLESHEET` and
 `navigation::STYLESHEET` once in the host, or bundle their corresponding files from
 `crates/web-ui/assets/`. Mount under `ThemeProvider`; both comfortable browser and
 compact VS Code densities use the same component and events. Supply a unique `id`
 for each navigation instance and feed back the persistent app-core root view.
+Icons expose their `IconName` through `data-icon`, with a nested SVG fallback.
+The VS Code host can provide its Codicon font and workbench styles without
+changing the shared Rust renderer or application events.
 
 ```rust,ignore
 WorkspaceNavigation {
@@ -32,6 +41,15 @@ Activity graph with 24-pixel preview rows and
 uses the existing graph's full record identities, keyboard selection and geometry.
 The first supplied record preview labels each compact item; this is a preview,
 not a claim that a record is the latest observation.
+
+Hosts with native sidebar views can mount `WorkspaceNavigationPane` for a single
+`NavigationSection`, or use `assembly::Surface::SidebarPane(section)`. This mode
+renders that section's content. The Activity pane also places the shared Settings
+and Agent Rules links below its graph, without additional headers or disclosure
+controls. The native host owns the pane's title, toolbar, divider, collapse state
+and resizing. The extension uses this pane for Activity alongside six native
+trees and routes selections to its detail editor. A host must coordinate workspace binding changes across
+its documents and replay the latest selection when a hidden document is recreated.
 
 ## State and actions
 
@@ -81,8 +99,8 @@ The current app-core contract has no host/provider registration action. Their
 plus controls remain disabled with an explanation; resource selection is fully
 wired. Registration belongs to the resource/backend owners. There is also no
 projection-destination selection or individual-member selection event. Projection
-summary rows open the shared Projections section, and the Users heading opens
-Members. Hosts can compose the existing projection panels there. This component
+summary rows open the shared Projections section, and user rows or the Users toolbar
+open Members. Hosts can compose the existing projection panels there. This component
 does not fabricate row selections, registration requests or private routes.
 
 Settings and Agent Rules are independent navigation entries. Their forms remain

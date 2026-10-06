@@ -29,6 +29,25 @@ pub(super) fn navigate(onaction: EventHandler<Event>, section: NavigationSection
 }
 
 #[component]
+pub(super) fn ConfigurationLinks(
+    current: NavigationSection,
+    enabled: bool,
+    onaction: EventHandler<Event>,
+) -> Element {
+    rsx! {
+        div { class: "idle-navigation-configuration", aria_label: "Workspace configuration",
+            for (destination, icon) in [(NavigationSection::Settings, IconName::Settings), (NavigationSection::AgentRules, IconName::Rules)] {
+                NavRow {
+                    key: "{destination:?}", name: label(destination), icon,
+                    selected: current == destination, disabled: !enabled,
+                    onpress: move |()| navigate(onaction, destination),
+                }
+            }
+        }
+    }
+}
+
+#[component]
 pub(super) fn Section(
     section: NavigationSection,
     current: NavigationSection,
@@ -38,22 +57,31 @@ pub(super) fn Section(
     action: Option<Element>,
     children: Element,
 ) -> Element {
+    if dioxus::prelude::try_consume_context::<super::pane::NativePane>().is_some() {
+        return rsx! { div { class: "idle-navigation-content", {children} } };
+    }
     let title = label(section);
     rsx! {
-        section { class: "idle-navigation-section", "data-section": "{section:?}", aria_label: title,
-            header { class: "idle-navigation-heading",
+        details { class: "idle-navigation-section", "data-section": "{section:?}", aria_label: title, open: true,
+            summary { class: "idle-navigation-heading",
+                span { class: "idle-navigation-chevron", Icon { name: IconName::ChevronRight } }
                 h2 {
-                    button {
-                        r#type: "button", class: "idle-navigation-destination", disabled: !enabled,
-                        aria_current: (section == current).then_some("page"),
-                        onclick: move |_| { if enabled { navigate(onaction, section); } },
-                        "{title}"
-                    }
+                    "{title}"
                 }
                 if let Some(count) = count { span { class: "idle-navigation-count", title: "{title} count", "{count}" } }
-                {action}
+                div { class: "idle-navigation-actions",
+                    {action}
+                    button {
+                        r#type: "button", class: "idle-button idle-icon-button idle-navigation-destination", "data-variant": "quiet",
+                        disabled: !enabled, title: if section == NavigationSection::Workspace { "Show workspace overview".to_owned() } else { format!("Open {title}") },
+                        aria_label: if section == NavigationSection::Workspace { "Show workspace overview".to_owned() } else { format!("Open {title}") },
+                        aria_current: (section == current).then_some("page"),
+                        onclick: move |event| { event.stop_propagation(); if enabled { navigate(onaction, section); } },
+                        Icon { name: if section == NavigationSection::Workspace { IconName::Workspace } else { IconName::ExternalLink } }
+                    }
+                }
             }
-            {children}
+            div { class: "idle-navigation-content", {children} }
         }
     }
 }
@@ -94,8 +122,10 @@ pub(super) fn NavRow(
             onclick: move |_| { if !disabled { onpress.call(()); } },
             if let Some(status) = status { Status { status } }
             Icon { name: icon }
-            span { class: "idle-navigation-name", "{name}" }
-            if let Some(detail) = detail { span { class: "idle-navigation-detail", "{detail}" } }
+            span { class: "idle-navigation-label",
+                span { class: "idle-navigation-name", "{name}" }
+                if let Some(detail) = detail { span { class: "idle-navigation-detail", "{detail}" } }
+            }
         }
     }
 }

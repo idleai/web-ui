@@ -83,6 +83,37 @@ fn offline_reads_keep_source_status_time_and_retry_visible() {
 }
 
 #[test]
+fn repository_inspector_belongs_to_the_detail_view() {
+    fn surface(surface: crate::assembly::Surface) -> Element {
+        let mut view = app_core::ViewModel::default();
+        view.workspace.selected_workspace = Some("workspace".into());
+        view.repository = fixture();
+        rsx! { crate::assembly::WorkspaceSurface {
+            view, surface, capabilities: crate::host::HostCapabilities::new(crate::host::HostKind::VsCode),
+            onaction: move |_| {},
+        } }
+    }
+    for target in [
+        crate::assembly::Surface::Sidebar,
+        crate::assembly::Surface::Detail,
+    ] {
+        let mut dom = VirtualDom::new_with_props(surface, target);
+        dom.rebuild_in_place();
+        let html = dioxus_ssr::render(&dom);
+        assert_eq!(
+            html.contains("Refresh repository"),
+            target == crate::assembly::Surface::Detail,
+            "repository inspection remains available in the editor detail view"
+        );
+        assert_eq!(
+            html.contains("Workspace navigation"),
+            target == crate::assembly::Surface::Sidebar,
+            "the sidebar retains the workspace overview"
+        );
+    }
+}
+
+#[test]
 fn authorship_is_separate_from_idle_presence_and_markup_is_escaped() {
     let html = render(fixture(), 1);
     assert!(html.contains("No Idle members are available."));

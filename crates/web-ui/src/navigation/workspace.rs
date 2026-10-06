@@ -15,6 +15,7 @@ use crate::icons::IconName;
 pub(super) fn WorkspacePicker(
     id: String,
     view: workspace::ViewModel,
+    repository: app_core::repository::ViewModel,
     connection: SubscriptionViewModel,
     onaction: EventHandler<Event>,
 ) -> Element {
@@ -57,6 +58,10 @@ pub(super) fn WorkspacePicker(
         .context
         .as_ref()
         .is_some_and(|context| Some(&context.workspace) == view.selected_workspace.as_ref());
+    let checkout = repository
+        .snapshot
+        .as_ref()
+        .and_then(|snapshot| snapshot.checkout.as_ref());
     let connection_label = if connected {
         connection.status.label()
     } else {
@@ -82,7 +87,8 @@ pub(super) fn WorkspacePicker(
                 state: if loading { ControlState::Busy } else { ControlState::Ready },
                 onpress: move |()| onaction.call(Event::Workspace(workspace::Event::Load)),
             } },
-            div { class: "idle-navigation-selectors",
+            div { class: "idle-navigation-workspace",
+              div { class: "idle-navigation-selectors",
                 Select { id: "{id}-workspace", label: "Workspace", value: view.selected_workspace.clone().unwrap_or_default(), options,
                     onchange: move |value: String| { if !value.is_empty() { onaction.call(Event::Workspace(workspace::Event::SelectWorkspace(value))); } },
                 }
@@ -91,12 +97,20 @@ pub(super) fn WorkspacePicker(
                         onchange: move |value: String| onaction.call(Event::Workspace(workspace::Event::SelectRepository((!value.is_empty()).then_some(value)))),
                     }
                 }
+              }
+              if enabled {
+                div { class: "idle-navigation-connection",
+                    if let Some(checkout) = checkout {
+                        span { class: "idle-navigation-branch", title: "Branch: {checkout.branch.as_deref().unwrap_or(\"Detached HEAD\")}",
+                            {checkout.branch.as_deref().unwrap_or("Detached HEAD")}
+                        }
+                    }
+                    Status { status: RowStatus { label: connection_label.into(), tone: connection_tone } }
+                }
+              }
             }
             if enabled {
-                div { class: "idle-navigation-connection",
-                    Status { status: RowStatus { label: connection_label.into(), tone: connection_tone } }
-                    span { "{connection_label}" }
-                }
+                if connected && connection.status != ConnectionStatus::Live { Notice { text: connection_label } }
                 if connected && let Some(error) = connection.error { Notice { text: error.message, error: true } }
             }
             for (label, state) in [("Workspaces", view.directory_state), ("Workspace", view.snapshot_state)] {

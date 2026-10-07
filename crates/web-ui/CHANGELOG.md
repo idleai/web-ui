@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/idleai/web-ui/compare/web-ui-v0.1.3...web-ui-v0.2.0) - 2026-10-07
+
+### Other
+
+- *(f43/d9-sidebar-structure)* support native panes and configuration footer links ([#26](https://github.com/idleai/web-ui/pull/26))
+
 ## [0.1.3](https://github.com/idleai/web-ui/compare/web-ui-v0.1.2...web-ui-v0.1.3) - 2026-10-05
 
 ### Fixed

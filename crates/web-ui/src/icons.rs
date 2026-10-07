@@ -86,19 +86,17 @@ impl IconName {
 #[component]
 pub fn Icon(name: IconName, label: Option<String>) -> Element {
     rsx! {
-        svg {
+        span {
             class: "idle-icon",
-            view_box: "0 0 24 24",
-            fill: "none",
-            stroke: "currentColor",
-            stroke_width: "1.7",
-            stroke_linecap: "round",
-            stroke_linejoin: "round",
-            "focusable": "false",
+            "data-icon": "{name:?}",
             role: label.as_ref().map(|_| "img"),
             "aria-label": label.clone(),
             "aria-hidden": label.is_none().then_some("true"),
-            path { d: name.path() }
+            svg {
+                view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.7",
+                stroke_linecap: "round", stroke_linejoin: "round", "focusable": "false", "aria-hidden": "true",
+                path { d: name.path() }
+            }
         }
     }
 }

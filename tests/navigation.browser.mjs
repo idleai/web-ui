@@ -110,6 +110,33 @@ test('keyboard selections and creation share app-core state between both hosts',
   } finally { await page.close(); }
 });
 
+test('dense sections collapse by keyboard and keep their state through updates', async () => {
+  const { page, errors } = await open();
+  try {
+    assert.equal(await page.$eval('#sidebar [data-contributor] .idle-navigation-row', element => element.getBoundingClientRect().height), 22);
+    assert.equal(await page.$$eval('#sidebar .idle-navigation-connections', elements => elements.length), 0, 'member activity fits in one row');
+    const section = '#sidebar [data-section="Sessions"]';
+    await page.focus(`${section} > summary`);
+    await page.keyboard.press('Space'); await settle(page);
+    assert.equal(await page.$eval(section, element => element.open), false);
+    assert.equal(await text(page, '#last-action'), 'No action dispatched', 'collapsing does not navigate');
+    await toolbar(page, 'Fail resource refresh');
+    assert.equal(await page.$eval(section, element => element.open), false, 'live updates retain the collapsed state');
+    await page.focus(`${section} > summary`);
+    await page.keyboard.press('Enter'); await settle(page);
+    await page.focus(`${section} [aria-label="Open Sessions"]`);
+    await page.keyboard.press('Enter'); await settle(page);
+    assert.equal(await page.$eval(section, element => element.open), true, 'toolbar actions do not collapse the section');
+    assert.match(await text(page, '#selection'), /Section: Sessions/);
+    await page.focus('#sidebar [data-section="Workspace"] > summary');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter'); await settle(page);
+    assert.match(await text(page, '#selection'), /Section: Workspace/, 'the workspace toolbar returns to the overview');
+    assert.deepEqual(errors, []);
+  } finally { await page.close(); }
+});
+
 test('workspace switches, expiry and refresh failure never reuse old status or actions', async () => {
   const { page, errors } = await open();
   try {

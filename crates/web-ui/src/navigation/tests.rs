@@ -95,6 +95,45 @@ fn markup(props: Harness) -> String {
 }
 
 #[test]
+fn native_pane_contains_only_its_rust_content_without_a_second_header() {
+    fn pane(section: NavigationSection) -> Element {
+        rsx! { super::WorkspaceNavigationPane {
+            id: "native", section, view: ViewModel::default(), onaction: move |_| {},
+        } }
+    }
+    for section in [
+        NavigationSection::Workspace,
+        NavigationSection::Members,
+        NavigationSection::Sessions,
+        NavigationSection::Projections,
+        NavigationSection::ComputeHosts,
+        NavigationSection::ModelProviders,
+        NavigationSection::Activity,
+    ] {
+        let mut dom = VirtualDom::new_with_props(pane, section);
+        dom.rebuild_in_place();
+        let html = dioxus_ssr::render(&dom);
+        assert!(html.contains(&format!("data-section=\"{section:?}\"")));
+        assert!(!html.contains("<details") && !html.contains("<summary") && !html.contains("<h2"));
+        assert!(!html.contains("idle-navigation-heading"));
+        assert_eq!(html.matches("data-section=").count(), 1);
+        assert_eq!(
+            html.contains("idle-navigation-configuration"),
+            section == NavigationSection::Activity,
+            "standalone configuration links follow the Activity graph"
+        );
+        if section == NavigationSection::Activity {
+            assert!(html.contains("title=\"Settings\"") && html.contains("title=\"Agent Rules\""));
+            assert_eq!(
+                html.matches("disabled").count(),
+                2,
+                "configuration requires a workspace"
+            );
+        }
+    }
+}
+
+#[test]
 fn reference_order_control_first_supplied_counts_and_distinct_identities() {
     for mode in [WorkspaceMode::Standalone, WorkspaceMode::Managed] {
         let props = Harness::new(mode);

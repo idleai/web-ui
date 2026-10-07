@@ -6,8 +6,8 @@ use app_core::{
 };
 use dioxus::prelude::*;
 
-use super::super::chrome::{Notice, RowStatus, Section, Status};
-use crate::icons::{Icon, IconName};
+use super::super::chrome::{NavRow, Notice, RowStatus, Section, navigate};
+use crate::icons::IconName;
 
 #[component]
 pub(in crate::navigation) fn Users(
@@ -23,23 +23,10 @@ pub(in crate::navigation) fn Users(
             ul { class: "idle-navigation-list",
                 for user in &view.members {
                     li { key: "{user.member.contributor_id}", "data-contributor": user.member.contributor_id.clone(),
-                        div { class: "idle-navigation-row", title: "{user.member.display_name} · {user.member.contributor_id}",
-                            Status { status: connection_status(user) }
-                            Icon { name: IconName::User }
-                            span { class: "idle-navigation-name", "{user.member.display_name}" }
-                            span { class: "idle-navigation-detail", "{connection_status(user).label}" }
-                        }
-                        if !user.connections.is_empty() {
-                            ul { class: "idle-navigation-connections",
-                                for connection in &user.connections {
-                                    li { key: "{connection.connection_id}",
-                                        if let Some(summary) = &connection.summary { span { "{summary}" } }
-                                        if let Some(host) = &connection.host_id { span { " · Host: {host}" } }
-                                        if let Some(branch) = &connection.branch { span { " · Branch: {branch}" } }
-                                        if let Some(file) = &connection.file { span { " · {file}" } }
-                                    }
-                                }
-                            }
+                        NavRow { name: user.member.display_name.clone(), icon: IconName::User,
+                            identity: user.member.contributor_id.clone(), status: connection_status(user),
+                            detail: work_summary(user), disabled: view.selected_workspace.is_none(),
+                            onpress: move |()| navigate(onaction, NavigationSection::Members),
                         }
                     }
                 }
@@ -52,6 +39,35 @@ pub(in crate::navigation) fn Users(
             }
             if view.snapshot.is_some() && view.members.is_empty() { Notice { text: "No users in this workspace" } }
         }
+    }
+}
+
+fn work_summary(user: &workspace::MemberView) -> String {
+    let connections = user
+        .connections
+        .iter()
+        .map(|connection| {
+            let mut parts = Vec::new();
+            if let Some(summary) = &connection.summary {
+                parts.push(summary.clone());
+            }
+            if let Some(file) = &connection.file {
+                parts.push(file.clone());
+            }
+            if let Some(branch) = &connection.branch {
+                parts.push(format!("Branch: {branch}"));
+            }
+            if let Some(host) = &connection.host_id {
+                parts.push(format!("Host: {host}"));
+            }
+            parts.join(" · ")
+        })
+        .filter(|summary| !summary.is_empty())
+        .collect::<Vec<_>>();
+    if connections.is_empty() {
+        connection_status(user).label
+    } else {
+        connections.join("; ")
     }
 }
 

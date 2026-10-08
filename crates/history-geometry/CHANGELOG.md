@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/idleai/web-ui/compare/history-geometry-v0.2.0...history-geometry-v0.2.1) - 2026-10-08
+
+### Other
+
+- *(f43/activity-editor-main)* land the Activity UI on main ([#29](https://github.com/idleai/web-ui/pull/29))
+
 ## [0.2.0](https://github.com/idleai/web-ui/compare/history-geometry-v0.1.3...history-geometry-v0.2.0) - 2026-10-08
 
 ### Other

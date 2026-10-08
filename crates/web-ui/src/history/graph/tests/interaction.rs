@@ -7,6 +7,40 @@ use super::super::state::State;
 use super::{item, view};
 
 #[test]
+fn resize_retains_visible_focus_without_revealing_an_offscreen_selection() {
+    let mut state = State::default();
+    state.reconcile(
+        &view(
+            (1..=40)
+                .rev()
+                .map(|index| item(&index.to_string(), index, &[]))
+                .collect(),
+        ),
+        0.0,
+    );
+    state.viewport.focus(39);
+    assert!(
+        state.viewport.resize(800.0, 200.0),
+        "inspector changes the viewport"
+    );
+    let row = state.viewport.rows.last().unwrap();
+    assert!(
+        row.top >= state.viewport.top
+            && row.top + row.height <= state.viewport.top + state.viewport.height,
+        "a visible focused row stays visible when the inspector opens"
+    );
+    state.viewport.scroll(400.0);
+    assert!(
+        state.viewport.resize(800.0, 180.0),
+        "subsequent host resize is applied"
+    );
+    assert!(
+        (state.viewport.top - 400.0).abs() < 0.01,
+        "manual scrolling away from selection is preserved"
+    );
+}
+
+#[test]
 fn page_keys_cross_tall_rows_and_stop_at_the_ends() {
     for height in [480.0, 2000.0] {
         let mut state = State::default();

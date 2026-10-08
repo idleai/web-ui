@@ -26,6 +26,13 @@ graph measures supplied content with resize events and adjusts its row positions
 and scroll anchor. Nested controls should consume their own keyboard actions;
 clicks on buttons, links and form controls do not select the surrounding row.
 
+An optional `header` element sits outside the vertical viewport. The graph
+publishes `--idle-history-graph-width` so a table header can align with its rows.
+Set `disclosure: false` for a mini view that opens details in another surface;
+its rows then omit `aria-expanded` and do not consume left/right disclosure keys.
+Lane colors can be supplied with `--idle-history-lane-0` through `-5`; the default
+remains the host's accent color. See the [activity editor guide](history-explorer.md).
+
 ## Relationships and identity
 
 `GraphSnapshot::from_view` retains each observation's full `RecordRef`. It resolves

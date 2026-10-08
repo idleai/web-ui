@@ -36,6 +36,8 @@ pub enum HostCapability {
     OpenDiff,
     /// Open the exact retained operation encoding through history effects.
     OpenRecord,
+    /// Open the selected decoded operation as read-only JSON.
+    OpenOperationJson,
     /// Open the captured Original through history effects.
     OpenOriginal,
     /// Reveal a file in the host's explorer.
@@ -88,6 +90,7 @@ impl HostCapabilities {
     pub fn supports_history(&self, target: OpenTarget) -> bool {
         self.supports(match target {
             OpenTarget::Record => HostCapability::OpenRecord,
+            OpenTarget::OperationJson => HostCapability::OpenOperationJson,
             OpenTarget::Original => HostCapability::OpenOriginal,
             OpenTarget::File => HostCapability::OpenFile,
             OpenTarget::Diff => HostCapability::OpenDiff,

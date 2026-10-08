@@ -11,6 +11,11 @@ extension hosts. The three public components are:
 - `HistoryTimeline`: the existing `HistoryGraph` with `HistoryRow` in its content
   slot and a persistent `HistoryDetails` inspector below it.
 
+The full Activity editor uses [HistoryExplorer](history-explorer.md), a continuous
+table over native timeline windows. Its rows open normal VS Code file, diff or
+operation JSON editors. The components described here serve existing raw-history
+and recorded-session callers.
+
 The graph continues to own geometry, scrolling, focus and row measurement. The
 components do not reconstruct streams, resolve files or maintain another copy of
 selection, disclosure or request state.

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/idleai/web-ui/compare/history-geometry-v0.1.3...history-geometry-v0.2.0) - 2026-10-08
+
+### Other
+
+- *(f43/activity-geometry)* use the portable host graph for browser geometry ([#27](https://github.com/idleai/web-ui/pull/27))
+
 ## [0.1.3](https://github.com/idleai/web-ui/compare/history-geometry-v0.1.2...history-geometry-v0.1.3) - 2026-10-05
 
 ### Fixed

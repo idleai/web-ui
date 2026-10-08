@@ -10,8 +10,10 @@ Source and assets live in [`crates/web-ui/`](crates/web-ui/).
 
 `assembly::WorkspaceSurface` renders the ordered workspace navigation in its
 compact sidebar and composes history/details and sessions in wider detail views.
+Activity uses the full editor table (`HistoryExplorer`) and a separate sidebar
+mini view (`HistoryMini`), sharing summaries, graph geometry and typed actions.
 Mount one per document, supply a persistent app-core view and event dispatcher,
-and load the theme, navigation, graph, details, session and projection styles. It advertises
+and load `assets::STYLESHEET` for the complete component styles. It advertises
 only supplied host actions; session creation requires a connected provider and
 a prepared request. Detail navigation exposes every workspace destination.
 
@@ -53,6 +55,9 @@ relationship handling, the `history-geometry` package and browser checks.
 
 See the [history details guide](docs/history-details.md) for message/tool content,
 file revisions, Original drill-down, typed actions and host capabilities.
+
+See the [activity editor guide](docs/history-explorer.md) for native timeline windows,
+editor/sidebar interactions, graph controls and browser fixtures.
 
 See the [author activity guide](docs/author-activity.md) for shared attribution
 heatmaps, observed exposure/touch, unknown coverage and exact source drill-down.

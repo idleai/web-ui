@@ -67,13 +67,13 @@ test('reference order, control first, supplied counts, graph and separate config
       assert.equal(sessions.length, 7);
       assert.match(await text(page, `#${host} [data-section="Projections"]`), /24/);
       assert.equal(await page.$eval(`#${host}-activity`, element => element.clientHeight), 176);
-      assert.ok(await page.$(`#${host}-activity .idle-history-path[data-kind="causal"]`));
+      assert.ok(await page.$(`#${host}-activity .idle-timeline-rail`));
       assert.deepEqual(await page.$$eval(`#${host} [data-contributor] .idle-navigation-name`, elements => elements.map(element => element.textContent)), ['Alice', 'Bob', 'Alex', 'Dev']);
       assert.equal(await page.$eval(`#${host} [aria-label="Add compute host — registration unavailable"]`, element => element.disabled), true);
     }
     const ids = await page.$$eval('[id]', elements => elements.map(element => element.id));
     assert.equal(ids.length, new Set(ids).size);
-    assert.equal(await text(page, '#last-action'), 'No action dispatched');
+    assert.match(await text(page, '#last-action'), /Timeline\((Load|Visible)/, 'recent activity loads its native window when mounted');
     await mkdir(resolve(root, 'screenshots'), { recursive: true });
     await page.screenshot({ path: resolve(root, 'screenshots/navigation.png'), fullPage: true });
     assert.deepEqual(errors, []);
@@ -102,7 +102,7 @@ test('keyboard selections and creation share app-core state between both hosts',
       assert.equal(await page.$eval(`#${host} [aria-label="Add session"]`, element => element.disabled), true);
     }
     assert.equal(await page.$$eval('#sidebar [data-section="Sessions"] [data-identity]', elements => elements.length), 7, 'pending creation is not an optimistic session');
-    await page.focus('#sidebar-activity'); await page.keyboard.press('Home'); await page.keyboard.press('Enter'); await settle(page);
+    await page.focus('#sidebar-activity'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter'); await settle(page);
     assert.match(await text(page, '#selection'), /Section: Activity/);
     assert.ok(await page.$('#sidebar-activity [aria-selected="true"]'));
     assert.ok(await page.$('#browser-activity [aria-selected="true"]'));
@@ -116,10 +116,11 @@ test('dense sections collapse by keyboard and keep their state through updates',
     assert.equal(await page.$eval('#sidebar [data-contributor] .idle-navigation-row', element => element.getBoundingClientRect().height), 22);
     assert.equal(await page.$$eval('#sidebar .idle-navigation-connections', elements => elements.length), 0, 'member activity fits in one row');
     const section = '#sidebar [data-section="Sessions"]';
+    const selection = await text(page, '#selection');
     await page.focus(`${section} > summary`);
     await page.keyboard.press('Space'); await settle(page);
     assert.equal(await page.$eval(section, element => element.open), false);
-    assert.equal(await text(page, '#last-action'), 'No action dispatched', 'collapsing does not navigate');
+    assert.equal(await text(page, '#selection'), selection, 'collapsing does not navigate');
     await toolbar(page, 'Fail resource refresh');
     assert.equal(await page.$eval(section, element => element.open), false, 'live updates retain the collapsed state');
     await page.focus(`${section} > summary`);

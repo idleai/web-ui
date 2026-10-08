@@ -116,6 +116,10 @@ jobs:
       - run: npm run test:history-details:browser
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.path }}
+      - run: bash scripts/build-history-explorer.sh
+      - run: npm run test:history-explorer:browser
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.path }}
       - run: bash scripts/build-sessions.sh
       - run: npm run test:sessions:browser
         env:

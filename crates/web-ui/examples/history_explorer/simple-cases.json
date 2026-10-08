@@ -1,0 +1,2650 @@
+{
+  "fork": {
+    "version": 2,
+    "revision": "8:18dc61350d3f8bce-362d58-2:1",
+    "rows": [
+      {
+        "occurrence": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "item": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "5f9c2c7dd0dce09a638d6d791f07ae1d013a4fd29fef79ac68d7c79fcb2508bc"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "5f9c2c7dd0dce09a638d6d791f07ae1d013a4fd29fef79ac68d7c79fcb2508bc"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: work",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383405000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "5f9c2c7dd0dce09a638d6d791f07ae1d013a4fd29fef79ac68d7c79fcb2508bc"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "item": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "3df384e92c83c9746a37ebb3c48af0c2bbf6405e03666b038ea2b2f3ec454167"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "3df384e92c83c9746a37ebb3c48af0c2bbf6405e03666b038ea2b2f3ec454167"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: work",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383404000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+                  "hash": "3df384e92c83c9746a37ebb3c48af0c2bbf6405e03666b038ea2b2f3ec454167"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: continue",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: start",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+                  "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: spawn child",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [],
+          "transitions": [
+            [
+              1,
+              0
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 5,
+    "visible_rows": 5,
+    "max_lane": 1,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "independent": {
+    "version": 2,
+    "revision": "8:18dc613528606b3c-362d58-6:1",
+    "rows": [
+      {
+        "occurrence": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "item": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "a9378ec12f38055f4f70e301cce12dfed688770988a7fc812a77604185572c57"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "a9378ec12f38055f4f70e301cce12dfed688770988a7fc812a77604185572c57"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream B: finish",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383406000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+                  "hash": "a9378ec12f38055f4f70e301cce12dfed688770988a7fc812a77604185572c57"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [],
+          "below": [
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "item": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "20e0f71b123c3f303edacccc319f6d2c7eb6451882f49e83f2ddf436f559725c"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "20e0f71b123c3f303edacccc319f6d2c7eb6451882f49e83f2ddf436f559725c"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream A: finish",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383405000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "20e0f71b123c3f303edacccc319f6d2c7eb6451882f49e83f2ddf436f559725c"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "item": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "6f51095f5e54edb23c47d968527c35cc6852082343647bdee845b9aff01f019a"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "6f51095f5e54edb23c47d968527c35cc6852082343647bdee845b9aff01f019a"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream B: work",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383404000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+                  "hash": "6f51095f5e54edb23c47d968527c35cc6852082343647bdee845b9aff01f019a"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "62d85d95246b89864dc587c077cd6776cca8d9b66c8966f528ae7dc5c58244f4"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "62d85d95246b89864dc587c077cd6776cca8d9b66c8966f528ae7dc5c58244f4"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream A: work",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "62d85d95246b89864dc587c077cd6776cca8d9b66c8966f528ae7dc5c58244f4"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "7a32317c7e0845b7be2231b96c5bd1dbcdd7bebc837baf6f670a3d819348982f"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "7a32317c7e0845b7be2231b96c5bd1dbcdd7bebc837baf6f670a3d819348982f"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream B: start",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "aad9c4fb3faf498e038d966ca60b3572f0e819d4cc28896350a617b6cb6dfcd4"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "aad9c4fb3faf498e038d966ca60b3572f0e819d4cc28896350a617b6cb6dfcd4"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Stream A: start",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 6,
+    "visible_rows": 6,
+    "max_lane": 1,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "join": {
+    "version": 2,
+    "revision": "8:18dc61351198c5bb-362d58-3:1",
+    "rows": [
+      {
+        "occurrence": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "item": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "47a676de49314ad312187fa6e5a23ba3ca22c43a4595cb5c4475bbbcea83db9f"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "47a676de49314ad312187fa6e5a23ba3ca22c43a4595cb5c4475bbbcea83db9f"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: finish",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383406000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+                  "hash": "47a676de49314ad312187fa6e5a23ba3ca22c43a4595cb5c4475bbbcea83db9f"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "item": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "0c965eb7fe2a4cd2385c685e3baeef298d75cc3dca2ea69ef6810631e4fbcec7"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "0c965eb7fe2a4cd2385c685e3baeef298d75cc3dca2ea69ef6810631e4fbcec7"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: join child",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383405000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "0c965eb7fe2a4cd2385c685e3baeef298d75cc3dca2ea69ef6810631e4fbcec7"
+                }
+              }
+            },
+            "unresolved": null
+          },
+          {
+            "kind": "Parent",
+            "parent": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "0c965eb7fe2a4cd2385c685e3baeef298d75cc3dca2ea69ef6810631e4fbcec7"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [
+            [
+              0,
+              1
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "item": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "961cf46565d6a7afa17517a27ce44eb60307c54ee457eeb9ee12d9cb5f31f03f"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "961cf46565d6a7afa17517a27ce44eb60307c54ee457eeb9ee12d9cb5f31f03f"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: finish",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383404000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+                  "hash": "961cf46565d6a7afa17517a27ce44eb60307c54ee457eeb9ee12d9cb5f31f03f"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: continue",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "536c543c48bb66c348decb711e8ebf1ea6f8fe49968cd34bbf347f1de52daa65"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: start",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+                  "hash": "2f865fe74e4ae26820cbab1b8ebead87a1f16d2157e830906d04b9975dc914be"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: spawn child",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [],
+          "transitions": [
+            [
+              1,
+              0
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 6,
+    "visible_rows": 6,
+    "max_lane": 1,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "linear": {
+    "version": 2,
+    "revision": "8:18dc613508ff55ad-362d58-1:1",
+    "rows": [
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "c3c9735a2a31860cbe2c89bf7e9dfa222b700ab29ab42c5105307c01fa564acf"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "c3c9735a2a31860cbe2c89bf7e9dfa222b700ab29ab42c5105307c01fa564acf"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: finish",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "c3c9735a2a31860cbe2c89bf7e9dfa222b700ab29ab42c5105307c01fa564acf"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "a5e54144d1aa6b45d21e7e0c20db9231ef6d3e81f6381dfc950cb28d0cff4c7f"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "a5e54144d1aa6b45d21e7e0c20db9231ef6d3e81f6381dfc950cb28d0cff4c7f"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: work",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+                  "hash": "a5e54144d1aa6b45d21e7e0c20db9231ef6d3e81f6381dfc950cb28d0cff4c7f"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "fd95e2fed8fad231924b5fd894b1f030b714cf2130b6b1d531c09482da335ca9"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "fd95e2fed8fad231924b5fd894b1f030b714cf2130b6b1d531c09482da335ca9"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: start",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 3,
+    "visible_rows": 3,
+    "max_lane": 0,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "nested": {
+    "version": 2,
+    "revision": "8:18dc6135207a66e3-362d58-5:1",
+    "rows": [
+      {
+        "occurrence": "current:783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+        "item": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+              "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+              "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: finish",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383408000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+                  "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+        "item": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+              "hash": "5a837fd6f25356518fe645ecfdbb601721157ae637e438ee424ebf0cfcf7c9a9"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+              "hash": "5a837fd6f25356518fe645ecfdbb601721157ae637e438ee424ebf0cfcf7c9a9"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: join child",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383407000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+                  "hash": "5a837fd6f25356518fe645ecfdbb601721157ae637e438ee424ebf0cfcf7c9a9"
+                }
+              }
+            },
+            "unresolved": null
+          },
+          {
+            "kind": "Parent",
+            "parent": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+                  "hash": "5a837fd6f25356518fe645ecfdbb601721157ae637e438ee424ebf0cfcf7c9a9"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [
+            [
+              0,
+              1
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "item": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "4d6235bd563cc1512c8c9dd2a169473122a1b0efc3eead2819bdfb60463aea7c"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "4d6235bd563cc1512c8c9dd2a169473122a1b0efc3eead2819bdfb60463aea7c"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: join grandchild",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383406000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+                  "hash": "4d6235bd563cc1512c8c9dd2a169473122a1b0efc3eead2819bdfb60463aea7c"
+                }
+              }
+            },
+            "unresolved": null
+          },
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+                  "hash": "4d6235bd563cc1512c8c9dd2a169473122a1b0efc3eead2819bdfb60463aea7c"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [
+            [
+              1,
+              2
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "item": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "55bed1bd5ec30ba955d4fd182358273bddba3b5ea8d7fd747695ce6b3c4449e4"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "55bed1bd5ec30ba955d4fd182358273bddba3b5ea8d7fd747695ce6b3c4449e4"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Grandchild: finish",
+        "author": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "session": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "tags": [],
+        "timestamp": 1791383405000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "55bed1bd5ec30ba955d4fd182358273bddba3b5ea8d7fd747695ce6b3c4449e4"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 2,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "item": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: continue",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383404000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+                  "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "05a78e86ed829c4b21e3a81372b5e7a15353ca5333a251cc4186cef79ca81434"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "05a78e86ed829c4b21e3a81372b5e7a15353ca5333a251cc4186cef79ca81434"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Grandchild: start",
+        "author": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "session": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "05a78e86ed829c4b21e3a81372b5e7a15353ca5333a251cc4186cef79ca81434"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 2,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "a67100d9ff2b120c2d58abd8e1a7951da50be369c2e34895000b3e32bed37f26"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "a67100d9ff2b120c2d58abd8e1a7951da50be369c2e34895000b3e32bed37f26"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: spawn grandchild",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+                  "hash": "a67100d9ff2b120c2d58abd8e1a7951da50be369c2e34895000b3e32bed37f26"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1
+          ],
+          "transitions": [
+            [
+              2,
+              1
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "995691b3e72ca3e7cef623c9e42a92133ab2b660a0e6ab93fe23f89373284bc8"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: spawn child",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1
+          ],
+          "below": [],
+          "transitions": [
+            [
+              1,
+              0
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 8,
+    "visible_rows": 8,
+    "max_lane": 2,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "passing": {
+    "version": 2,
+    "revision": "8:18dc61352dad3575-362d58-7:1",
+    "rows": [
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "f986c20948b427b045a393df929f81f64be460d9b9863d7016a860b7a0dbf260"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "f986c20948b427b045a393df929f81f64be460d9b9863d7016a860b7a0dbf260"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child: exact older attachment",
+        "author": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "session": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "f986c20948b427b045a393df929f81f64be460d9b9863d7016a860b7a0dbf260"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 2,
+          "above": [],
+          "below": [
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "7bb7712bedc89bd21f8c32addd4b09d59a97e743eac1101e5e72d7442fd7f2cf"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "7bb7712bedc89bd21f8c32addd4b09d59a97e743eac1101e5e72d7442fd7f2cf"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Unrelated activity",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 1,
+          "above": [
+            2
+          ],
+          "below": [
+            0
+          ],
+          "transitions": [
+            [
+              2,
+              0
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "f3ef656bf731f2120b11e9a28101aacfa2bcde522e6b99cb57cf5e7891556114"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "f3ef656bf731f2120b11e9a28101aacfa2bcde522e6b99cb57cf5e7891556114"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: older attachment",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 3,
+    "visible_rows": 3,
+    "max_lane": 2,
+    "gaps": [],
+    "rebuilding": null
+  },
+  "siblings": {
+    "version": 2,
+    "revision": "8:18dc613518b1419b-362d58-4:1",
+    "rows": [
+      {
+        "occurrence": "current:783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+        "item": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+              "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+              "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: finish",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383408000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "783b517cbdee46b786ef6dc4968398922606ee8e7a4f04156493f6c881a60dfb",
+                  "hash": "d0af0554dff00fb296c4c41cc89a8595ba8b3378a84aa1619174abcbee91ca7c"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [],
+          "below": [
+            0
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+        "item": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+              "hash": "4e6c96fe4e728e24c054e936912328381b9d8d67f2c3997007cffd3c31c64a74"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+              "hash": "4e6c96fe4e728e24c054e936912328381b9d8d67f2c3997007cffd3c31c64a74"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: join both children",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383407000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+                  "hash": "4e6c96fe4e728e24c054e936912328381b9d8d67f2c3997007cffd3c31c64a74"
+                }
+              }
+            },
+            "unresolved": null
+          },
+          {
+            "kind": "Parent",
+            "parent": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+                  "hash": "4e6c96fe4e728e24c054e936912328381b9d8d67f2c3997007cffd3c31c64a74"
+                }
+              }
+            },
+            "unresolved": null
+          },
+          {
+            "kind": "Parent",
+            "parent": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "6f3287cd13d7e1d790ece8ec6da9b2a553d1506c07351269ff230d3b1de63a44",
+                  "hash": "4e6c96fe4e728e24c054e936912328381b9d8d67f2c3997007cffd3c31c64a74"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0
+          ],
+          "below": [
+            0,
+            2
+          ],
+          "transitions": [
+            [
+              0,
+              2
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+            "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+            "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "item": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "e4e84bfc0fef9f05a98adba04c1cb30baabc2edd42bf771d7f8946aac0e2827b"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+              "hash": "e4e84bfc0fef9f05a98adba04c1cb30baabc2edd42bf771d7f8946aac0e2827b"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child B: finish",
+        "author": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "session": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "tags": [],
+        "timestamp": 1791383406000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "b7890e7019b8e244e32f4d84a995c0f01ea9776cbae240855f634a7ea0150daa",
+                  "hash": "e4e84bfc0fef9f05a98adba04c1cb30baabc2edd42bf771d7f8946aac0e2827b"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 2,
+          "above": [
+            0,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [
+            [
+              0,
+              1
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "item": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "4fc6109f120d5b2e69d3999ae6139de0eecb61ee615ad3effdfaf9fd30ff6ffd"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+              "hash": "4fc6109f120d5b2e69d3999ae6139de0eecb61ee615ad3effdfaf9fd30ff6ffd"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child A: finish",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383405000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "7670a5a683b5119971841294a5291a339464be45d612a0e0e083dc6b09de86f3",
+                  "hash": "4fc6109f120d5b2e69d3999ae6139de0eecb61ee615ad3effdfaf9fd30ff6ffd"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "item": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+              "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: continue",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383404000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "846333980f613b6bffc8021457063c938c56ae0cee82eb27c27cc625c2ca116a",
+                  "hash": "79a83c85417be689897513165df60ba580ff88f912d0d93b587773f38633dc84"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "item": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "fd1b1d5ff4a48ddf6643bc32d4e6ee627934d132fbfc90e57638797fe540c452"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+              "hash": "fd1b1d5ff4a48ddf6643bc32d4e6ee627934d132fbfc90e57638797fe540c452"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child B: start",
+        "author": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "session": "81c5c7cf0711a561ad29d13d6fc9dbc877241b8b51a5f78f8a08c2e01d0fb73c",
+        "tags": [],
+        "timestamp": 1791383403000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "e3d5003ead1a936380020220637f7b8e1c2812992da64345e823b227195fb97c",
+                  "hash": "fd1b1d5ff4a48ddf6643bc32d4e6ee627934d132fbfc90e57638797fe540c452"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 2,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "item": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "33a11556fe5ce8765b0942a86fe64e114b829a8564ed6b24a6a276201207aa77"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+              "hash": "33a11556fe5ce8765b0942a86fe64e114b829a8564ed6b24a6a276201207aa77"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Child A: start",
+        "author": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "session": "2374fa628f4c4de71bdfe1df8245ea1c72cf4c35493a21cfba6aae880ec15ad0",
+        "tags": [],
+        "timestamp": 1791383402000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [
+          {
+            "kind": "Parent",
+            "parent": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+            "source": {
+              "Record": {
+                "source": "current",
+                "record": {
+                  "operation": "ea21c7b3c885cf2fb547bb51016c8bbbaca21db264cc9f332769ad8dd895f0a3",
+                  "hash": "33a11556fe5ce8765b0942a86fe64e114b829a8564ed6b24a6a276201207aa77"
+                }
+              }
+            },
+            "unresolved": null
+          }
+        ],
+        "graph": {
+          "lane": 1,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [
+            0,
+            1,
+            2
+          ],
+          "transitions": [],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [
+            "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee"
+          ],
+          "clipped_below": false
+        }
+      },
+      {
+        "occurrence": "current:1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "item": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+        "address": {
+          "Record": {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "a4f361e0d43817a513981b3c7a28024ebb6e22c30f429cf634763eb08e56f837"
+            }
+          }
+        },
+        "records": [
+          {
+            "source": "current",
+            "record": {
+              "operation": "1a0d12016999e47689dae5744d2b8c1903faf7ca2886a658150083100ef2c8ee",
+              "hash": "a4f361e0d43817a513981b3c7a28024ebb6e22c30f429cf634763eb08e56f837"
+            }
+          }
+        ],
+        "kind": "Message",
+        "title": "message",
+        "preview": "Main: spawn two children",
+        "author": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "session": "f874f05095589fdab8478a292c17d61b1153670c28aebf892f23157ddac67fa5",
+        "tags": [],
+        "timestamp": 1791383401000,
+        "open": "OperationJson",
+        "unavailable": null,
+        "group": null,
+        "relationships": [],
+        "graph": {
+          "lane": 0,
+          "above": [
+            0,
+            1,
+            2
+          ],
+          "below": [],
+          "transitions": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "muted_above": [],
+          "muted_below": [],
+          "muted_transitions": [],
+          "parents": [],
+          "clipped_below": false
+        }
+      }
+    ],
+    "newer": null,
+    "older": null,
+    "offset": 0,
+    "activities": 8,
+    "visible_rows": 8,
+    "max_lane": 2,
+    "gaps": [],
+    "rebuilding": null
+  }
+}

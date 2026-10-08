@@ -15,7 +15,7 @@ use dioxus_html as dioxus_elements;
 use dioxus_ssr as _;
 use history_geometry as _;
 #[cfg(target_arch = "wasm32")]
-use web_sys as _;
+use {js_sys as _, web_sys as _};
 
 use fixture::{Fixture, Reply, delivery};
 use web_ui::controls::{Button, SelectOption};
@@ -269,6 +269,9 @@ fn apply_history(view: &mut history::ViewModel, event: HistoryEvent) {
         | HistoryEvent::NavigateMatch(_)
         | HistoryEvent::ClearSelection
         | HistoryEvent::Open { .. }
-        | HistoryEvent::Completed { .. } => {}
+        | HistoryEvent::Completed { .. }
+        | HistoryEvent::Timeline(_) => {}
     }
 }
+
+use serde_json as _;

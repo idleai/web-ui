@@ -9,7 +9,7 @@ use dioxus_html as dioxus_elements;
 use dioxus_ssr as _;
 use history_geometry as _;
 #[cfg(target_arch = "wasm32")]
-use web_sys as _;
+use {js_sys as _, web_sys as _};
 
 use web_ui::controls::Button;
 use web_ui::history::graph::HistoryGraph;
@@ -163,3 +163,5 @@ fn fixture() -> ViewModel {
         ..ViewModel::default()
     }
 }
+
+use serde_json as _;

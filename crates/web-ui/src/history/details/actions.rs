@@ -17,6 +17,7 @@ pub(crate) fn OpenButton(
 ) -> Element {
     let label = match target {
         OpenTarget::Record => "Open stored record",
+        OpenTarget::OperationJson => "Open operation JSON",
         OpenTarget::Original => "Open Original",
         OpenTarget::File => "Open recorded revision",
         OpenTarget::Diff => "Open recorded comparison",

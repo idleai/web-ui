@@ -17,6 +17,8 @@ use crate::provenance::ActivitySnapshot;
 use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
 use crate::theme::{Density, Theme, ThemeProvider};
 
+mod activity;
+
 /// Host presentation size; application state and events are identical in both.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Surface {
@@ -57,6 +59,11 @@ pub fn WorkspaceSurface(
                 }
             }
         };
+    }
+    if surface == Surface::Detail
+        && view.workspace.section == workspace::NavigationSection::Activity
+    {
+        return rsx! { activity::ActivityEditor { view, capabilities, theme, error, activity, onaction } };
     }
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
     let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));

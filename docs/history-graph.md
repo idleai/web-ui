@@ -81,9 +81,10 @@ both effects. Paths and rows use shared theme tokens.
 
 ## Extracted implementation
 
-The `history-geometry` workspace crate owns bootstrap lane planning, retained
-routes and coverage, connection growth timing and exact coordinate conversion.
-It has no Dioxus, app-core, host or network dependency. Its generic `GraphNode`
+The `idle-history-graph` crate in host-tools owns bootstrap lane planning,
+retained routes and coverage. Its runtime depends only on `editchain-index` and
+Serde. The `history-geometry` workspace crate re-exports its `live` API and owns
+connection growth timing and exact coordinate conversion. Generic `GraphNode`
 and `GraphRow` adapters supply the component's causal lanes and route corners;
 the component adds a separate logical-relationship layer.
 
@@ -93,13 +94,14 @@ each neighboring vertical run, keeping close turns smooth as row heights change.
 Logical side routes and self-loops use the same tangent rule; node attachments
 stay at their measured centers.
 
-`history-geometry` owns layout, live graph, growth and viewport calculations used
-by Dioxus. Its old projection/protocol adapters and the direct DOM renderer have
-been removed after both current hosts adopted the shared components. Layout
-regressions exercise `LiveGraph` directly, including offscreen connections and
-muted paths. Saved row geometry preserves the former snapshot implementation's
-results across bootstrap, insertion, retraction and mute edits. EditChain owns storage and queries
-and has no dependency on this repository or application display classifications.
+`history-geometry` owns browser growth and viewport calculations used by Dioxus.
+Its old projection/protocol adapters and the direct DOM renderer have been
+removed after both current hosts adopted the shared components. Layout
+regressions live with `idle-history-graph` and exercise `LiveGraph` directly,
+including offscreen connections and muted paths. Saved row geometry preserves
+the former snapshot implementation's results across bootstrap, insertion,
+retraction and mute edits. EditChain owns storage and queries and has no
+dependency on this repository or application display classifications.
 
 ## Local checks
 

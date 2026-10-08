@@ -2,6 +2,7 @@
 //! Geometry is indexed by stable row boundaries, so inserting a row never
 //! rewrites every later coordinate. Native paging and WASM use this same state.
 
+mod batch;
 mod edit;
 mod events;
 mod lanes;
@@ -167,19 +168,7 @@ impl<N: GraphNode> LiveGraph<N> {
             return;
         };
         let order = meta.order();
-        let mut row = RowGeometry {
-            lane: self
-                .lanes
-                .node(key)
-                .map_or(0, |lane| self.lanes.display(lane)),
-            ..RowGeometry::default()
-        };
-        row.above.clear();
-        row.below.clear();
-        row.transitions.clear();
-        row.muted_above.clear();
-        row.muted_below.clear();
-        row.muted_transitions.clear();
+        let mut row = self.attachments(meta, slot);
         for (lane, coverage) in self.lanes.iter() {
             let lane = self.lanes.display(lane);
             let above = coverage.at(&(order.clone(), if slot == 0 { 0 } else { 2 }));
@@ -197,23 +186,38 @@ impl<N: GraphNode> LiveGraph<N> {
                 row.muted_below.push(lane);
             }
         }
+        output.set_graph(row, slot == 0);
+    }
+
+    fn attachments(&self, meta: &N, slot: u64) -> RowGeometry {
+        let mut row = RowGeometry {
+            lane: self
+                .lanes
+                .node(meta.key())
+                .map_or(0, |lane| self.lanes.display(lane)),
+            ..RowGeometry::default()
+        };
         if slot == 0 {
             row.parents = meta
                 .parents()
                 .iter()
                 .filter_map(|parent| self.nodes.get(parent).map(|node| node.node_key().clone()))
                 .collect();
-            for (lanes, owners) in self.bends.get(&order).into_iter().flatten() {
-                let lanes = (self.lanes.display(lanes.0), self.lanes.display(lanes.1));
-                row.transitions.push(lanes);
-                if owners.muted() {
-                    row.muted_transitions.push(lanes);
-                }
+            self.fill_bends(&meta.order(), &mut row);
+        }
+        row
+    }
+
+    fn fill_bends(&self, order: &Order, row: &mut RowGeometry) {
+        for (lanes, owners) in self.bends.get(order).into_iter().flatten() {
+            let lanes = (self.lanes.display(lanes.0), self.lanes.display(lanes.1));
+            row.transitions.push(lanes);
+            if owners.muted() {
+                row.muted_transitions.push(lanes);
             }
         }
         row.transitions.sort_unstable();
         row.muted_transitions.sort_unstable();
-        output.set_graph(row, slot == 0);
     }
 
     fn bootstrap(&mut self) {

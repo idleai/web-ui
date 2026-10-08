@@ -58,9 +58,15 @@ impl<N: GraphNode> LiveGraph<N> {
             path.bend(&end, from, to);
         } else {
             let jog = self.order.range(..end.clone()).next_back()?;
-            path.run(from, &start, jog);
-            path.bend(jog, from, to);
-            path.run(to, jog, &end);
+            if jog.1 != key && self.lanes.node(&jog.1) == Some(to) {
+                // Never bend through an unrelated dot on a reused column.
+                path.run(from, &start, &end);
+                path.bend(&end, from, to);
+            } else {
+                path.run(from, &start, jog);
+                path.bend(jog, from, to);
+                path.run(to, jog, &end);
+            }
         }
         Some(path)
     }

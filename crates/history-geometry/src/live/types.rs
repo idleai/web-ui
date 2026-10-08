@@ -24,6 +24,14 @@ pub trait GraphNode: Clone {
     fn task_protected(&self) -> bool;
     /// Whether two nodes explicitly share a producer stream.
     fn same_source(&self, other: &Self) -> bool;
+    /// Persistent producer identity whose active column must stay reserved.
+    fn source_key(&self) -> Option<&str> {
+        None
+    }
+    /// An explicitly recorded end releases the source's column for later work.
+    fn closes_source(&self) -> bool {
+        false
+    }
     /// Stable order used by rank and route indexes.
     fn order(&self) -> Order {
         (std::cmp::Reverse(self.sort_time()), self.key().clone(), 1)

@@ -5,6 +5,7 @@ mod fixture;
 type LiveGraph = super::LiveGraph<LiveBlockMeta>;
 
 mod human;
+mod streams;
 
 fn node(key: &str, time: u64, parents: &[&str]) -> LiveBlockMeta {
     LiveBlockMeta {
@@ -19,6 +20,7 @@ fn node(key: &str, time: u64, parents: &[&str]) -> LiveBlockMeta {
         spans: Vec::new(),
         node_key: key.into(),
         human_stream: None,
+        source_closed: false,
         parents: parents.iter().map(|key| (*key).into()).collect(),
         chain_state: ChainState::Active,
     }
@@ -28,6 +30,39 @@ fn row(graph: &LiveGraph, key: &str, slot: u64) -> HistoryRow {
     let mut row = HistoryRow::default();
     graph.decorate(key, slot, &mut row);
     row
+}
+
+#[test]
+fn window_batch_keeps_exact_forks_joins_and_passing_paths_after_edits() {
+    let mut graph = LiveGraph::default();
+    let nodes = [
+        node("base", 1, &[]),
+        node("a", 2, &["base"]),
+        node("b", 3, &["base"]),
+        node("a2", 4, &["a"]),
+        node("b2", 5, &["b"]),
+        node("join", 6, &["a2", "b2"]),
+    ];
+    for batch in nodes.chunks(2) {
+        graph.edit_stream(&[], batch);
+        let keys = vec![
+            "b2".into(),
+            "a".into(),
+            "join".into(),
+            "missing".into(),
+            "a2".into(),
+        ];
+        let rows = graph.decorate_many(&keys);
+        assert!(!rows.contains_key("missing"));
+        for (key, row) in rows {
+            let mut expected = RowGeometry::default();
+            graph.decorate(&key, 0, &mut expected);
+            assert_eq!(row, expected);
+        }
+    }
+    let rows = graph.decorate_many(&["a2".into(), "join".into()]);
+    assert_eq!(rows.get("join").unwrap().parents.len(), 2);
+    assert!(rows.get("a2").unwrap().above.len() >= 2);
 }
 
 #[test]

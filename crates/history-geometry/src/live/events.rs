@@ -31,6 +31,13 @@ impl Events {
         let sum = self.weights.prefix(point);
         sum.expanded.saturating_sub(sum.visible)
     }
+    fn at_many(&self, points: &[Point]) -> Vec<u64> {
+        self.weights
+            .prefixes(points)
+            .into_iter()
+            .map(|sum| sum.expanded.saturating_sub(sum.visible))
+            .collect()
+    }
     fn intersects(&self, start: &Point, end: &Point) -> bool {
         self.at(start) > 0 || self.keys.range(start.clone()..end.clone()).next().is_some()
     }
@@ -58,6 +65,14 @@ impl Coverage {
             active: self.active.at(point),
             muted: self.muted.at(point),
         }
+    }
+    pub(super) fn at_many(&self, points: &[Point]) -> Vec<Owners> {
+        self.active
+            .at_many(points)
+            .into_iter()
+            .zip(self.muted.at_many(points))
+            .map(|(active, muted)| Owners { active, muted })
+            .collect()
     }
     pub(super) fn empty(&self) -> bool {
         self.dots.is_empty() && self.active.keys.is_empty() && self.muted.keys.is_empty()

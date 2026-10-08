@@ -8,11 +8,18 @@ impl<N: GraphNode> LiveGraph<N> {
     /// Apply keyed edits without replaying the rest of the lane assignment.
     pub fn edit(&mut self, removed: &[String], upserts: &[N]) {
         self.changed.clear();
-        self.edit_nodes(removed, upserts);
+        self.edit_nodes(removed, upserts, self.nodes.is_empty());
     }
 
-    fn edit_nodes(&mut self, removed: &[String], upserts: &[N]) {
-        let bootstrap = self.nodes.is_empty();
+    /// Apply a streaming batch using the same source-continuity policy for the
+    /// first batch and every later batch. Supply parents before their children
+    /// for deterministic cold construction and append-equivalent lane choices.
+    pub fn edit_stream(&mut self, removed: &[String], upserts: &[N]) {
+        self.changed.clear();
+        self.edit_nodes(removed, upserts, false);
+    }
+
+    fn edit_nodes(&mut self, removed: &[String], upserts: &[N], bootstrap: bool) {
         let changed: BTreeSet<_> = removed
             .iter()
             .cloned()
@@ -154,13 +161,16 @@ impl<N: GraphNode> LiveGraph<N> {
         let lane = if is_git(&node) {
             Lane::Git
         } else if let Some(lane @ Lane::Operation(_)) = inherited {
-            if avoid.is_none() && self.lanes.coverage(lane).available(&start, &end) {
+            if avoid.is_none()
+                && self.lanes.permits(lane, node.source_key())
+                && self.lanes.coverage(lane).available(&start, &end)
+            {
                 lane
             } else {
-                self.lanes.allocate(false, &start, &end, avoid)
+                self.lanes.allocate(&start, &end, avoid, node.source_key())
             }
         } else {
-            self.lanes.allocate(false, &start, &end, avoid)
+            self.lanes.allocate(&start, &end, avoid, node.source_key())
         };
         self.lanes.put(&node, lane);
         self.add_paths(key);

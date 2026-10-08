@@ -22,6 +22,10 @@ pub(super) struct Lanes {
     operations: BTreeMap<usize, Coverage>,
     positions: BTreeMap<Lane, usize>,
     next_position: usize,
+    #[serde(default)]
+    owners: BTreeMap<Lane, (String, Order)>,
+    #[serde(default)]
+    sources: Map<String, (Order, bool)>,
 }
 
 impl Lanes {
@@ -63,6 +67,26 @@ impl Lanes {
         self.git_present |= is_git(node);
         let _: Option<Lane> = self.nodes.insert(node.key().clone(), lane);
         let _: bool = self.coverage(lane).dots.insert(node.order());
+        if let Some(source) = node.source_key() {
+            let order = node.order();
+            if self
+                .sources
+                .get(source)
+                .is_none_or(|(latest, _)| order <= *latest)
+            {
+                drop(
+                    self.sources
+                        .insert(source.to_owned(), (order.clone(), node.closes_source())),
+                );
+            }
+            if self
+                .owners
+                .get(&lane)
+                .is_none_or(|(_, latest)| order <= *latest)
+            {
+                drop(self.owners.insert(lane, (source.to_owned(), order)));
+            }
+        }
     }
     pub(super) fn remove_dot<N: GraphNode>(&mut self, node: &N, forget: bool) {
         if let Some(lane) = self.node(node.key()) {
@@ -70,6 +94,16 @@ impl Lanes {
             if forget {
                 let _: Option<Lane> = self.nodes.remove(node.key());
             }
+            if self.coverage(lane).empty() {
+                drop(self.owners.remove(&lane));
+            }
+        }
+        if let Some(source) = node.source_key()
+            && let Some((latest, closed)) = self.sources.get_mut(source)
+            && *latest == node.order()
+        {
+            // Retraction cannot establish that the remaining source has ended.
+            *closed = false;
         }
     }
     pub(super) fn coverage(&mut self, lane: Lane) -> &mut Coverage {
@@ -86,33 +120,32 @@ impl Lanes {
     }
     pub(super) fn allocate(
         &mut self,
-        spine: bool,
         start: &Order,
         end: &Order,
         avoid: Option<Lane>,
+        source: Option<&str>,
     ) -> Lane {
-        let collection = if spine {
-            &mut self.spines
-        } else {
-            &mut self.operations
-        };
-        let index = collection
+        let index = self
+            .operations
             .iter()
             .find_map(|(index, lane)| {
-                let identity = if spine {
-                    Lane::Spine(*index)
-                } else {
-                    Lane::Operation(*index)
-                };
-                (avoid != Some(identity) && lane.available(start, end)).then_some(*index)
+                let identity = Lane::Operation(*index);
+                (avoid != Some(identity)
+                    && self.permits(identity, source)
+                    && lane.available(start, end))
+                .then_some(*index)
             })
-            .unwrap_or(collection.len());
-        let _: &mut Coverage = collection.entry(index).or_default();
-        if spine {
-            Lane::Spine(index)
-        } else {
-            Lane::Operation(index)
-        }
+            .unwrap_or(self.operations.len());
+        let lane = Lane::Operation(index);
+        let _coverage = self.coverage(lane);
+        lane
+    }
+    pub(super) fn permits(&self, lane: Lane, source: Option<&str>) -> bool {
+        source.is_none_or(|source| {
+            self.owners.get(&lane).is_none_or(|(owner, _)| {
+                owner == source || self.sources.get(owner).is_some_and(|(_, closed)| *closed)
+            })
+        })
     }
     pub(super) fn display(&self, lane: Lane) -> usize {
         match lane {

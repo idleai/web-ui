@@ -14,10 +14,18 @@ pub(super) struct LiveBlockMeta {
     pub(super) spans: Vec<()>,
     pub(super) node_key: String,
     pub(super) human_stream: Option<String>,
+    #[serde(default)]
+    pub(super) source_closed: bool,
     pub(super) parents: Vec<String>,
     pub(super) chain_state: idle_history::taxonomy::ChainState,
 }
 impl GraphNode for LiveBlockMeta {
+    fn source_key(&self) -> Option<&str> {
+        self.human_stream.as_deref()
+    }
+    fn closes_source(&self) -> bool {
+        self.source_closed
+    }
     fn key(&self) -> &String {
         &self.key
     }

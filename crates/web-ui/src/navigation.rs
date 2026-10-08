@@ -24,7 +24,7 @@ pub const STYLESHEET: &str = include_str!("../assets/navigation.css");
 /// Ordered workspace overview, including an independently scrollable Activity graph.
 ///
 /// Supply a document-unique `id`, a persistent root view and its event dispatcher.
-/// Selection is controlled entirely by app-core; rendering never starts requests.
+/// Selection is controlled by app-core; Activity loads its recent native window on mount.
 /// A prepared creation draft enables the session add action when its scope,
 /// deadline and supplied runtime capability are current.
 #[component]

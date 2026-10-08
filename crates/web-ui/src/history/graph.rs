@@ -1,12 +1,12 @@
 //! Item-keyed Dioxus history graphs over app-core's recorded relationships.
 //! Geometry, animation, viewport anchors and focus are local to each component.
 
-mod browser;
+pub(super) mod browser;
 mod component;
 mod model;
 mod paths;
 mod state;
-mod viewport;
+pub(super) mod viewport;
 
 pub use component::{HistoryGraph, HistoryGraphProps};
 pub use model::{Connection, ConnectionKind, EndpointState, GraphSnapshot};

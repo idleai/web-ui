@@ -8,9 +8,9 @@ use app_core::history::{ActivityKind, Event as HistoryEvent, ItemView, RequestSt
 #[cfg(debug_assertions)]
 use dioxus::prelude::dioxus_signals;
 use dioxus::prelude::{
-    Callback, Element, EventHandler, ModifiersInteraction, MountedData, Props, ReadableExt, Signal,
-    WritableExt, component, dioxus_core, dioxus_elements, rsx, use_effect, use_hook, use_memo,
-    use_reactive, use_signal,
+    Callback, Element, EventHandler, Key, ModifiersInteraction, MountedData, Props, ReadableExt,
+    Signal, WritableExt, component, dioxus_core, dioxus_elements, rsx, use_effect, use_hook,
+    use_memo, use_reactive, use_signal,
 };
 
 use super::browser;
@@ -34,6 +34,8 @@ pub fn HistoryGraph(
     #[props(default = "Activity history".into())] label: String,
     #[props(default = 480)] height: u32,
     #[props(default)] compact: bool,
+    #[props(default = true)] disclosure: bool,
+    header: Option<Element>,
     render_item: Option<Callback<ItemView, Element>>,
 ) -> Element {
     let state = use_hook(|| Rc::new(RefCell::new(State::default())));
@@ -73,7 +75,13 @@ pub fn HistoryGraph(
             &state.layout,
             &state.viewport,
             &state.births,
-        );
+        )
+        .into_iter()
+        .map(|path| {
+            let lane = *state.layout.lanes.get(&path.connection.owner).unwrap_or(&0);
+            (path, lane)
+        })
+        .collect::<Vec<_>>();
         (
             rows,
             paths,
@@ -117,6 +125,7 @@ pub fn HistoryGraph(
     let can_page = !view.paging.exhausted;
     rsx! {
         section { class: "idle-history", "data-compact": compact.to_string(), aria_label: label.clone(),
+            style: "--idle-history-graph-width:{graph_width}px",
             div { class: "idle-history-legend", aria_label: "Connection types",
                 span { "Causal parent" }
                 span { "· · Logical cause" }
@@ -124,6 +133,9 @@ pub fn HistoryGraph(
                 if unresolved > 0 { span { "{unresolved} connections have endpoints outside this view" } }
             }
             if let Some(warning) = warning { p { class: "idle-history-notice", "{warning}" } }
+            if let Some(header) = header {
+                div { class: "idle-history-column-header", {header} }
+            }
             div {
                 id: id.clone(), class: "idle-history-viewport", role: "tree", tabindex: "0",
                 aria_label: label, aria_activedescendant: active, aria_busy: busy.to_string(),
@@ -137,6 +149,7 @@ pub fn HistoryGraph(
                 },
                 onkeydown: move |event| {
                     if event.is_composing() || !event.modifiers().is_empty() || !browser::tree_key(&event.data()) { return; }
+                    if !disclosure && matches!(event.key(), Key::ArrowLeft | Key::ArrowRight) { return; }
                     let (handled, action) = key_state.borrow_mut().key(&event.key());
                     if handled {
                         event.prevent_default(); event.stop_propagation(); invalidate(tick);
@@ -147,12 +160,12 @@ pub fn HistoryGraph(
                     svg {
                         class: "idle-history-edges", width: "{graph_width}", height: "{total}",
                         view_box: "0 0 {graph_width} {total}", "aria-hidden": "true", "focusable": "false",
-                        for path in paths {
-                            ConnectionPath { key: "{path.connection.key}", path }
+                        for (path, lane) in paths {
+                            ConnectionPath { key: "{path.connection.key}", path, lane }
                         }
                     }
                     for row in rows {
-                        HistoryItem { key: "{row.item.key}", id: row_id(&id, &row.item.key), row, graph_width, onselect: select.clone(), onmeasure: measure.clone(), render_item }
+                        HistoryItem { key: "{row.item.key}", id: row_id(&id, &row.item.key), row, graph_width, disclosure, onselect: select.clone(), onmeasure: measure.clone(), render_item }
                     }
                 }
                 if view.items.is_empty() && !busy { p { class: "idle-history-empty", "No loaded history items." } }
@@ -191,6 +204,7 @@ fn HistoryItem(
     id: String,
     row: RenderRow,
     graph_width: f64,
+    disclosure: bool,
     onselect: EventHandler<String>,
     onmeasure: EventHandler<(String, f64)>,
     render_item: Option<Callback<ItemView, Element>>,
@@ -212,7 +226,7 @@ fn HistoryItem(
     rsx! {
         div {
             id, class: "idle-history-item", role: "treeitem", aria_level: "1",
-            aria_selected: selected, aria_expanded: row.item.expanded.to_string(),
+            aria_selected: selected, aria_expanded: disclosure.then(|| row.item.expanded.to_string()),
             aria_setsize: "{row.total}", aria_posinset: "{position}",
             "data-item-key": key.clone(), "data-focused": row.focused.to_string(),
             style: "transform:translateY({row.row.top}px);padding-left:{graph_width}px;{motion}",
@@ -221,7 +235,7 @@ fn HistoryItem(
                     event.stop_propagation();
                 if let Ok(size) = event.get_border_box_size() { onmeasure.call((measure_key.clone(), size.height)); }
             },
-            span { class: "idle-history-dot", style: "left:{lane_x}px", aria_hidden: "true" }
+            span { class: "idle-history-dot", style: "left:{lane_x}px;background:var(--idle-history-lane-{row.lane % 6}, var(--idle-color-accent))", aria_hidden: "true" }
             div { class: "idle-history-item-content",
                 if let Some(render_item) = render_item { {render_item.call(row.item.clone())} }
                 else {
@@ -242,20 +256,28 @@ fn HistoryItem(
 }
 
 #[component]
-fn ConnectionPath(path: Path) -> Element {
+fn ConnectionPath(path: Path, lane: usize) -> Element {
     let connection = &path.connection;
     let motion = use_memo(use_reactive(
         (&path.born, &path.delay, &path.duration),
         |(born, delay, duration)| motion_style(born, delay, duration),
     ));
     let class = connection.kind.class();
+    let color = if class == "causal" {
+        format!(
+            "stroke:var(--idle-history-lane-{}, var(--idle-color-accent));",
+            lane % 6
+        )
+    } else {
+        String::new()
+    };
     rsx! {
         path {
             class: "idle-history-path", d: path.d, path_length: (class == "causal").then_some("1"),
             "data-kind": class, "data-unresolved": connection.unresolved().to_string(),
             "data-connection-key": connection.key.clone(),
             "data-operation": connection.record.operation.clone(), "data-record-hash": connection.record.hash.clone(),
-            style: "{motion}",
+            style: "{color}{motion}",
             title { "{connection.caption()}" }
         }
     }

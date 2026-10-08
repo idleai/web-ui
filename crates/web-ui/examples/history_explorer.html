@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle activity editor fixture</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="history.css">
+<link rel="stylesheet" href="history-details.css">
+<link rel="stylesheet" href="navigation.css">
+<link rel="stylesheet" href="history-explorer.css">
+<style>
+body { margin:0; }
+.explorer-fixture { height:100vh; display:flex; flex-direction:column; }
+.fixture-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:5px 10px; font-size:12px; }
+#last-action { max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fixture-surfaces { flex:1; min-height:0; display:grid; grid-template-columns:280px minmax(0,1fr); }
+.fixture-surfaces > * { min-height:0; min-width:0; }
+.fixture-editor > .idle-theme, .fixture-editor .idle-activity-editor,
+.fixture-sidebar > .idle-theme, .fixture-sidebar .idle-native-pane,
+.fixture-sidebar .idle-navigation-pane { height:100%; min-height:0; }
+.fixture-sidebar { border-right:1px solid #555; }
+.fixture-sidebar .idle-navigation-pane { display:flex; flex-direction:column; }
+.fixture-sidebar .idle-navigation-activity, .fixture-sidebar .idle-history-mini,
+.fixture-sidebar .idle-history { display:flex; flex:1; flex-direction:column; min-height:0; }
+.fixture-sidebar .idle-history-viewport { height:auto !important; flex:1; min-height:0; }
+.fixture-sidebar .idle-navigation-configuration { flex:none; }
+@media (max-width:900px) { .fixture-surfaces { grid-template-columns: minmax(0,1fr); } .fixture-sidebar { display:none; } }
+</style>
+<div id="main"></div>
+<script type="module" src="loader.js"></script>
+</html>

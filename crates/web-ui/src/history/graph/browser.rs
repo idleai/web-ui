@@ -5,7 +5,7 @@ use dioxus::prelude::{KeyboardData, MountedData, MouseData};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast as _;
 
-pub(super) fn now() -> f64 {
+pub(in crate::history) fn now() -> f64 {
     #[cfg(target_arch = "wasm32")]
     {
         web_sys::window()
@@ -18,7 +18,7 @@ pub(super) fn now() -> f64 {
     }
 }
 
-pub(super) fn scroll(mounted: &MountedData, top: f64) {
+pub(in crate::history) fn scroll(mounted: &MountedData, top: f64) {
     #[cfg(target_arch = "wasm32")]
     if let Some(element) = mounted.downcast::<web_sys::Element>() {
         let options = web_sys::ScrollToOptions::new();
@@ -35,7 +35,7 @@ pub(super) fn scroll(mounted: &MountedData, top: f64) {
     }
 }
 
-pub(super) fn focus(mounted: &MountedData) {
+pub(in crate::history) fn focus(mounted: &MountedData) {
     #[cfg(target_arch = "wasm32")]
     if let Some(element) = mounted
         .downcast::<web_sys::Element>()
@@ -51,7 +51,7 @@ pub(super) fn focus(mounted: &MountedData) {
     }
 }
 
-pub(super) fn tree_key(data: &KeyboardData) -> bool {
+pub(in crate::history) fn tree_key(data: &KeyboardData) -> bool {
     #[cfg(target_arch = "wasm32")]
     if let Some(event) = data.downcast::<web_sys::KeyboardEvent>() {
         return event
@@ -64,7 +64,7 @@ pub(super) fn tree_key(data: &KeyboardData) -> bool {
     true
 }
 
-pub(super) fn row_click(data: &MouseData) -> bool {
+pub(in crate::history) fn row_click(data: &MouseData) -> bool {
     #[cfg(target_arch = "wasm32")]
     if let Some(event) = data.downcast::<web_sys::MouseEvent>() {
         return event

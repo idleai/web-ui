@@ -3,8 +3,6 @@
 use dioxus::prelude::*;
 use dioxus_html as dioxus_elements;
 use history_geometry as _;
-#[cfg(target_arch = "wasm32")]
-use web_sys as _;
 use web_ui::controls::{
     Button, ButtonVariant, Checkbox, ControlState, Disclosure, FieldMessage, IconButton, Select,
     SelectOption, TextField, TextFieldKind,
@@ -15,6 +13,8 @@ use web_ui::host::{
 use web_ui::icons::IconName;
 use web_ui::status::{EmptyState, ErrorState, LoadingState, StatusBadge, StatusTone};
 use web_ui::theme::{Density, Theme, ThemeProvider};
+#[cfg(target_arch = "wasm32")]
+use {js_sys as _, web_sys as _};
 
 /// Mount the local fixture. No backend or native API is used by this example.
 #[cfg(target_arch = "wasm32")]
@@ -150,3 +150,5 @@ fn Preview(
         }
     }
 }
+
+use serde_json as _;

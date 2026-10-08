@@ -8,6 +8,8 @@ pub const STYLESHEET: &str = concat!(
     "\n",
     include_str!("../assets/history-details.css"),
     "\n",
+    include_str!("../assets/history-explorer.css"),
+    "\n",
     include_str!("../assets/sessions.css"),
     "\n",
     include_str!("../assets/navigation.css"),

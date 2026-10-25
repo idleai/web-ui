@@ -2,7 +2,9 @@
 # Development-only views; production hosts supply their app-core state.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-cargo build --locked --example history_explorer --target wasm32-unknown-unknown
+if [[ "${IDLE_FIXTURES_BUILT:-0}" != 1 ]]; then
+    cargo build --locked --example history_explorer --target wasm32-unknown-unknown
+fi
 EXPLORER_TARGET_DIR="$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')"
 mkdir -p out/history-explorer
 wasm-bindgen --target web --no-typescript --out-dir out/history-explorer/pkg \

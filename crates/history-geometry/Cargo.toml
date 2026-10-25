@@ -12,7 +12,7 @@ keywords = ["idle", "ui", "application"]
 categories = ["gui"]
 
 [dependencies]
-idle-history-graph = { registry = "idle-host-tools", version = "0.3.0" }
+idle-history-graph = { registry = "idle-host-tools", version = "0.5.1" }
 
 [lints]
 workspace = true

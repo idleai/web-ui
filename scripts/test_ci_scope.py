@@ -54,6 +54,11 @@ class ScopeTests(unittest.TestCase):
     def test_release_and_integration_runs_are_full(self):
         self.assertEqual(select([], full=True)["browser"], list(BROWSERS))
 
+    def test_pr_runs_one_relevant_browser_fixture_and_release_runs_all(self):
+        self.assertEqual(select(["Cargo.lock"], quick=True)["browser"], ["history"])
+        self.assertEqual(select(["tests/sessions.browser.mjs"], quick=True)["browser"], ["sessions"])
+        self.assertEqual(select([], quick=True, full=True)["browser"], list(BROWSERS))
+
 
 if __name__ == "__main__":
     unittest.main()

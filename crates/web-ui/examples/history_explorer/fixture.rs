@@ -27,7 +27,8 @@ pub(super) struct Fixture {
 #[derive(Default)]
 struct Local {
     choices: BTreeMap<String, bool>,
-    temporary: BTreeSet<String>,
+    exposed: BTreeSet<String>,
+    details: BTreeSet<String>,
     anchor: Option<String>,
     at_newest: bool,
 }
@@ -170,6 +171,18 @@ impl Fixture {
                         surface: Surface::Mini,
                         ..
                     }
+                    | Event::Click {
+                        surface: Surface::Mini,
+                        ..
+                    }
+                    | Event::Inspect {
+                        surface: Surface::Mini,
+                        ..
+                    }
+                    | Event::Details {
+                        surface: Surface::Mini,
+                        ..
+                    }
                     | Event::Move {
                         surface: Surface::Mini,
                         ..
@@ -229,6 +242,18 @@ impl Fixture {
                     }
                 }
             }
+            Event::Click { occurrence, .. } => self.click(&occurrence),
+            Event::Inspect { occurrence, .. } => self.timeline(Event::Select {
+                surface: Surface::Editor,
+                occurrence,
+                open: true,
+            }),
+            Event::Details { occurrence, .. } => {
+                if !self.local.details.remove(&occurrence) {
+                    let _inserted = self.local.details.insert(occurrence);
+                }
+                self.refresh();
+            }
             Event::Reveal { selection, .. } => {
                 self.view.history.timeline.selected = Some(selection.clone());
                 self.seek(&selection.occurrence);
@@ -249,11 +274,10 @@ impl Fixture {
                     .find(|value| value.id == group)
                     .is_some_and(|group| group.expanded);
                 let _previous = self.local.choices.insert(group.clone(), !expanded);
-                let _removed = self.local.temporary.remove(&group);
+                self.local.exposed.clear();
                 self.refresh();
             }
             Event::Find { text, .. } => {
-                self.local.temporary.clear();
                 let matches = self
                     .rows
                     .iter()
@@ -277,7 +301,9 @@ impl Fixture {
                     state: history::RequestState::Ready,
                     ..history::timeline::Search::default()
                 };
-                if total > 0 {
+                if self.view.history.timeline.editor.search.text.is_empty() {
+                    self.view.history.timeline.selected = None;
+                } else if total > 0 {
                     self.find_match(0);
                 } else {
                     self.refresh();
@@ -328,6 +354,37 @@ impl Fixture {
         }
     }
 
+    fn click(&mut self, occurrence: &str) {
+        let row = self
+            .view
+            .history
+            .timeline
+            .editor
+            .window
+            .as_ref()
+            .and_then(|window| window.rows.iter().find(|row| row.occurrence == occurrence))
+            .cloned();
+        let Some(row) = row else {
+            return;
+        };
+        self.timeline(Event::Select {
+            surface: Surface::Editor,
+            occurrence: occurrence.into(),
+            open: row.presentation.file,
+        });
+        if let Some(group) = row.group.filter(|group| group.header && !group.expanded) {
+            self.timeline(Event::Toggle {
+                surface: Surface::Editor,
+                group: group.id,
+            });
+        } else if row.details.is_some() && !row.presentation.file {
+            self.timeline(Event::Details {
+                surface: Surface::Editor,
+                occurrence: occurrence.into(),
+            });
+        }
+    }
+
     fn visible_rows(&self) -> Vec<Row> {
         let kinds = &self.view.history.timeline.editor.filter.kinds;
         self.rows
@@ -336,20 +393,26 @@ impl Fixture {
             .filter_map(|row| {
                 let mut row = row.clone();
                 if let Some(group) = &mut row.group {
-                    group.expanded = self.local.temporary.contains(&group.id)
-                        || self
-                            .local
-                            .choices
-                            .get(&group.id)
-                            .copied()
-                            .unwrap_or(group.live);
-                    if !group.expanded {
+                    group.expanded = self
+                        .local
+                        .choices
+                        .get(&group.id)
+                        .copied()
+                        .unwrap_or(group.live);
+                    if !group.expanded && !self.local.exposed.contains(&row.occurrence) {
                         return if group.header {
-                            self.headers.get(&group.id).cloned()
+                            self.headers.get(&group.id).cloned().map(|mut header| {
+                                header.presentation.task_summary = true;
+                                header
+                            })
                         } else {
                             None
                         };
                     }
+                }
+                row.presentation.task_summary = false;
+                if let Some(details) = &mut row.details {
+                    details.expanded = self.local.details.contains(&row.occurrence);
                 }
                 Some(row)
             })
@@ -392,14 +455,7 @@ impl Fixture {
     }
 
     fn seek(&mut self, occurrence: &str) {
-        if let Some(group) = self
-            .rows
-            .iter()
-            .find(|row| row.occurrence == occurrence)
-            .and_then(|row| row.group.as_ref())
-        {
-            let _inserted = self.local.temporary.insert(group.id.clone());
-        }
+        let _inserted = self.local.exposed.insert(occurrence.into());
         let rows = self.visible_rows();
         let offset = rows
             .iter()
@@ -487,7 +543,6 @@ impl Fixture {
             .and_then(|index| search.matches.get(index))
             .cloned()
         {
-            self.local.temporary.clear();
             self.view.history.timeline.selected = Some(Selection {
                 occurrence: hit.occurrence.clone(),
                 address: hit.address,

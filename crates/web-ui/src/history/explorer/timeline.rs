@@ -1,6 +1,8 @@
 //! Full editor table over host-indexed rows and routing coverage.
 
 mod graph;
+mod icon;
+mod input;
 mod mini;
 mod row;
 mod state;
@@ -42,25 +44,22 @@ pub(super) fn TimelineTable(
     let tick = use_signal(|| 0_u64);
     let _revision = *tick.read();
     let mut width = use_signal(|| 0.0_f64);
-    let mut pitch = use_signal(|| 15.0_f64);
+    let mut pitch = use_signal(|| 14.76_f64);
+    let mut roving = use_signal(|| None::<String>);
     let mut pan = use_signal(|| 0.0_f64);
     let mut drag = use_signal(|| None::<(f64, f64)>);
     let editor = &view.editor;
     let lane_count = editor.window.as_ref().map_or(1, |window| {
-        let maximum = if editor.filter == Filter::default() {
-            window.max_lane
-        } else {
-            window
-                .rows
-                .iter()
-                .map(|row| graph::maximum(&row.graph))
-                .max()
-                .unwrap_or(0)
-        };
+        let maximum = window
+            .rows
+            .iter()
+            .map(|row| graph::maximum(&row.graph))
+            .max()
+            .unwrap_or(0);
         maximum.saturating_add(1)
     });
     let column_width = if width() == 0.0 {
-        graph::x(lane_count, pitch()).clamp(44.0, 240.0)
+        graph::x(lane_count, pitch()).max(32.0)
     } else {
         width()
     };
@@ -78,9 +77,16 @@ pub(super) fn TimelineTable(
         .flat_map(|window| &window.rows)
         .find(|row| Some(&row.occurrence) == selected.as_ref())
         .map(|row| row.graph.lane);
-    let (rows, top, total, active, anchor, groups, at_newest) = {
+    let (rows, top, total, anchor, groups, at_newest) = {
         let mut state = state.borrow_mut();
         state.reconcile(editor);
+        let mounted_indices = state.viewport.mounted_indices();
+        let focused = roving
+            .read()
+            .as_ref()
+            .and_then(|key| state.viewport.index(key))
+            .filter(|index| mounted_indices.contains(index))
+            .or_else(|| mounted_indices.first().copied());
         let rows = state
             .viewport
             .mounted_indices()
@@ -100,6 +106,21 @@ pub(super) fn TimelineTable(
                     pitch: pitch(),
                     pan: horizontal,
                     selected: selected.as_ref() == Some(&row.occurrence),
+                    focused: focused == Some(index),
+                    task: if row
+                        .group
+                        .as_ref()
+                        .is_some_and(|group| editor.pending_disclosures.contains(&group.id))
+                    {
+                        ControlState::Busy
+                    } else {
+                        ControlState::Ready
+                    },
+                    details: if editor.pending_disclosures.contains(&row.occurrence) {
+                        ControlState::Busy
+                    } else {
+                        ControlState::Ready
+                    },
                     matched: editor
                         .search
                         .matches
@@ -111,15 +132,10 @@ pub(super) fn TimelineTable(
             })
             .collect::<Vec<_>>();
         let (anchor, groups, at_newest) = state.reading(editor);
-        let active = selected
-            .as_ref()
-            .filter(|id| state.viewport.index(id).is_some())
-            .map(|key| row_id(&id, key));
         (
             rows,
             state.viewport.top,
             state.viewport.total,
-            active,
             anchor,
             groups,
             at_newest,
@@ -144,7 +160,6 @@ pub(super) fn TimelineTable(
     let scroll_state = Rc::clone(&state);
     let resize_state = Rc::clone(&state);
     let key_state = Rc::clone(&state);
-    let key_view = view.clone();
     let scroll_view = editor.clone();
     let busy = editor.state == RequestState::Loading;
     let (count, shown, offset) = editor.window.as_ref().map_or((0, 0, 0), |window| {
@@ -197,8 +212,8 @@ pub(super) fn TimelineTable(
             }
             }
             div { class: "idle-timeline-horizontal",
-                div { id: id.clone(), class: "idle-history-viewport idle-timeline-viewport", role: "grid", tabindex: "0",
-                    aria_label: "Activity history", aria_activedescendant: active, aria_rowcount: shown.saturating_add(1).to_string(), aria_colcount: "5", aria_busy: busy.to_string(),
+                div { id: id.clone(), class: "idle-history-viewport idle-timeline-viewport", role: "grid", tabindex: "-1",
+                    aria_label: "Activity history", aria_rowcount: shown.saturating_add(1).to_string(), aria_colcount: "5", aria_busy: busy.to_string(),
                     onmounted: move |event| mounted.set(Some(event.data())),
                     onscroll: move |event| {
                         let mut state = scroll_state.borrow_mut();
@@ -212,10 +227,9 @@ pub(super) fn TimelineTable(
                     onresize: move |event| { event.stop_propagation(); if let Ok(size) = event.get_content_box_size()
                         && resize_state.borrow_mut().viewport.resize(size.width, (size.height - 28.0).max(1.0)) { invalidate(tick); } },
                     onkeydown: move |event| {
-                        if event.is_composing() || !event.modifiers().is_empty() || !browser::tree_key(&event.data()) { return; }
-                        if let Some(action) = key_action(&key_view, Surface::Editor, &event.key(), key_state.borrow().visible_count()) {
+                        if event.is_composing() || !event.modifiers().is_empty() { return; }
+                        if input::navigate(&event.data(), &event.key(), key_state.borrow().visible_count()) {
                             event.prevent_default(); event.stop_propagation();
-                            onaction.call(HistoryEvent::Timeline(action));
                         }
                     },
                 div { id: "{id}-columns", class: "idle-timeline-header idle-timeline-columns", role: "row", aria_rowindex: "1",
@@ -232,7 +246,7 @@ pub(super) fn TimelineTable(
                     div { role: "columnheader", "Content" } div { role: "columnheader", "Date" }
                 }
                     div { class: "idle-timeline-canvas", style: "height:{total}px",
-                        for (row, paint) in rows { ActivityRow { key: "{row.occurrence}", row, paint, onaction } }
+                        for (row, paint) in rows { ActivityRow { key: "{row.occurrence}", row, paint, onaction, onfocusrow: move |id| roving.set(Some(id)) } }
                     }
                     if shown == 0 {
                         p { class: "idle-timeline-empty", if busy { "Preparing recorded activity…" } else { "No recorded activities in this scope." } }

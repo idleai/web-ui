@@ -86,28 +86,34 @@ test('small native recordings keep distinct streams and smooth metro connections
             }
             return { d: path.getAttribute('d'), style: path.getAttribute('style'), bend: path.classList.contains('idle-timeline-bend'),
               first: { x: first.x, y: first.y }, last: { x: last.x, y: last.y }, clearance,
-              firstDx: Math.abs(next.x - first.x), lastDx: Math.abs(last.x - previous.x) };
+              firstDx: Math.abs(next.x - first.x), lastDx: Math.abs(last.x - previous.x),
+              firstDy: Math.abs(next.y - first.y), lastDy: Math.abs(last.y - previous.y) };
           });
           return { occurrence: element.dataset.occurrence, x: Number(dot.getAttribute('cx')), y: Number(dot.getAttribute('cy')), height: Number(svg.getAttribute('height')), paths };
         }));
         assert.equal(actual.length, recording.rows.length, `${name}: all small-case rows render`);
-        const pitch = name === 'linear' ? 18 : Math.min(...actual.map(row => row.x).filter(x => x > 14)) - 14;
+        const pitch = selector === rows ? 14.76 : 22;
         for (const [index, row] of actual.entries()) {
           const native = recording.rows.find(candidate => candidate.occurrence === row.occurrence);
           const expected = native.preview.startsWith('Main:') || native.preview.startsWith('Stream A:') ? 0
             : native.preview.startsWith('Grandchild:') || native.preview.startsWith('Child B:') || (name === 'passing' && native.preview.startsWith('Child:')) ? 2 : 1;
-          assert.equal(row.x, 14 + expected * pitch, `${name}: ${native.preview} has its own column`);
+          assert(Math.abs(row.x - (expected + 1) * pitch) < .001, `${name}: ${native.preview} has its own column`);
           if (name === 'linear' || name === 'independent') {
             assert(row.paths.every(path => !path.bend), `${name}: no invented joins`);
           }
           for (const path of row.paths.filter(path => path.bend)) {
-            assert.match(path.d, /^M [-\d.]+ [-\d.]+ C /, `${name}: each turn is a cubic curve`);
-            assert(path.firstDx < 0.001 && path.lastDx < 0.001, `${name}: turns meet adjoining rails vertically: ${path.d}`);
-            const attached = (path.first.x === row.x && path.first.y === row.y) || (path.last.x === row.x && path.last.y === row.y);
+            assert.match(path.d, /^M [-\d.]+ [-\d.]+ Q /, `${name}: each turn uses two quadratic halves`);
+            if (path.first.y === 0) assert(path.firstDx < .001, `${name}: upper boundary tangent is vertical`);
+            if (path.last.y === row.height) assert(path.lastDx < .001, `${name}: lower boundary tangent is vertical`);
+            if (Math.abs(path.first.x - row.x) < .001 && path.first.y === row.y) assert(path.firstDy < .001, `${name}: node departure tangent is horizontal`);
+            if (Math.abs(path.last.x - row.x) < .001 && path.last.y === row.y) assert(path.lastDy < .001, `${name}: node arrival tangent is horizontal`);
+            const attached = (Math.abs(path.first.x - row.x) < .001 && path.first.y === row.y) || (Math.abs(path.last.x - row.x) < .001 && path.last.y === row.y);
             if (!attached) assert(path.clearance >= 5, `${name}: a passing curve clears the unrelated dot: ${path.d}`);
             if (['fork', 'join', 'nested', 'siblings'].includes(name)) {
-              const branch = Math.round((Math.max(path.first.x, path.last.x) - 14) / pitch);
-              assert(path.style.includes(`--idle-history-lane-${branch}`), `${name}: a branch keeps its color through its turn`);
+              const startLane = path.first.x / pitch - 1;
+              const endLane = path.last.x / pitch - 1;
+              const lane = Math.abs(startLane - Math.round(startLane)) < .001 ? Math.round(startLane) : Math.round(endLane);
+              assert(path.style.includes(`--idle-history-lane-${lane % 10})`), `${name}: each curve half keeps its endpoint color`);
             }
           }
           if (index) {
@@ -161,7 +167,7 @@ test('full editor uses aligned 34px columns, native branch coverage, and bounded
       const row = grid.querySelector('.idle-timeline-row');
       const header = [...grid.querySelectorAll('[role=columnheader]')];
       return { height: grid.clientHeight, row: row.getBoundingClientRect().height,
-        columns: [...row.children].map((cell, index) => Math.abs(cell.getBoundingClientRect().left - header[index].getBoundingClientRect().left)),
+        columns: [...row.querySelectorAll(':scope > [role=gridcell]')].map((cell, index) => Math.abs(cell.getBoundingClientRect().left - header[index].getBoundingClientRect().left)),
         pageHeight: document.documentElement.scrollHeight, viewport: innerHeight,
         rows: grid.querySelectorAll('.idle-timeline-row').length,
         bends: grid.querySelectorAll('.idle-timeline-bend').length, rails: grid.querySelectorAll('.idle-timeline-rail').length };
@@ -204,26 +210,27 @@ test('mini disclosure retains its own viewport and does not alter editor disclos
   } finally { await page.close(); }
 });
 
-test('single clicks and Enter activate exactly once; arrows do not activate', async () => {
+test('row selection, keyboard focus, and record inspection stay independent', async () => {
   const { page, errors } = await open();
   try {
-    await page.click(`${rows}:first-child .idle-timeline-content`);
-    await settle(page);
+    await page.select('select[aria-label="Graph case"]', 'linear'); await settle(page);
+    await page.click(`${rows}:first-child .idle-timeline-content`); await settle(page);
     const occurrence = await selected(page);
+    assert.equal(await opens(page), 0, 'ordinary row clicks select without opening');
+    await page.keyboard.press('ArrowDown'); await settle(page);
+    assert.equal(await selected(page), occurrence, 'arrows move focus without changing selection');
+    const focused = await page.evaluate(() => document.activeElement.dataset.occurrence);
+    assert.notEqual(focused, occurrence);
+    assert.equal(await page.$$eval(`${rows}[tabindex="0"]`, elements => elements.length), 1);
+    await page.keyboard.press('Enter'); await settle(page);
     assert.equal(await opens(page), 1);
-    assert.match(occurrence, /^current:[a-f0-9]{64}$/);
-    assert.match(await page.$eval(`${rows}[aria-selected=true]`, row => row.dataset.recordHash), /^[a-f0-9]{64}$/);
-    await page.$eval(`${rows}[aria-selected=true]`, row => row.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 2 })));
-    assert.equal(await opens(page), 1, 'the second click of a double-click does not open again');
-    await page.focus('#idle-history');
-    await page.keyboard.press('ArrowDown');
+    assert.equal(await selected(page), focused, 'Enter selects and opens the focused ordinary row');
+    await page.click(`${rows}[data-occurrence="${focused}"] .idle-timeline-content`, { count: 2 });
     await settle(page);
-    assert.notEqual(await selected(page), occurrence);
-    assert.equal(await opens(page), 1);
-    await page.keyboard.press('Enter');
-    await settle(page);
-    assert.equal(await opens(page), 2);
-    assert.equal(await page.$('.idle-history-inspector'), null);
+    assert.equal(await opens(page), 2, 'double-click issues one inspection request: ' + await page.$eval('#last-action', node => node.textContent));
+    await page.keyboard.press('Home'); await settle(page);
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.occurrence), occurrence);
+    assert.equal(await selected(page), focused, 'Home changes focus only');
     await page.screenshot({ path: `${screenshots}/selected.png` });
     assert.deepEqual(errors, []);
   } finally { await page.close(); }
@@ -243,10 +250,10 @@ test('folded task disclosure reveals compact members without activating the row'
     assert.equal(await page.$eval(`${row} button`, element => element.getAttribute('aria-expanded')), 'true');
     assert.equal(await page.$eval(row, element => element.getBoundingClientRect().height), 34);
     await page.click(`${row} .idle-timeline-content`);
-    assert.equal(await opens(page), 1, 'the group representative uses normal row activation');
+    assert.equal(await opens(page), 0, 'the expanded representative selects without opening JSON');
     await page.click(`${row} .idle-timeline-disclosure`);
     await settle(page);
-    assert.equal(await opens(page), 1);
+    assert.equal(await opens(page), 0);
     assert.equal(await page.$eval(`${row} button`, element => element.getAttribute('aria-expanded')), 'false');
     await page.screenshot({ path: `${screenshots}/folded.png` });
     assert.deepEqual(errors, []);
@@ -269,9 +276,11 @@ test('Find seeks across pages and folded groups with next, previous, and clear',
     await button(page, 'Previous match'); assert.equal(await selected(page), first);
     assert.equal(await opens(page), 0, 'Find only selects and seeks');
     await page.focus('#idle-history-search'); await page.keyboard.press('Escape'); await settle(page);
-    assert.equal(await page.$eval('#idle-history-search', element => element.value), '');
+    assert.equal(await page.$eval('#idle-history-search', element => element.value), 'Parent execution continues');
+    assert.equal(await page.$(`${rows}[aria-selected=true]`), null, 'Escape clears selection and keeps the input text');
     assert.equal(await page.$('.idle-history-match-count'), null);
     assert.equal(await page.evaluate(() => document.activeElement.id), 'idle-history-search');
+    await page.$eval('#idle-history-search', input => { input.select(); });
     await page.type('#idle-history-search', 'activity 601'); await page.keyboard.press('Enter'); await settle(page);
     assert.match(await page.$eval(`${rows}[aria-selected=true]`, element => element.textContent), /activity 601/);
     assert.ok(Number(await page.$eval('#idle-history', element => element.getAttribute('aria-rowcount'))) > 500, 'Find retains full timeline context');
@@ -279,14 +288,14 @@ test('Find seeks across pages and folded groups with next, previous, and clear',
   } finally { await page.close(); }
 });
 
-test('narrow layout scrolls horizontally; graph width, pan, and zoom preserve topology', async () => {
+test('narrow layout adapts columns; graph width, pan, and zoom preserve topology', async () => {
   const { page, errors } = await open(440, 780);
   try {
-    assert.ok(await page.$eval('.idle-timeline-horizontal', element => element.scrollWidth > element.clientWidth));
+    assert.equal(await page.$eval('.idle-timeline-tags', element => Math.round(element.getBoundingClientRect().width)), 120);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no document overflow');
     const initial = await page.$eval('#idle-history', element => element.clientHeight);
     const paths = await page.$$eval(`${rows} .idle-timeline-bend`, paths => paths.length);
-    await range(page, 'Graph column width', '280'); await range(page, 'Graph lane spacing', '19');
+    await range(page, 'Graph column width', '285'); await range(page, 'Graph lane spacing', '19');
     const boundaryNodes = await page.$$eval(`${rows} .idle-timeline-graph`, graphs => graphs.filter(graph =>
       Number(graph.querySelector('circle').getAttribute('cx')) === Number(graph.getAttribute('width'))
     ).map(graph => [...graph.querySelectorAll('.idle-timeline-continuation title')].some(title => title.textContent.includes('right'))));
@@ -301,18 +310,22 @@ test('narrow layout scrolls horizontally; graph width, pan, and zoom preserve to
   } finally { await page.close(); }
 });
 
-test('keyboard navigation crosses windows; local retry retains readable rows', async () => {
+test('keyboard paging retains focus and fetch failures retain readable selection', async () => {
   const { page, errors } = await open();
   try {
-    await button(page, 'Latest'); await page.focus('#idle-history');
+    await button(page, 'Latest');
+    await page.click(`${rows}:first-child .idle-timeline-content`); await settle(page);
+    const selectedBefore = await selected(page);
     for (let index = 0; index < 9; index += 1) { await page.keyboard.press('PageDown'); await settle(page); }
     assert.ok(await page.$eval('#idle-history', grid => {
-      const selected = grid.querySelector('[aria-selected=true]').getBoundingClientRect();
+      const focused = document.activeElement.getBoundingClientRect();
       const viewport = grid.getBoundingClientRect();
-      return selected.top >= viewport.top + 27 && selected.bottom <= viewport.bottom + 1;
-    }), 'keyboard selection stays visible across a window boundary');
+      return focused.top >= viewport.top + 27 && focused.bottom <= viewport.bottom + 1;
+    }), 'keyboard focus stays visible while paging');
     assert.equal(await opens(page), 0);
+    await page.keyboard.press('Space'); await settle(page);
     const anchor = await selected(page);
+    assert.notEqual(anchor, selectedBefore, 'Space selects the focused row');
     await button(page, 'Fail history page');
     assert.match(await page.$eval('.idle-timeline-footer', element => element.textContent), /Fixture history is offline/);
     assert.equal(await selected(page), anchor);

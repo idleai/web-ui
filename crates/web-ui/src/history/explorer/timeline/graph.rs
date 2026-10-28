@@ -1,4 +1,4 @@
-//! Paint coalesced native lane fragments without reconstructing relationships.
+//! Paint native lane fragments without reconstructing relationships.
 
 use app_core::history::timeline::{Geometry, Transition};
 #[cfg(debug_assertions)]
@@ -8,7 +8,7 @@ use dioxus::prelude::{Element, Props, component, dioxus_core, dioxus_elements, r
 mod paths;
 
 pub(super) fn x(lane: u32, pitch: f64) -> f64 {
-    14.0 + f64::from(lane) * pitch
+    (f64::from(lane) + 1.0) * pitch
 }
 
 pub(super) fn maximum(graph: &Geometry) -> u32 {
@@ -37,56 +37,68 @@ pub(super) fn GraphRow(
     highlight: Option<u32>,
     selected: bool,
     #[props(default = 28)] height: u8,
+    #[props(default = false)] bundle: bool,
+    #[props(default = true)] node: bool,
 ) -> Element {
-    let mut lanes = graph.above.clone();
-    lanes.extend(&graph.below);
-    lanes.sort_unstable();
-    lanes.dedup();
+    let lanes = || {
+        graph
+            .above
+            .iter()
+            .chain(&graph.below)
+            .chain(std::iter::once(&graph.lane))
+    };
     let extent = |lane: &u32| {
-        if *lane == graph.lane {
-            if selected { 5.1 } else { 3.6 }
-        } else if highlight == Some(*lane) {
-            1.35
+        if node && *lane == graph.lane {
+            4.5
         } else {
-            0.75
+            0.7
         }
     };
-    let left = lanes
-        .iter()
-        .chain(std::iter::once(&graph.lane))
-        .any(|lane| x(*lane, pitch) - extent(lane) < pan);
-    let right = lanes
-        .iter()
-        .chain(std::iter::once(&graph.lane))
-        .any(|lane| x(*lane, pitch) + extent(lane) > pan + width);
+    let left = lanes().any(|lane| x(*lane, pitch) - extent(lane) < pan);
+    let right = lanes().any(|lane| x(*lane, pitch) + extent(lane) > pan + width);
     let node_x = x(graph.lane, pitch) - pan;
-    let color = graph.lane % 6;
+    let middle = f64::from(height) / 2.0;
+    let color = graph.lane % 10;
+    let shape = if node {
+        if bundle {
+            paths::Shape::Bundle
+        } else {
+            paths::Shape::Activity
+        }
+    } else {
+        paths::Shape::Detail
+    };
+    let segments = paths::segments(
+        &graph,
+        &paths::Options {
+            pitch,
+            pan,
+            height,
+            shape,
+        },
+    );
     rsx! {
         div { class: "idle-timeline-graph-cell", role: "gridcell",
             svg { class: "idle-timeline-graph", width: "{width}", height: "{height}", view_box: "0 0 {width} {height}",
-                "aria-hidden": "true", "focusable": "false",
-                for lane in lanes {
-                    {
-                        let rail_x = x(lane, pitch) - pan;
-                        let (top, bottom) = paths::rail(&graph, lane, height);
-                        let muted = (top == height / 2 || graph.muted_above.contains(&lane))
-                            && (bottom == height / 2 || graph.muted_below.contains(&lane));
-                        let highlighted = highlight == Some(lane);
-                        rsx! { if top != bottom {
-                            path { key: "rail-{lane}", class: "idle-timeline-rail", d: "M {rail_x} {top} V {bottom}",
-                                "data-highlight": highlighted.to_string(), "data-muted": muted.to_string(),
-                                style: "--rail:var(--idle-history-lane-{lane % 6})" }
-                        } }
+                "aria-hidden": "true", "focusable": "false", "data-selected": selected.to_string(),
+                for (index, segment) in segments.into_iter().enumerate() {
+                    path { key: "segment-{index}", class: if segment.curve { "idle-timeline-bend" } else { "idle-timeline-rail" }, d: segment.path,
+                        "data-highlight": (highlight == Some(segment.lane)).to_string(), "data-muted": segment.muted.to_string(),
+                        style: "--rail:var(--idle-history-lane-{segment.lane % 10})" }
+                }
+                if node {
+                    if bundle {
+                        rect { class: "idle-timeline-capsule", x: "{node_x - 3.5}", y: "{middle - 10.0}", width: "7", height: "20", rx: "3.5",
+                            style: "--rail:var(--idle-history-lane-{color})" }
+                        for terminal in [middle - 7.0, middle + 7.0] {
+                            circle { class: "idle-timeline-node idle-timeline-terminal", cx: "{node_x}", cy: "{terminal}", r: "3",
+                                style: "--rail:var(--idle-history-lane-{color})" }
+                        }
+                    } else {
+                        circle { class: "idle-timeline-node", cx: "{node_x}", cy: "{middle}", r: "4",
+                            style: "--rail:var(--idle-history-lane-{color})" }
                     }
                 }
-                for Transition(from, to) in &graph.transitions {
-                    path { key: "bend-{from}-{to}", class: "idle-timeline-bend", d: paths::bend(&graph, &Transition(*from, *to), pitch, pan, height),
-                        "data-highlight": (highlight == Some(*from) || highlight == Some(*to)).to_string(),
-                        "data-muted": graph.muted_transitions.contains(&Transition(*from, *to)).to_string(),
-                        style: "--rail:var(--idle-history-lane-{paths::color_lane(&graph, *from, *to) % 6})" }
-                }
-                circle { class: "idle-timeline-node", cx: "{node_x}", cy: "{height / 2}", r: if selected { "4.5" } else { "3" },
-                    style: "--rail:var(--idle-history-lane-{color})", "data-selected": selected.to_string() }
                 if graph.clipped_below {
                     path { class: "idle-timeline-continuation", d: "M {node_x} {height.saturating_sub(6)} v6", stroke_dasharray: "1 3",
                         title { "Routing continues through filtered activities" } }

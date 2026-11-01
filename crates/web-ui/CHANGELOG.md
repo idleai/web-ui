@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2](https://github.com/idleai/web-ui/compare/web-ui-v0.3.1...web-ui-v0.3.2) - 2026-11-01
+
+### Added
+
+- *(activity)* restore original table and graph presentation ([#36](https://github.com/idleai/web-ui/pull/36))
+
+### Fixed
+
+- restore navigation browser checks for timeline format 3 ([#41](https://github.com/idleai/web-ui/pull/41))
+
 ## [0.3.1](https://github.com/idleai/web-ui/compare/web-ui-v0.3.0...web-ui-v0.3.1) - 2026-10-25
 
 ### Other

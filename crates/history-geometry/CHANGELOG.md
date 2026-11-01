@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3](https://github.com/idleai/web-ui/compare/history-geometry-v0.2.2...history-geometry-v0.2.3) - 2026-11-01
+
+### Added
+
+- *(activity)* restore original table and graph presentation ([#36](https://github.com/idleai/web-ui/pull/36))
+
 ## [0.2.2](https://github.com/idleai/web-ui/compare/history-geometry-v0.2.1...history-geometry-v0.2.2) - 2026-10-25
 
 ### Other

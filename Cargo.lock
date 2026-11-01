@@ -1039,9 +1039,9 @@ dependencies = [
 
 [[package]]
 name = "idle-history-graph"
-version = "0.5.4"
+version = "0.6.0"
 source = "sparse+https://raw.githubusercontent.com/idleai/host-tools/cargo-index/"
-checksum = "fee38ecdeade7dc45d07a5ace55956d959bff465137bc010b42b63f576900791"
+checksum = "5482e47395050b663c84d7a496aa156a8d7590b3e31e2d1ba700dad0cd4ecf17"
 dependencies = [
  "editchain-index",
  "serde",

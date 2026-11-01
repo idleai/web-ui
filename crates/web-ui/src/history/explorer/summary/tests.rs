@@ -1,36 +1,29 @@
-use super::{
-    markdown::{MdInline, MdLineKind, Summary},
-    preview,
-};
+use super::plain;
 
 #[test]
 fn recorded_wrappers_do_not_replace_the_description_or_inflate_line_counts() {
-    let summary = Summary::parse("<task>\r\n# Review `src/main.rs`\r\n\r\nSecond line\r\n</task>");
-    assert_eq!(summary.more, 1);
-    assert_eq!(summary.line.kind, MdLineKind::Heading { level: 1 });
-    assert!(
-        summary
-            .line
-            .inline
-            .contains(&MdInline::Code("src/main.rs".into()))
+    assert_eq!(
+        plain("<task>\r\n# Review `src/main.rs`\r\n\r\nSecond line\r\n</task>"),
+        "Review src/main.rs · Second line",
+        "meaningful lines share a single plain summary"
     );
-    let (element, _) = preview("<b>Review</b> and <i>update</i> work_unit_id");
-    let rendered = dioxus_ssr::render_element(element);
-    assert!(rendered.contains("Review and update work_unit_id"));
-    assert!(!rendered.contains("<b>"));
+    assert_eq!(
+        plain("<b>Review</b> and <i>update</i> work_unit_id"),
+        "Review and update work_unit_id",
+        "wrappers disappear while identifiers retain underscores"
+    );
 }
 
 #[test]
 fn descriptions_keep_code_literal_and_links_non_navigable() {
-    let (element, extra) =
-        preview("- **Review** `<task>` and [file](javascript:alert)\n```\nMore details\n```");
-    let rendered = dioxus_ssr::render_element(element);
-    assert_eq!(extra, 1);
-    assert!(rendered.contains("<strong>Review</strong>"));
-    assert!(
-        rendered.contains("<code>&#60;task&#62;</code>"),
-        "{rendered}"
+    let text =
+        plain("- **Review** `src/main.rs` and [file](javascript:alert)\n```\nMore details\n```");
+    assert_eq!(
+        text, "Review src/main.rs and file · More details",
+        "links retain labels without destinations or formatting markup"
     );
-    assert!(!rendered.contains("href="));
-    assert!(!rendered.contains("<task>"));
+    assert!(
+        !text.contains("javascript:"),
+        "link destinations cannot become active markup"
+    );
 }

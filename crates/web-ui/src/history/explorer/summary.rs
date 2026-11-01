@@ -4,10 +4,16 @@ mod markdown;
 #[cfg(test)]
 mod tests;
 
-#[cfg(debug_assertions)]
-use dioxus::prelude::dioxus_signals;
-use dioxus::prelude::{Element, dioxus_core, dioxus_elements, rsx};
-use markdown::{MdInline, MdLineKind, Summary};
+/// Join meaningful lines as plain text, matching the shipped table summary.
+pub(super) fn plain(text: &str) -> String {
+    text.replace("\r\n", "\n")
+        .replace('\r', "\n")
+        .split('\n')
+        .map(markdown::markdown_plain_line)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>()
+        .join(" · ")
+}
 
 pub(super) fn timestamp(milliseconds: u64) -> String {
     #[cfg(target_arch = "wasm32")]
@@ -36,40 +42,4 @@ pub(super) fn timestamp(milliseconds: u64) -> String {
         );
     }
     format!("{milliseconds} ms since Unix epoch")
-}
-
-/// Render the first meaningful line without creating links or inserting HTML.
-pub(super) fn preview(text: &str) -> (Element, usize) {
-    let summary = Summary::parse(text);
-    let prefix = match &summary.line.kind {
-        MdLineKind::Task { done } => if *done { "☑ " } else { "☐ " }.into(),
-        MdLineKind::Unordered => "• ".into(),
-        MdLineKind::Ordered { marker } => format!("{marker} "),
-        MdLineKind::Quote { callout } => callout
-            .as_ref()
-            .map_or_else(|| "│ ".into(), |label| format!("{label}: ")),
-        MdLineKind::Fence { language } => format!("{language} "),
-        MdLineKind::Empty => Summary::EMPTY_LABEL.into(),
-        MdLineKind::Plain | MdLineKind::Heading { .. } => String::new(),
-    };
-    let heading = matches!(summary.line.kind, MdLineKind::Heading { .. });
-    (
-        rsx! { span { class: "idle-summary-line", "data-heading": heading.to_string(),
-            "{prefix}" {inline(&summary.line.inline)}
-        } },
-        summary.more,
-    )
-}
-
-fn inline(tokens: &[MdInline]) -> Element {
-    rsx! { for token in tokens { { match token {
-        MdInline::Text(text) => rsx! { "{text}" },
-        MdInline::Space => rsx! { "\u{a0}" },
-        MdInline::Code(text) => rsx! { code { "{text}" } },
-        MdInline::Strong(children) => rsx! { strong { {inline(children)} } },
-        MdInline::Em(children) => rsx! { em { {inline(children)} } },
-        MdInline::Strike(children) => rsx! { s { {inline(children)} } },
-        MdInline::Link { label, target } | MdInline::Image { label, target } =>
-            rsx! { span { class: "idle-summary-link", title: target.clone(), {inline(label)} } },
-    } } } }
 }

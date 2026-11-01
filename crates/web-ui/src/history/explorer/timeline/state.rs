@@ -76,7 +76,16 @@ impl State {
             })
             .collect();
         (
-            self.viewport.rows.get(first).map(|row| row.key.clone()),
+            view.window
+                .as_ref()
+                .and_then(|window| window.rows.get(first))
+                .map(|row| {
+                    row.presentation
+                        .parent
+                        .as_ref()
+                        .unwrap_or(&row.occurrence)
+                        .clone()
+                }),
             groups,
             self.offset == 0 && self.viewport.top < 1.0,
         )

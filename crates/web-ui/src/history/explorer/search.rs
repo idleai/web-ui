@@ -24,7 +24,11 @@ pub(super) fn HistorySearch(
     onaction: EventHandler<HistoryEvent>,
 ) -> Element {
     let mut draft = use_signal(|| view.text.clone());
-    let _sync = use_effect(use_reactive((&view.text,), move |(text,)| draft.set(text)));
+    let _sync = use_effect(use_reactive((&view.text,), move |(text,)| {
+        if !text.is_empty() {
+            draft.set(text);
+        }
+    }));
     let busy = view.state == RequestState::Loading;
     let navigation = if view.total == 0 || busy {
         ControlState::Disabled
@@ -42,7 +46,8 @@ pub(super) fn HistorySearch(
             text: String::new(),
         }));
     };
-    let mut clear_key = clear.clone();
+    let previous_id = id.clone();
+    let next_id = id.clone();
     rsx! {
         div { class: "idle-history-search",
             div { class: "idle-history-search-toolbar",
@@ -54,13 +59,19 @@ pub(super) fn HistorySearch(
                             if event.is_composing() { return; }
                             if event.key() == Key::Enter {
                                 event.prevent_default(); event.stop_propagation();
-                                if draft() == submitted {
+                                if !busy && !submitted.is_empty() && draft() == submitted {
                                     onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor, delta: if event.modifiers().contains(Modifiers::SHIFT) { -1 } else { 1 } }));
                                 } else {
                                     onaction.call(HistoryEvent::Timeline(Event::Find { surface: Surface::Editor, text: draft() }));
                                 }
                             } else if event.key() == Key::Escape {
-                                event.prevent_default(); event.stop_propagation(); clear_key(());
+                                event.prevent_default(); event.stop_propagation();
+                                onaction.call(HistoryEvent::Timeline(Event::Find { surface: Surface::Editor, text: String::new() }));
+                            } else if matches!(event.key(), Key::ArrowUp | Key::ArrowDown)
+                                && !busy && !submitted.is_empty() && draft() == submitted {
+                                event.prevent_default(); event.stop_propagation();
+                                onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor,
+                                    delta: if event.key() == Key::ArrowUp { -1 } else { 1 } }));
                             }
                         },
                     }
@@ -70,10 +81,10 @@ pub(super) fn HistorySearch(
                         span { class: "idle-history-match-count", role: "status", if busy { "Finding…" } else { "{current} of {view.total}" } }
                         span { class: "idle-history-previous",
                             IconButton { label: "Previous match", icon: IconName::ChevronRight, state: navigation,
-                                onpress: move |()| onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor, delta: -1 })) }
+                                onpress: move |()| { super::focus(&previous_id); onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor, delta: -1 })); } }
                         }
                         IconButton { label: "Next match", icon: IconName::ChevronRight, state: navigation,
-                            onpress: move |()| onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor, delta: 1 })) }
+                            onpress: move |()| { super::focus(&next_id); onaction.call(HistoryEvent::Timeline(Event::Match { surface: Surface::Editor, delta: 1 })); } }
                         IconButton { label: "Clear activity Find", icon: IconName::Close, onpress: clear }
                     }
                 }

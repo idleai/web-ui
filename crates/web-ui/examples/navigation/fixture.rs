@@ -182,6 +182,7 @@ impl Fixture {
                         | history::QueryAction::Open { .. }
                         | history::QueryAction::OpenAt { .. }
                         | history::QueryAction::Commit { .. }
+                        | history::QueryAction::CommitFile { .. }
                         | history::QueryAction::Reconcile(_) => Err(EffectError {
                             message: "Record details are outside this navigation fixture".into(),
                         }),

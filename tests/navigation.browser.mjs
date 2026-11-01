@@ -10,6 +10,7 @@ let server, browser, address;
 before(async () => {
   assert.ok(process.env.CHROME_PATH, 'CHROME_PATH must name an installed Chrome executable');
   await readFile(resolve(root, 'pkg/navigation_bg.wasm'));
+  await mkdir(resolve(root, 'screenshots'), { recursive: true });
   server = createServer(async (request, response) => {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
     const path = resolve(root, `.${pathname === '/' ? '/index.html' : pathname}`);
@@ -74,7 +75,6 @@ test('reference order, control first, supplied counts, graph and separate config
     const ids = await page.$$eval('[id]', elements => elements.map(element => element.id));
     assert.equal(ids.length, new Set(ids).size);
     assert.match(await text(page, '#last-action'), /Timeline\((Load|Visible)/, 'recent activity loads its native window when mounted');
-    await mkdir(resolve(root, 'screenshots'), { recursive: true });
     await page.screenshot({ path: resolve(root, 'screenshots/navigation.png'), fullPage: true });
     assert.deepEqual(errors, []);
   } finally { await page.close(); }

@@ -209,23 +209,11 @@ impl Fixture {
 }
 
 fn native_window() -> Result<history::QueryResult, EffectError> {
-    let fixture: serde_json::Value = serde_json::from_str(include_str!(
-        "../history_explorer/timeline.json"
-    ))
-    .map_err(|error| EffectError {
-        message: error.to_string(),
-    })?;
-    let topology = fixture
-        .get("topology")
-        .cloned()
-        .ok_or_else(|| EffectError {
-            message: "The native Activity fixture has no topology window.".into(),
-        })?;
-    let mut window: history::timeline::Window =
-        serde_json::from_value(topology).map_err(|error| EffectError {
+    // Forty rows exported by host-tools' activity-fixture using timeline format 3.
+    let window =
+        serde_json::from_str(include_str!("timeline.json")).map_err(|error| EffectError {
             message: error.to_string(),
         })?;
-    window.rows.truncate(40);
     Ok(history::QueryResult::Timeline(Box::new(
         history::timeline::Response::Window(window),
     )))

@@ -32,3 +32,5 @@
 @media (max-width: 480px) {
   .idle-theme .idle-session-composer .idle-session-actions { align-items: stretch; flex-direction: column; }
 }
+
+.idle-session-output-text { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--idle-font-mono, monospace); }

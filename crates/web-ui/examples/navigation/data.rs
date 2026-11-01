@@ -26,7 +26,9 @@ pub(super) fn sessions(mode: WorkspaceMode) -> Result<sessions::SessionSnapshot,
         let mut next = runner.clone();
         next.id = format!("session-{index}");
         next.title = title.into();
-        next.history.item = format!("{index:064x}");
+        if let Some(history) = &mut next.history {
+            history.item = format!("{index:064x}");
+        }
         snapshot.sessions.push(next);
     }
     for (id, name) in [("contributor-alex", "Alex"), ("contributor-dev", "Dev")] {

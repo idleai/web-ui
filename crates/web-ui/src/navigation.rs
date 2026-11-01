@@ -7,7 +7,7 @@ mod activity;
 mod chrome;
 mod directories;
 mod pane;
-mod sessions;
+pub(crate) mod sessions;
 mod workspace;
 
 pub use pane::WorkspaceNavigationPane;

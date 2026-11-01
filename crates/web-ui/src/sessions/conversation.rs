@@ -69,7 +69,7 @@ pub fn SessionConversation(
         let binding = view.selected_history.as_ref()?;
         history.as_ref().filter(|history| {
             super::permitted(&view, SessionPermission::Observe)
-                && *binding == session.session.history
+                && Some(binding) == session.session.history.as_ref()
                 && history.chain.as_ref() == Some(&binding.chain)
                 && history.filter.session.as_ref() == Some(&binding.item)
         })
@@ -104,11 +104,21 @@ pub fn SessionConversation(
                 }
                 section { aria_label: "Conversation and tool output",
                     h3 { "Conversation and tool output" }
+                    for output in view.transcripts.iter().filter(|output| Some(&output.session_id) == view.selected.as_ref()) {
+                        article { key: "{output.turn_id}", class: "idle-session-output", "data-turn-id": output.turn_id.clone(),
+                            if let Some(prompt) = output.input.as_ref().and_then(|input| view.prompts.iter().find(|prompt| &prompt.input == input)) {
+                                p { class: "idle-session-caption", "Result for {prompt.contributor.contributor_id}'s prompt" }
+                            }
+                            StatusBadge { label: output.status.clone() }
+                            pre { class: "idle-session-output-text", "{output.text}" }
+                            if output.truncated { p { class: "idle-session-caption", "This output is shortened. Open the runner history for the full result." } }
+                        }
+                    }
                     if let Some(history) = scoped_history {
                         RecordedConversation {
                             id: "{id}-history", view: history.clone(), capabilities, onaction: onhistoryaction,
                         }
-                    } else {
+                    } else if !view.transcripts.iter().any(|output| Some(&output.session_id) == view.selected.as_ref()) {
                         p { class: "idle-session-caption", "Conversation history is unavailable for the selected session." }
                     }
                 }

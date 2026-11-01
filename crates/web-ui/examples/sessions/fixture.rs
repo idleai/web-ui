@@ -48,6 +48,7 @@ impl Fixture {
             runtime_id: "runtime-evo".into(),
             revision: 1,
             state: SessionInputState::Ordered(delivery(42)),
+            text: None,
         });
         let mut fixture = Self {
             core: Core::new(),
@@ -231,6 +232,7 @@ impl Fixture {
             runtime_id: "runtime-evo".into(),
             revision: previous.map_or(1, |update| update.revision.saturating_add(1)),
             state,
+            text: None,
         };
         self.changes.push(SessionChange::Input(update));
         self.publish()

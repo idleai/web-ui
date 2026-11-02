@@ -4,6 +4,7 @@ use app_core::sessions::{
     Event as SessionEvent, SessionCapability, SessionGrant, SessionGrantStatus, SessionMutation,
     SessionMutationState, SessionPermission, SessionRetryAdvice, ViewModel,
 };
+use app_core::workspace::WorkspaceMode;
 use dioxus::prelude::*;
 
 use super::SessionActionToken;
@@ -93,12 +94,19 @@ pub fn SessionSharing(
     now_ms: Option<u64>,
 ) -> Element {
     let selected = super::selected(&view);
+    let delegated_sharing = view
+        .context
+        .as_ref()
+        .is_some_and(|context| context.mode == WorkspaceMode::Managed);
     let reason = unavailable(&view, draft.as_ref());
     let scoped = draft.as_ref().filter(|draft| draft.token.matches(&view));
+    let unsupported_draft =
+        !delegated_sharing && scoped.is_some_and(|draft| draft.access == InvitationAccess::Manage);
     let editable = reason.is_none();
     let can_invite = editable
         && scoped.is_some_and(|draft| {
-            !draft.grant_id.trim().is_empty()
+            (draft.access != InvitationAccess::Manage || delegated_sharing)
+                && !draft.grant_id.trim().is_empty()
                 && recipients
                     .iter()
                     .any(|recipient| !recipient.disabled && recipient.value == draft.grantee)
@@ -121,7 +129,7 @@ pub fn SessionSharing(
     let recipient_draft = scoped.cloned();
     let access_draft = scoped.cloned();
     let invite_draft = scoped.cloned();
-    let access_options = [
+    let mut access_options: Vec<_> = [
         (InvitationAccess::Observe, "Read session"),
         (InvitationAccess::Contribute, "Read and send prompts"),
         (
@@ -130,16 +138,30 @@ pub fn SessionSharing(
         ),
     ]
     .into_iter()
+    .filter(|(access, _)| *access != InvitationAccess::Manage || delegated_sharing)
     .map(|(access, label)| SelectOption {
         value: access.value().into(),
         label: label.into(),
         disabled: false,
     })
     .collect();
+    if unsupported_draft {
+        access_options.insert(
+            0,
+            SelectOption {
+                value: "unsupported".into(),
+                label: "Choose supported access".into(),
+                disabled: true,
+            },
+        );
+    }
     rsx! {
         section { id: id.clone(), class: "idle-session-sharing", aria_label: "Session sharing",
             h2 { "Participants and sharing" }
             p { class: "idle-session-caption", "Session invitations grant participation. Compute access is managed separately." }
+            if !delegated_sharing {
+                p { class: "idle-session-caption", "Only the session owner can manage standalone sharing." }
+            }
             if let Some(session) = selected {
                 p { class: "idle-session-owner", "Session owner: " strong { "{session.session.owner}" } }
                 ul { class: "idle-session-grants",
@@ -168,13 +190,13 @@ pub fn SessionSharing(
                 }
                 Select {
                     id: "{id}-access", label: "Session access", options: access_options,
-                    value: scoped.map_or(InvitationAccess::Observe, |draft| draft.access).value(),
+                    value: if unsupported_draft { "unsupported" } else { scoped.map_or(InvitationAccess::Observe, |draft| draft.access).value() },
                     state: if editable { ControlState::Ready } else { ControlState::Disabled },
                     onchange: move |value: String| {
                         let access = match value.as_str() {
                             "observe" => Some(InvitationAccess::Observe),
                             "contribute" => Some(InvitationAccess::Contribute),
-                            "manage" => Some(InvitationAccess::Manage),
+                            "manage" if delegated_sharing => Some(InvitationAccess::Manage),
                             _ => None,
                         };
                         if editable && let (Some(mut draft), Some(access)) = (access_draft.clone(), access) {
@@ -185,6 +207,9 @@ pub fn SessionSharing(
                 }
                 p { id: "{id}-hint", class: "idle-session-caption",
                     if let Some(reason) = reason { "{reason}" }
+                    else if unsupported_draft {
+                        "Choose read access or read and send prompts. Delegated sharing is unavailable."
+                    }
                     else { "Choose a participant and review their access before inviting them." }
                 }
                 if let Some(expiry) = scoped.and_then(|draft| draft.expires_at_ms) {

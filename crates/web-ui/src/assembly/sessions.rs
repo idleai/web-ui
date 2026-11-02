@@ -3,7 +3,7 @@
 use app_core::{Event, ViewModel, sessions};
 use dioxus::prelude::*;
 
-use crate::controls::{Button, ControlState, TextField};
+use crate::controls::{Button, ControlState, FieldState, TextField};
 use crate::host::HostCapabilities;
 use crate::sessions::{
     PromptComposer, SessionConversation, SessionFeedback, SessionFormEdit, SessionForms,
@@ -73,6 +73,7 @@ fn Creation(
     rsx! {
         section { class: "idle-stack", aria_label: "Create a session",
             TextField { id: "idle-session-title", label: "Session title", value: title,
+                state: if creation.is_some() { FieldState::Editable } else { FieldState::Disabled },
                 oninput: move |text| onedit.call(SessionFormEdit::Title(text)) }
             if let Some(host) = host { p { class: "idle-session-caption", "Compute host: {host}" } }
             if let Some(reason) = reason { p { role: "status", "{reason}" } }

@@ -16,9 +16,9 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
 name = "app-core"
-version = "0.3.0"
+version = "0.4.0"
 source = "sparse+https://raw.githubusercontent.com/idleai/app-core/cargo-index/"
-checksum = "57a0c2c0d9dde63b0af86ce0344839f31d79ae248bcac8a0e91d23165c66958e"
+checksum = "de1981f80f7b728fdf88fce0226668803452322d5f5b5e32373c9ea714fe7975"
 dependencies = [
  "bincode",
  "crux_core",

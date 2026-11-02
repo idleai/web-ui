@@ -33,7 +33,7 @@ pub struct SessionCreation {
     pub draft: SessionDraft,
 }
 
-fn unavailable(
+pub(crate) fn unavailable(
     view: &sessions::ViewModel,
     creation: Option<&SessionCreation>,
     now_ms: Option<u64>,
@@ -119,10 +119,10 @@ pub(super) fn Sessions(
                 SessionLoadState::Idle => rsx! { Notice { text: "Sessions not connected" } },
                 SessionLoadState::Loading => rsx! { Notice { text: "Loading sessions…" } },
                 SessionLoadState::Ready => rsx! {},
-                SessionLoadState::Failed(error) => rsx! { Notice { text: error.message, error: true } },
+                SessionLoadState::Failed(error) => rsx! { Notice { text: error.message, error: section == NavigationSection::Sessions } },
             }
-            if let SessionLoadState::Failed(error) = view.updates { Notice { text: error.message, error: true } }
-            if let Some(error) = view.action_error { Notice { text: error.message, error: true } }
+            if let SessionLoadState::Failed(error) = view.updates { Notice { text: error.message, error: section == NavigationSection::Sessions } }
+            if let Some(error) = view.action_error { Notice { text: error.message, error: section == NavigationSection::Sessions } }
         }
     }
 }

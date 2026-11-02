@@ -294,6 +294,32 @@ fn invitations_are_explicit_session_permissions_and_wait_for_the_returned_grant(
     }
 }
 
+#[test]
+fn standalone_invitation_offers_only_supported_access() {
+    for access in [InvitationAccess::Observe, InvitationAccess::Manage] {
+        let mut fixture = sharing_fixture();
+        fixture.view.context.as_mut().expect("session context").mode = WorkspaceMode::Standalone;
+        fixture.draft.token.context.mode = WorkspaceMode::Standalone;
+        fixture.draft.access = access;
+        let (dom, mutations) = mount(sharing, fixture.clone());
+        let html = dioxus_ssr::render(&dom);
+        assert!(
+            !html.contains("value=\"manage\""),
+            "unsupported sharing choice is absent"
+        );
+        assert!(
+            html.contains("Only the session owner"),
+            "standalone sharing policy is visible"
+        );
+        click(&dom, listener(&mutations, "click", 0));
+        assert_eq!(
+            fixture.actions.borrow().is_empty(),
+            access == InvitationAccess::Manage,
+            "a restored unsupported draft cannot dispatch; ordinary sharing still works"
+        );
+    }
+}
+
 #[derive(Clone)]
 struct RecoveryFixture {
     state: SessionMutationState,

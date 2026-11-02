@@ -89,6 +89,7 @@ fn remote(view: &ViewModel, state: Option<SessionInputState>) -> SessionPromptVi
             runtime_id: "runtime-evo".into(),
             revision: 7,
             state,
+            text: None,
         }),
     }
 }
@@ -111,6 +112,43 @@ fn render<P: Clone + 'static>(app: fn(P) -> Element, props: P) -> String {
     let mut dom = VirtualDom::new_with_props(app, props);
     dom.rebuild_in_place();
     dioxus_ssr::render(&dom)
+}
+
+#[test]
+fn native_results_keep_the_prompt_author_and_only_show_the_selected_session() {
+    let mut view = connected(WorkspaceMode::Standalone).view().sessions;
+    let prompt = remote(&view, Some(SessionInputState::Ordered(delivery(1))));
+    view.transcripts
+        .push(app_core::sessions::SessionTranscript {
+            session_id: "session-shared".into(),
+            turn_id: "native-turn-one".into(),
+            input: Some(prompt.input.clone()),
+            status: "completed".into(),
+            text: "Shared task result".into(),
+            truncated: false,
+        });
+    view.transcripts
+        .push(app_core::sessions::SessionTranscript {
+            session_id: "different-session".into(),
+            turn_id: "native-turn-two".into(),
+            input: None,
+            status: "completed".into(),
+            text: "Other session output".into(),
+            truncated: false,
+        });
+    view.prompts.push(prompt);
+    let html = render(
+        conversation,
+        ConversationFixture {
+            view,
+            kind: HostKind::VsCode,
+            history: None,
+        },
+    );
+    assert_eq!(html.matches("Shared task result").count(), 1);
+    assert!(html.contains("Result for contributor-bob"));
+    assert!(!html.contains("Other session output"));
+    assert!(!html.contains("Conversation history is unavailable"));
 }
 
 #[test]

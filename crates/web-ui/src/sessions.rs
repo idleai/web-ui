@@ -7,6 +7,7 @@
 mod composer;
 mod conversation;
 mod feedback;
+mod forms;
 mod sharing;
 
 pub use composer::{PromptComposer, PromptComposerProps, PromptDraft, SessionActionToken};
@@ -15,6 +16,7 @@ pub use conversation::{
     SessionConversationProps,
 };
 pub use feedback::{SessionFeedback, SessionFeedbackProps};
+pub use forms::{SessionFormEdit, SessionForms};
 pub use sharing::{InvitationAccess, InvitationDraft, SessionSharing, SessionSharingProps};
 
 use app_core::sessions::{SessionLoadState, SessionPermission, SessionView, ViewModel};

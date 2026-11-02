@@ -1,6 +1,6 @@
 //! Host composition of workspace navigation, history and session surfaces.
 
-use app_core::{Event, ViewModel, history, projections, sessions, workspace};
+use app_core::{Event, ViewModel, history, projections, workspace};
 #[cfg(debug_assertions)]
 use dioxus::prelude::dioxus_signals;
 use dioxus::prelude::{
@@ -14,10 +14,12 @@ use crate::host::HostCapabilities;
 use crate::navigation::{SessionCreation, WorkspaceNavigation, WorkspaceNavigationPane};
 use crate::projections::ProjectionPanel;
 use crate::provenance::ActivitySnapshot;
-use crate::sessions::{PromptComposer, SessionConversation, SessionFeedback, SessionSharing};
+use crate::sessions::{SessionFormEdit, SessionForms};
 use crate::theme::{Density, Theme, ThemeProvider};
 
 mod activity;
+#[path = "assembly/sessions.rs"]
+mod live_sessions;
 
 /// Host presentation size; application state and events are identical in both.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -45,6 +47,8 @@ pub fn WorkspaceSurface(
     #[props(default = Theme::VsCode)] theme: Theme,
     error: Option<String>,
     creation: Option<SessionCreation>,
+    session_forms: Option<SessionForms>,
+    onsessionform: Option<EventHandler<SessionFormEdit>>,
     now_ms: Option<u64>,
     destination: Option<Element>,
     onopen: Option<EventHandler<String>>,
@@ -66,7 +70,6 @@ pub fn WorkspaceSurface(
         return rsx! { activity::ActivityEditor { view, capabilities, theme, error, activity, onaction } };
     }
     let history_action = EventHandler::new(move |event| onaction.call(Event::History(event)));
-    let session_action = EventHandler::new(move |event| onaction.call(Event::Sessions(event)));
     let directory = view.workspace.clone();
     let selected = directory.selected_workspace.clone();
     let session_selected = directory.section == workspace::NavigationSection::Sessions;
@@ -114,24 +117,18 @@ pub fn WorkspaceSurface(
                         crate::repository::RepositoryOverview { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
                     } else if directory.section == workspace::NavigationSection::Members {
                         crate::repository::RepositoryUsers { view: view.repository.clone(), workspace: view.workspace.clone(), onaction: move |event| onaction.call(Event::Repository(event)), onopen, now_ms }
-                    } else if session_selected && view.repository.context.is_some() {
+                    } else if session_selected && view.repository.context.is_some() && (view.sessions.context.is_none() || session_forms.as_ref().is_some_and(|forms| forms.show_recorded_history) || (view.repository.selected_session.is_some() && view.sessions.selected.is_none())) {
+                        if view.sessions.context.is_some() {
+                            Button { label: "Live sessions", onpress: move |()| onaction.call(Event::Sessions(app_core::sessions::Event::Select(None))) }
+                        }
                         crate::repository::RecordedSessions { view: view.repository.clone(), onaction: move |event| onaction.call(Event::Repository(event)), now_ms }
                         {rsx! { HistorySearch { key: "recorded:{view.repository.selected_session:?}", view: view.history.search.clone(), onaction: history_action } }}
                         Button { label: "Refresh recorded history", onpress: move |()| history_action.call(history::Event::Refresh) }
                         HistoryTimeline { id: "idle-recorded-history", view: view.history.clone(), capabilities: capabilities.clone(), onaction: history_action, activity: activity.clone(), height: if surface == Surface::Sidebar { 400 } else { 640 } }
                     }
                     else if session_selected {
-                        if view.sessions.context.is_none() { p { "A session connection is not available for this workspace." } }
-                        SessionFeedback { view: view.sessions.clone(), onaction: session_action }
-                        for session in &view.sessions.sessions {
-                            Button { key: "{session.session.id}", label: session.session.title.clone(), onpress: {
-                                let id = session.session.id.clone();
-                                move |()| session_action.call(sessions::Event::Select(Some(id.clone())))
-                            } }
-                        }
-                        SessionConversation { id: "idle-session", view: view.sessions.clone(), history: Some(view.history.clone()), capabilities: capabilities.clone(), onaction: session_action, onhistoryaction: history_action, now_ms: None }
-                        PromptComposer { id: "idle-composer", view: view.sessions.clone(), draft: None, oninput: move |_text| {}, onaction: session_action }
-                        SessionSharing { id: "idle-sharing", view: view.sessions, draft: None, recipients: Vec::new(), onchange: move |_draft| {}, onaction: session_action, now_ms: None }
+                        live_sessions::LiveSessions { view: view.clone(), capabilities: capabilities.clone(), forms: session_forms,
+                            onedit: onsessionform, onaction, now_ms }
                     } else if directory.section == workspace::NavigationSection::Activity || (surface == Surface::Detail && directory.section == workspace::NavigationSection::Workspace) {
                         HistorySearch { key: "{view.history.chain:?}", view: view.history.search.clone(), onaction: history_action }
                         Button { label: "Refresh history", onpress: move |()| history_action.call(history::Event::Refresh) }

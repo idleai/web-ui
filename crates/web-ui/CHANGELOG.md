@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1](https://github.com/idleai/web-ui/compare/web-ui-v0.4.0...web-ui-v0.4.1) - 2026-11-02
+
+### Fixed
+
+- enable session title editing only when its draft is ready ([#43](https://github.com/idleai/web-ui/pull/43))
+
 ## [0.4.0](https://github.com/idleai/web-ui/compare/web-ui-v0.3.2...web-ui-v0.4.0) - 2026-11-02
 
 ### Added
